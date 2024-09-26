@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package natalia.multiplesclerosis;
+import MultipleSclerosisJDBC.JDBCManager;
 import javax.swing.*;
 
 /**
