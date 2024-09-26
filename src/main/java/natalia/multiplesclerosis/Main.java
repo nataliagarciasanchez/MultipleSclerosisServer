@@ -3,11 +3,17 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package natalia.multiplesclerosis;
+import javax.swing.*;
 
 /**
  *
  * @author nataliagarciasanchez
  */
-public class Main {
-    //test
+public class Main extends JFrame{
+    private JDBCManager manager; 
+    
+    
+    public Main(){
+        
+    }
 }
