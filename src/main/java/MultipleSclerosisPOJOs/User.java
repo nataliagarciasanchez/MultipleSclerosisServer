@@ -4,6 +4,7 @@
  */
 package MultipleSclerosisPOJOs;
 import java.io.Serializable;
+import javax.persistence.*;
 
 
 /**
