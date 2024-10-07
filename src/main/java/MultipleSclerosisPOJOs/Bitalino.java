@@ -5,6 +5,7 @@
 package MultipleSclerosisPOJOs;
 
 import java.io.Serializable;
+import java.sql.Date;
 
 /**
  *
@@ -12,6 +13,8 @@ import java.io.Serializable;
  */
 public class Bitalino implements Serializable{
      private static final long serialVersionUID = 123456789L;
+     private Date date;
+     
      
     
 }
