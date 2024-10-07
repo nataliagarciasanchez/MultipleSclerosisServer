@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package MultipleSclerosisPOJOs;
+import java.io.Serializable;
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
@@ -11,8 +12,10 @@ import java.util.Objects;
  *
  * @author nataliagarciasanchez
  */
-public class Role {
-    private static final long serialVersionUID = -1008273412421410404L;
+@Entity
+@Table (name= "roles")
+public class Role implements Serializable{
+    private static final long serialVersionUID = 1L;
 
     @Id 
     @GeneratedValue(generator = "roles")
