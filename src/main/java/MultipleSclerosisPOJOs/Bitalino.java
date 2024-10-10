@@ -53,7 +53,14 @@ public class Bitalino implements Serializable{
      public String getFile_path(String file_path) {
 	return file_path;
      }
+     //setFILE
+     public Float getDuration(Float duration) {
+	return duration;
+    }
+      public void setDuration(Float duration) {
+	this.duration = duration;
+      }
         }
-}
+
 
      
