@@ -32,6 +32,9 @@ public class Doctor {
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
     private List<Patient> patients;
     
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
+    private List<Feedback> feedback; 
+    
     public Doctor(){
     super();
     }
