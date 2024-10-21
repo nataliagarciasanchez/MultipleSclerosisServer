@@ -35,6 +35,8 @@ public class Patient implements Serializable{
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
+    
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<Report> reports;
     
     public Patient() {
