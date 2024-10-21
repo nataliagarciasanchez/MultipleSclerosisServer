@@ -53,13 +53,24 @@ public class Bitalino implements Serializable{
      public String getFile_path(String file_path) {
 	return file_path;
      }
-     //setFILE
+     public void setFile_path(String file_path) {
+	this.file_path = file_path;
+     }
      public Float getDuration(Float duration) {
 	return duration;
     }
       public void setDuration(Float duration) {
 	this.duration = duration;
       }
+     public Integer getClinicalHistoryID(Integer clinicalHistoryID) {
+	return clinicalHistoryID;
+     }
+     public void SetClinicalHistoryID(Integer clinicalHistoryID) {
+	this.clinical_historyID= clinicalHistoryID;  
+     }
+       public String toString() {
+        return "Bitalino {" +"Date=" + date +" Signal Type=" + signal_type + " File path=" + file_path +  "Duration=" + duration + " Clinical History ID=" + clinical_historyID + '}';
+       }
         }
 
 
