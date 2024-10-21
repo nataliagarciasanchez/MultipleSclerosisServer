@@ -18,8 +18,8 @@ public class Patient implements Serializable{
     
     private Integer id;
     private String name;
-    private String gender;
-    private Date dob;
+     private Date dob;
+    private Gender gender;
     private Integer phone;
     private Doctor doctor;
     private List<Report> reports;
