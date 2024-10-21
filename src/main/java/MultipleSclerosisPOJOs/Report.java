@@ -6,6 +6,7 @@ package MultipleSclerosisPOJOs;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.List;
 
 /**
  *
@@ -18,5 +19,5 @@ public class Report implements Serializable{
     private Date date;
     private Patient patient;
     private List<Bitalino> bitalinos;
-    private List<Report_Symptoms> report_Symptoms;
+    private List<Symptom> symptom;
 }
