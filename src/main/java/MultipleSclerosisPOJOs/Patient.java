@@ -27,8 +27,9 @@ public class Patient implements Serializable{
     
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
+    private User user;
     private String name;
-     private Date dob;
+    private Date dob;
     private Gender gender;
     private Integer phone;
     private Doctor doctor;
