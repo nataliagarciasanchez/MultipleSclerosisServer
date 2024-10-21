@@ -32,6 +32,8 @@ public class Patient implements Serializable{
     private Date dob;
     private Gender gender;
     private Integer phone;
+    @ManyToOne
+    @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
     private List<Report> reports;
     
