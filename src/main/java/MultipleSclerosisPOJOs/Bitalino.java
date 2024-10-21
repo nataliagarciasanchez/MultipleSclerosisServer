@@ -23,7 +23,7 @@ public class Bitalino implements Serializable{
     @TableGenerator(name = "bitalinos", table = "sqlite_sequence",  pkColumnName = "name", valueColumnName = "seq", pkColumnValue = "bitalinos")
     private Integer id;
     private Date date;
-    private String signal_type;
+    private SignalType signal_type;
     private String file_path;
     private Float duration;
     
@@ -35,14 +35,14 @@ public class Bitalino implements Serializable{
     super();
     }
      
-    public Bitalino (Date date,String signal_type,String file_path,Float duration){
+    public Bitalino (Date date,SignalType signal_type,String file_path,Float duration){
          this.date=date;
          this.signal_type=signal_type;
          this.file_path=file_path;
          this.duration=duration;
      }
 
-    public Bitalino(Integer id, Date date, String signal_type, String file_path, Float duration, Report report) {
+    public Bitalino(Integer id, Date date, SignalType signal_type, String file_path, Float duration, Report report) {
         this.id = id;
         this.date = date;
         this.signal_type = signal_type;
@@ -63,7 +63,7 @@ public class Bitalino implements Serializable{
         return date;
     }
 
-    public String getSignal_type() {
+    public SignalType getSignal_type() {
         return signal_type;
     }
 
@@ -87,7 +87,7 @@ public class Bitalino implements Serializable{
         this.date = date;
     }
 
-    public void setSignal_type(String signal_type) {
+    public void setSignal_type(SignalType signal_type) {
         this.signal_type = signal_type;
     }
 
