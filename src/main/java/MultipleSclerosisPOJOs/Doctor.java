@@ -13,7 +13,7 @@ import javax.persistence.*;
  * @author nataliagarciasanchez
  */
 @Entity
-@Table (name= "patients")
+@Table (name= "doctors")
 public class Doctor {
     
     private static final long serialVersionUID = 1L;
