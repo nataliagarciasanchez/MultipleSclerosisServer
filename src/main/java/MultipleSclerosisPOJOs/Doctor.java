@@ -4,6 +4,7 @@
  */
 package MultipleSclerosisPOJOs;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.*;
@@ -14,7 +15,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table (name= "doctors")
-public class Doctor {
+public class Doctor implements Serializable{
     
     private static final long serialVersionUID = 1L;
     
