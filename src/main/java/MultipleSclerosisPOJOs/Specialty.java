@@ -6,9 +6,8 @@ package MultipleSclerosisPOJOs;
 
 /**
  *
- * @author Andreoti
+ * @author maipa
  */
-public enum SignalType {
-    ECG,EMG;
-    
+public enum Specialty {
+    NEUROLOGIST;
 }
