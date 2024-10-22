@@ -31,18 +31,25 @@ public class Report implements Serializable{
     
     @OneToMany(mappedBy = "reports", cascade = CascadeType.ALL)
     private List<Bitalino> bitalinos;
-    private List<Symptom> symptom;
+    
+    @ManyToMany
+    @JoinTable(
+        name = "report_symptoms",  // Nombre de la tabla intermedia
+        joinColumns = @JoinColumn(name = "report_id"),  // FK de Report
+        inverseJoinColumns = @JoinColumn(name = "symptom_id")  // FK de Symptom
+    )
+    private List<Symptom> symptoms;
     
     public Report(){
     super();
     }
 
-    public Report(Integer id, Date date, Patient patient, List<Bitalino> bitalinos, List<Symptom> symptom) {
+    public Report(Integer id, Date date, Patient patient, List<Bitalino> bitalinos, List<Symptom> symptoms) {
         this.id = id;
         this.date = date;
         this.patient = patient;
         this.bitalinos = bitalinos;
-        this.symptom = symptom;
+        this.symptoms = symptoms;
     }
 
     public static long getSerialVersionUID() {
@@ -65,8 +72,8 @@ public class Report implements Serializable{
         return bitalinos;
     }
 
-    public List<Symptom> getSymptom() {
-        return symptom;
+    public List<Symptom> getSymptoms() {
+        return symptoms;
     }
 
     public void setId(Integer id) {
@@ -85,13 +92,13 @@ public class Report implements Serializable{
         this.bitalinos = bitalinos;
     }
 
-    public void setSymptom(List<Symptom> symptom) {
-        this.symptom = symptom;
+    public void setSymptom(List<Symptom> symptoms) {
+        this.symptoms = symptoms;
     }
 
     @Override
     public String toString() {
-        return "Report{" + "id=" + id + ", date=" + date + ", patient=" + patient + ", bitalinos=" + bitalinos + ", symptom=" + symptom + '}';
+        return "Report{" + "id=" + id + ", date=" + date + ", patient=" + patient + ", bitalinos=" + bitalinos + ", symptom=" + symptoms + '}';
     }
 
     @Override
@@ -101,7 +108,7 @@ public class Report implements Serializable{
         hash = 59 * hash + Objects.hashCode(this.date);
         hash = 59 * hash + Objects.hashCode(this.patient);
         hash = 59 * hash + Objects.hashCode(this.bitalinos);
-        hash = 59 * hash + Objects.hashCode(this.symptom);
+        hash = 59 * hash + Objects.hashCode(this.symptoms);
         return hash;
     }
 
@@ -129,7 +136,7 @@ public class Report implements Serializable{
         if (!Objects.equals(this.bitalinos, other.bitalinos)) {
             return false;
         }
-        return Objects.equals(this.symptom, other.symptom);
+        return Objects.equals(this.symptoms, other.symptoms);
     }
     
     

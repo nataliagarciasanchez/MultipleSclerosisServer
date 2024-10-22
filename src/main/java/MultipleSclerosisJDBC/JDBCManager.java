@@ -4,6 +4,7 @@
  */
 package MultipleSclerosisJDBC;
 import MultipleSclerosisPOJOs.Gender;
+import MultipleSclerosisPOJOs.Specialty;
 import MultipleSclerosisPOJOs.SignalType;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -42,56 +43,82 @@ public class JDBCManager {
 	try {
 			
             Statement stmt = c.createStatement();
+            
+            String create_table_administrators = "CREATE TABLE IF NOT EXIST Administrators ("
+		+ "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "    name TEXT NOT NULL, "
+		+ "    user_id,"
+		+ "    FOREIGN KEY (user_id) REFERENCES Users(id)"
+		+ ");";
+		
+            stmt.executeUpdate(create_table_administrators);
+            
+            StringBuilder enumValuesSpecialty=new StringBuilder();
+            for (Specialty specialty : Specialty.values()) {
+                if (enumValuesSpecialty.length() > 0) {
+                    enumValuesSpecialty.append(", ");
+                }
+                enumValuesSpecialty.append("'").append(specialty.name()).append("'");
+            }
 			
 	    String create_table_doctors = "CREATE TABLE IF NOT EXIST Doctors ("
 		+ "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
-		+ "    email TEXT NOT NULL, "
                 + "    name TEXT NOT NULL, "
-		+ "    specialty_id INTEGER NOT NULL,"
-		+ "    licensePDF BLOB,"
-		+ "    FOREIGN KEY (speciality_id) REFERENCES Specialty(id)"
+		+ "    specialty TEXT("+enumValuesSpecialty.toString()+") NOT NULL,"
+		+ "    user_id,"
+		+ "    FOREIGN KEY (user_id) REFERENCES Users(id)"
 		+ ");";
 		
             stmt.executeUpdate(create_table_doctors);
             
             //HAY QUE HACER ESTO PARA LOS ENUM 
-            StringBuilder enumValues=new StringBuilder();
+            StringBuilder enumValuesGender=new StringBuilder();
             for (Gender gender : Gender.values()) {
-                if (enumValues.length() > 0) {
-                    enumValues.append(", ");
+                if (enumValuesGender.length() > 0) {
+                    enumValuesGender.append(", ");
                 }
-                enumValues.append("'").append(gender.name()).append("'");
+                enumValuesGender.append("'").append(gender.name()).append("'");
             }
 		
             String create_table_patients="CREATE TABLE IF NOT EXIST Patients ("
                 +"      id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "     name TEXT NOT NULL, "
-                + "     date of birth DATE NOT NULL, "
-                + "     gender ENUM("+enumValues.toString()+") NOT NULL, "
+                + "     dob DATE NOT NULL, "
+                + "     gender TEXT("+enumValuesGender.toString()+") NOT NULL, " //los enums se representarán como TEXT
                 + "     phone INTEGER NOT NULL, "
                 + "     doctor_id INTEGER NOT NULL, "
-                + "     FOREIGN KEY (doctor_id) REFERENCES Doctor(id)"
+                + "     user_id INTEGER NOT NULL"
+                + "     FOREIGN KEY (doctor_id) REFERENCES Doctors(id)"
+                + "     FOREIGN KEY (user_id) REFERENCES Users(id)"
                 + ");";
        
             stmt.executeUpdate(create_table_patients);
             
-            String create_table_report="CREATE TABLE IF NOT EXIST Report ("
-                +"      id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            String create_table_reports="CREATE TABLE IF NOT EXIST Reports ("
+                + "      id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "     date DATE NOT NULL, "
                 + "     patient_id INTEGER NOT NULL, "
-                + "     FOREIGN KEY (patient_id) REFERENCES Patient(id)"
+                + "     FOREIGN KEY (patient_id) REFERENCES Patients(id)"
                 + ");";
        
-            stmt.executeUpdate(create_table_report);
+            stmt.executeUpdate(create_table_reports);
             
-            String create_table_symptoms="CREATE TABLE IF NOT EXIST Symptom ("
-                +"      id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            String create_table_symptoms="CREATE TABLE IF NOT EXIST Symptoms ("
+                + "      id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "     name TEXT NOT NULL, "
-                + "     report_id INTEGER NOT NULL, "
-                + "     FOREIGN KEY (report_id) REFERENCES Report(id)"
                 + ");";
        
             stmt.executeUpdate(create_table_symptoms);
+            
+            String create_table_report_symptoms="CREATE TABLE IF NOT EXIST Report_ymptoms ("
+                + "      symptom_id INTEGER NOT NULL,"
+                + "      report_id INTEGER NOT NULL,"
+                + "      PRIMARY KEY(report_id, symptom_id)"
+                + "     FOREIGN KEY (patient_id) REFERENCES Patients(id)"
+                + "     FOREIGN KEY (report_id) REFERENCES Reports(id)"
+                + ");";
+       
+            stmt.executeUpdate(create_table_report_symptoms);
             
             StringBuilder bitValues=new StringBuilder();
             for (SignalType signal : SignalType.values()) {
@@ -101,17 +128,31 @@ public class JDBCManager {
                 bitValues.append("'").append(signal.name()).append("'");
             }
             
-            String create_table_bitalinos="CREATE TABLE IF NOT EXIST Bitalino ("
-                +"      id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            String create_table_bitalinos="CREATE TABLE IF NOT EXIST Bitalinos ("
+                + "     id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "     date DATE NOT NULL, "
                 + "     signal_type ENUM("+bitValues.toString()+") NOT NULL, "
-                + "     file_path VARCHAR(255) NOT NULL, "
+                + "     file_path TEXT NOT NULL, "
                 + "     duration FLOAT NOT NULL, "
                 + "     report_id INTEGER NOT NULL, "
-                + "     FOREIGN KEY (report_id) REFERENCES Report(id)"
+                + "     FOREIGN KEY (report_id) REFERENCES Reports(id)"
                 + ");";
        
             stmt.executeUpdate(create_table_bitalinos);
+            
+            
+            String create_table_feedbacks = "CREATE TABLE IF NOT EXIST Feedbacks ("
+                + "     id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "     date DATE NOT NULL, "
+                + "     message TEXT NOT NULL"
+                + "     doctor_id INTEGER NOT NULL, "
+                + "     patient_id INTEGER NOT NULL, "
+                + "     FOREIGN KEY (doctor_id) REFERENCES Doctors(id)"
+                + "     FOREIGN KEY (patient_id) REFERENCES Patients(id)"
+                + ");";
+            
+            stmt.executeUpdate(create_table_feedbacks);
+            
 			
 	}catch(SQLException e) {
             if(!e.getMessage().contains("already exists")){
