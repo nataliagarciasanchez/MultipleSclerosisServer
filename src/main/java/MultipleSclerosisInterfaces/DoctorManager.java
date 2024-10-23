@@ -20,7 +20,7 @@ public interface DoctorManager {
     public List<Doctor> getListOfDoctors();
     public void removeDoctorById(Integer id);
     public void modifyDoctorInfo(Integer id, String name, Specialty specialty, User user);
-    public void searchDoctorById(Integer id);
+    public Doctor searchDoctorById(Integer id);
     public List<Doctor> searchDoctorByName(String name);//es una lista porque puede haber doctores con el mismo nombre
     public void assignPatient2Doctor(Integer doctorId, Integer patientId);
     public void removePatientFromDoctor(Integer doctorId, Integer patientId);

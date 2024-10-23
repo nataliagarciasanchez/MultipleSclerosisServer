@@ -19,7 +19,7 @@ public interface PatientManager {
     public List<Patient> getListOfPatients();
     public void removePatientById(Integer id);
     public void modifyPatientInfo(Integer id, String name, String specialty, User user);
-    public void searchPatientById(Integer id);
+    public Patient searchPatientById(Integer id);
     public List<Patient> searchPatientByName(String name);
     public List<Patient> searchPatientByDoctor(Integer doctorId);
     public void assignSymptom2Patient(Integer symptomId, Integer patientId);

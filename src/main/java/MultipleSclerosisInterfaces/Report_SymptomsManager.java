@@ -14,6 +14,6 @@ import java.util.List;
 public interface Report_SymptomsManager {
     public void addSymptomToReport(Integer symptomId, Integer reportId);
     public void removeSymptomFromReport(Integer symptomId, Integer reportId);
-    public void emptyReport(Integer reportId); //delete all the symproms associated with a report
+    public void emptyReport(Integer reportId); //delete all the symptoms associated with a report
     public List <Symptom> getSymptomsFromReport(Integer reportId);
 }

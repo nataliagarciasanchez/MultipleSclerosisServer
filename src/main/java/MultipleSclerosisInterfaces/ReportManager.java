@@ -17,7 +17,7 @@ public interface ReportManager {
     public void removeReportById(int id);
     public Report viewReport(int id);
     public List<Report> getListOfReports();
-    public void searchReportById(int id);
+    public Report searchReportById(int id);
     public List<Report> getListOfReportsOfPatient(int patientId);   
     
 }

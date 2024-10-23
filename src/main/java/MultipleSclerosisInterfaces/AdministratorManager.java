@@ -18,6 +18,6 @@ public interface AdministratorManager {
     public List<Administrator> getListOfAdministrators();
     public void removeAdministratorById(Integer id);
     public void modifyAdministratorInfo(Integer id, String name, User user);
-    public void searchAdministratorById(Integer id);
+    public Administrator searchAdministratorById(Integer id);
     public List<Administrator> searchAdministratorByName(String name);//es una lista porque puede haber doctores con el mismo nombre
 }
