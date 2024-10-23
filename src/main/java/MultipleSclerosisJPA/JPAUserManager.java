@@ -76,7 +76,7 @@ public class JPAUserManager implements UserManager {
 
     @Override
     public List<Role> getRoles() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        
     }
 
     @Override

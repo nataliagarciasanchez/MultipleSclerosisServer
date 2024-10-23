@@ -58,10 +58,7 @@ public class User implements Serializable{
     public void setPassword(byte[] password) {
         this.password = password;
     }
-    
-    
 
-	
 
     public Role getRole() {
         return role;

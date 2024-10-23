@@ -38,6 +38,7 @@ public class Patient implements Serializable{
     
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<Report> reports;
+   
     
     public Patient() {
         super();

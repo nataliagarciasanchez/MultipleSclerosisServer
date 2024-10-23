@@ -110,7 +110,7 @@ public class JDBCManager {
        
             stmt.executeUpdate(create_table_symptoms);
             
-            String create_table_report_symptoms="CREATE TABLE IF NOT EXIST Report_ymptoms ("
+            String create_table_report_symptoms="CREATE TABLE IF NOT EXIST Report_Symptoms ("
                 + "      symptom_id INTEGER NOT NULL,"
                 + "      report_id INTEGER NOT NULL,"
                 + "      PRIMARY KEY(report_id, symptom_id)"
