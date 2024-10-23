@@ -15,14 +15,14 @@ import java.util.List;
  */
 public interface PatientManager {
     public void createPatient(Patient p);
-    public Patient viewMyInfo(int id);
+    public Patient viewMyInfo(Integer id);
     public List<Patient> getListOfPatients();
-    public void removePatientById(int id);
-    public void modifyPatientInfo(int id, String name, String specialty, User user);
-    public void searchPatientById(int id);
+    public void removePatientById(Integer id);
+    public void modifyPatientInfo(Integer id, String name, String specialty, User user);
+    public void searchPatientById(Integer id);
     public List<Patient> searchPatientByName(String name);
-    public List<Patient> searchPatientByDoctor(int doctorId);
-    public void assignSymptom2Patient(int symptomId, int patientId);
-    public void removePatientFromDoctor(int doctorId, int patientId);
+    public List<Patient> searchPatientByDoctor(Integer doctorId);
+    public void assignSymptom2Patient(Integer symptomId, Integer patientId);
+    public void removePatientFromDoctor(Integer doctorId, Integer patientId);
     
 }
