@@ -14,6 +14,7 @@ import java.util.Objects;
 public class Feedback {
     
      private static final long serialVersionUID = 1L;
+     private Integer id;
      private String message;
      private Date date;
      private Doctor doctor;
@@ -23,7 +24,8 @@ public class Feedback {
      super();
      }
 
-    public Feedback(String message, Date date, Doctor doctor, Patient patient) {
+    public Feedback(Integer id, String message, Date date, Doctor doctor, Patient patient) {
+        this.id = id;
         this.message = message;
         this.date = date;
         this.doctor = doctor;
@@ -34,9 +36,13 @@ public class Feedback {
         return serialVersionUID;
     }
 
+    public Integer getId() {
+        return id;
+    }
     public String getMessage() {
         return message;
     }
+   
 
     public Date getDate() {
         return date;
@@ -49,7 +55,11 @@ public class Feedback {
     public Patient getPatient() {
         return patient;
     }
-
+    
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    
     public void setMessage(String message) {
         this.message = message;
     }
