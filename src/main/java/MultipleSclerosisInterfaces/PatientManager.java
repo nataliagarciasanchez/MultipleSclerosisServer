@@ -24,4 +24,5 @@ public interface PatientManager {
     public List<Patient> searchPatientByDoctor(int doctorId);
     public void assignSymptom2Patient(int symptomId, int patientId);
     public void removePatientFromDoctor(int doctorId, int patientId);
+    
 }
