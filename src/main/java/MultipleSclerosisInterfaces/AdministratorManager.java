@@ -14,10 +14,10 @@ import java.util.List;
  */
 public interface AdministratorManager {
     public void createDoctor(Administrator a);
-    public Administrator viewMyInfo(int id);
+    public Administrator viewMyInfo(Integer id);
     public List<Administrator> getListOfAdministrators();
-    public void removeAdministratorById(int id);
-    public void modifyAdministratorInfo(int id, String name, User user);
-    public void searchAdministratorById(int id);
+    public void removeAdministratorById(Integer id);
+    public void modifyAdministratorInfo(Integer id, String name, User user);
+    public void searchAdministratorById(Integer id);
     public List<Administrator> searchAdministratorByName(String name);//es una lista porque puede haber doctores con el mismo nombre
 }
