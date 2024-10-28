@@ -20,4 +20,5 @@ public interface AdministratorManager {
     public void modifyAdministratorInfo(Integer id, String name, User user);
     public Administrator searchAdministratorById(Integer id);
     public List<Administrator> searchAdministratorByName(String name);//es una lista porque puede haber doctores con el mismo nombre
+    
 }
