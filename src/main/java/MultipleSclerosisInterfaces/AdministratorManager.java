@@ -21,4 +21,5 @@ public interface AdministratorManager {
     public Administrator searchAdministratorById(Integer id);
     public List<Administrator> searchAdministratorByName(String name);//es una lista porque puede haber doctores con el mismo nombre
     
+    
 }
