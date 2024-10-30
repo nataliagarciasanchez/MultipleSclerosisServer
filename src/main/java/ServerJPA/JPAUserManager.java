@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package MultipleSclerosisJPA;
+package ServerJPA;
 
-import MultipleSclerosisInterfaces.UserManager;
-import MultipleSclerosisPOJOs.Role;
-import MultipleSclerosisPOJOs.User;
+import ServerInterfaces.UserManager;
+import POJOs.Role;
+import POJOs.User;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;

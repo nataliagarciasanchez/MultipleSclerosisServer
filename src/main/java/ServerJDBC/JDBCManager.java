@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package MultipleSclerosisJDBC;
-import MultipleSclerosisPOJOs.Gender;
-import MultipleSclerosisPOJOs.Specialty;
-import MultipleSclerosisPOJOs.SignalType;
+package ServerJDBC;
+import POJOs.Gender;
+import POJOs.Specialty;
+import POJOs.SignalType;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;

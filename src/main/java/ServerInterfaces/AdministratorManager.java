@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
-package MultipleSclerosisInterfaces;
+package ServerInterfaces;
 
-import MultipleSclerosisPOJOs.Administrator;
-import MultipleSclerosisPOJOs.User;
+import POJOs.Administrator;
+import POJOs.User;
 import java.util.List;
 
 /**
