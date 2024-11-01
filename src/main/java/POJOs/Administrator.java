@@ -49,6 +49,10 @@ public class Administrator implements Serializable{
         return user;
     }
     
+    public void setUser(User user){
+       this.user = user;
+    }
+    
     
 
     public void setId(Integer id) {
