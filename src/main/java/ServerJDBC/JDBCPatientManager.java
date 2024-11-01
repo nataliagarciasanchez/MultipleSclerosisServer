@@ -50,7 +50,7 @@ public class JDBCPatientManager implements PatientManager{
     }
 
     @Override
-    public Patient viewMyInfo(Integer id) {
+    public Patient viewPatientInfo(Integer id) {
         Patient patient = null;
         try{
             String sql = "SELECT * FROM Patients " +
@@ -167,7 +167,7 @@ public class JDBCPatientManager implements PatientManager{
             while (rs.next()) {
 	        Integer p_id = rs.getInt("ID");
 	        String n = rs.getString("name");
-                 String surname = rs.getString("surname");
+                String surname = rs.getString("surname");
                 String NIF = rs.getString("NIF");
                 Date dob = rs.getDate("dob");
                 String genderString = rs.getString("gender");
@@ -224,19 +224,19 @@ public class JDBCPatientManager implements PatientManager{
 
 
     @Override
-    public void modifyPatientInfo(Integer id, String name, String surname, String NIF, Date dob, Gender gender, String phone, Integer doctorId, Integer userId) {
+    public void updatePatient(Patient p) {
         
         String sql = "UPDATE Patients SET name = ?, surname= ?, NIF= ?, dob = ?, gender = ?, phone = ?, doctor_id = ?, user_id = ? WHERE id = ?";
 	try {
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	        stmt.setString(1, name);
-                stmt.setString(2, surname);
-                stmt.setString(3, NIF);
-                stmt.setDate(4,dob);
-                stmt.setString(5, gender.toString());
-                stmt.setString(6, phone);
-	        stmt.setInt(7, doctorId);
-                stmt.setInt(8, userId);
+	        stmt.setString(1, p.getName());
+                stmt.setString(2, p.getSurname());
+                stmt.setString(3, p.getNIF());
+                stmt.setDate(4, p.getDob());
+                stmt.setString(5, p.getGender().toString());
+                stmt.setString(6, p.getPhone());
+	        stmt.setInt(7, p.getDoctor().getId());
+                stmt.setInt(8, p.getUser().getId());
 
 	        stmt.executeUpdate();
 	    } catch (SQLException ex) {

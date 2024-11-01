@@ -43,7 +43,7 @@ public class JDBCAdministratorManager implements AdministratorManager {
     
 
     @Override
-    public Administrator viewMyInfo(Integer administratorId) {
+    public Administrator viewAdministratorInfo(Integer administratorId) {
         Administrator administrator = null;
         try{
             String sql = "SELECT administrators.*"+
@@ -105,13 +105,13 @@ public class JDBCAdministratorManager implements AdministratorManager {
     }
 
     @Override
-    public void modifyAdministratorInfo(Integer id, String name) {
+    public void updateAdministrator(Administrator a) {
         String sql = "UPDATE administrators SET name = ? WHERE id = ?";
 	try {
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	   
-	    stmt.setString(1, name);
-	    stmt.setInt(2, id);
+	    stmt.setString(1, a.getName());
+	    stmt.setInt(2, a.getId());
 
 	    stmt.executeUpdate();
 	    } catch (SQLException ex) {

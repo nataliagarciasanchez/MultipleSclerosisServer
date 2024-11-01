@@ -17,10 +17,10 @@ import java.util.List;
  */
 public interface PatientManager {
     public void createPatient(Patient p);
-    public Patient viewMyInfo(Integer id);
+    public Patient viewPatientInfo(Integer id);
     public List<Patient> getListOfPatients();
     public void removePatientById(Integer id);
-    public void modifyPatientInfo(Integer id, String name,String surname, String NIF, Date dob, Gender gender, String phone, Integer doctorId, Integer userId);
+    public void updatePatient(Patient p);
     public Patient searchPatientById(Integer id);
     public List<Patient> searchPatientByName(String name);
     public List<Patient> getPatientsFromDoctor(Integer doctorId);
