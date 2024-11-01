@@ -16,6 +16,7 @@ public interface SymptomManager {
     
     public void createSymptom(Symptom symptom);
     public Symptom searchSymptomById(Integer id);
+    public List<Symptom> searchSymptomByName(String name);
     public void updateSymptom(Symptom symptom);
     public void deleteSymptom(Integer id);
     public List<Symptom> getAllSymptoms();

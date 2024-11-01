@@ -29,9 +29,10 @@ public class JDBCAdministratorManager implements AdministratorManager {
     public void createAdministrator(Administrator a) {
         try{
             String sql = "INSERT INTO administrators (name, user_id)"
-                    +"values (?)";
+                    +"values (?,?)";
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1,a.getName());
+            p.setInt(2,a.getUser().getId());
             p.executeUpdate();
             p.close();
             
@@ -70,26 +71,24 @@ public class JDBCAdministratorManager implements AdministratorManager {
     @Override
     public List<Administrator> getListOfAdministrators() {
         List<Administrator> administrators = new ArrayList<>();
-	        try {
-	            String sql = "SELECT * FROM administrators";
-	            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	            ResultSet rs = stmt.executeQuery();
+	try {
+	    String sql = "SELECT * FROM administrators";
+	    PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+	    ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Integer id = rs.getInt("ID");
+                String name = rs.getString("name");
 
-	            while (rs.next()) {
-	                Integer id = rs.getInt("ID");
-	                String name = rs.getString("name");
-
-	                Administrator administrator = new Administrator(name, id);
-	                administrators.add(administrator);
-	            }
-
-	            rs.close();
-	            stmt.close();
-
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	        return administrators;
+                Administrator administrator = new Administrator(name, id);
+                administrators.add(administrator);
+            }
+	            
+            rs.close();
+	    stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return administrators;
     }
 
     @Override
@@ -117,7 +116,8 @@ public class JDBCAdministratorManager implements AdministratorManager {
 	    stmt.executeUpdate();
 	    } catch (SQLException ex) {
 	        ex.printStackTrace();
-	    }    }
+	    }    
+    }
 
     @Override
     public Administrator searchAdministratorById(Integer id) {
