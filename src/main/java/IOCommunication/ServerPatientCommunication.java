@@ -17,18 +17,18 @@ import java.net.Socket;
  */
 public class ServerPatientCommunication implements Runnable{
 
-    private Socket clientSocket;
+    private Socket patientSocket;
     private JPAUserManager userManager;
 
     public ServerPatientCommunication(Socket clientSocket) {
-        this.clientSocket = clientSocket;
+        this.patientSocket = clientSocket;
         this.userManager = new JPAUserManager(); // Iniciar el gestor de usuarios
     }
 
     @Override
     public void run() {
-        try (ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
-             ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream())) {
+        try (ObjectInputStream in = new ObjectInputStream(patientSocket.getInputStream());
+             ObjectOutputStream out = new ObjectOutputStream(patientSocket.getOutputStream())) {
              
             String action = (String) in.readObject(); // Leer acción del cliente
 
@@ -43,7 +43,7 @@ public class ServerPatientCommunication implements Runnable{
                     handleChangePassword(in, out);
                     break;
                 default:
-                    out.writeObject("Acción no reconocida");
+                    out.writeObject("Not recognized action");
                     break;
             }
 
@@ -51,7 +51,7 @@ public class ServerPatientCommunication implements Runnable{
             e.printStackTrace();
         } finally {
             try {
-                clientSocket.close();
+                patientSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -62,15 +62,15 @@ public class ServerPatientCommunication implements Runnable{
     private void handleRegister(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
         User user = (User) in.readObject();
         userManager.register(user);
-        userManager.assignRole(user, userManager.getRole("patient"));
-        out.writeObject("Registro exitoso");
+        userManager.assignRole(user, userManager.getRoleFromType("patient"));
+        out.writeObject("Registered with success");
     }
 
     private void handleLogin(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
         String username = (String) in.readObject();
         String password = (String) in.readObject();
         User user = userManager.login(username, password);
-        out.writeObject((user != null) ? "Login exitoso" : "Credenciales incorrectas");
+        out.writeObject((user != null) ? "Successful login" : "Incorrect introduced data");
     }
 
     private void handleChangePassword(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
@@ -80,10 +80,10 @@ public class ServerPatientCommunication implements Runnable{
 
         User user = userManager.login(username, oldPassword);
         if (user != null) {
-            userManager.updatePassword(user, newPassword);
-            out.writeObject("Contraseña actualizada con éxito");
+            userManager.changePassword(user, newPassword);
+            out.writeObject("Password changed correclty");
         } else {
-            out.writeObject("Usuario o contraseña incorrectos");
+            out.writeObject("Incorrect username or password");
         }
     }
     

@@ -96,16 +96,29 @@ public class JPAUserManager implements UserManager {
 
     @Override
     public Role getRole(Integer id) {
+        Role role = null;
+        try {
+            Query query = em.createNativeQuery("SELECT * FROM Roles WHERE id =" + id, Role.class);
+            role = (Role) query.getSingleResult();
+        } catch (NoResultException nre) {
+            System.out.println("No role found with id: " + id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return role;
+    }
+    
+    @Override
+    public Role getRoleFromType(String roleName){
         Role role=null;
-		try {
-			Query query = em.createNativeQuery("SELECT * FROM Roles WHERE id ="+id, Role.class);
-			role = (Role) query.getSingleResult();
-		}catch(NoResultException nre) {
-			System.out.println("No role found with id: "+id);
-		}catch(Exception e) {
-			e.printStackTrace();
-	}
-		return role;
+        try{
+            Query query=em.createNativeQuery("SELECT r FROM Roles WHERE name="+ roleName, Role.class);
+        }catch (NoResultException nre) {
+            System.out.println("No role found with name: " + roleName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return role;
     }
 
     @Override
@@ -204,6 +217,27 @@ public class JPAUserManager implements UserManager {
             return null; 
         }
         
+    }
+
+    @Override
+    public void assignRole(User user, Role role) {
+        em.getTransaction().begin();
+    try {
+        
+        user.setRole(role); 
+        if (role.getUsers() != null) {
+            role.addUser(user);
+        }
+        //actualiza en la base de datos
+        em.merge(user); 
+        em.merge(role); 
+        em.getTransaction().commit(); 
+        
+        
+    } catch (Exception e) {
+        em.getTransaction().rollback(); 
+        e.printStackTrace();
+    }
     }
     
     

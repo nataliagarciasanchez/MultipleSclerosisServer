@@ -13,7 +13,7 @@ import java.util.Objects;
  * @author nataliagarciasanchez
  */
 @Entity
-@Table (name= "roles")
+@Table (name= "Roles")
 public class Role implements Serializable{
     private static final long serialVersionUID = 1L;
 
@@ -59,6 +59,10 @@ public class Role implements Serializable{
     public void setUsers(List<User> users) {
         this.users = users;
     }
+    
+    public void addUser(User user){
+        this.users.add(user);
+    }
 
     @Override
     public int hashCode() {
@@ -81,4 +85,6 @@ public class Role implements Serializable{
     public String toString() {
         return this.name;
     }
+    
+    
 }
