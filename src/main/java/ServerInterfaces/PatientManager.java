@@ -20,7 +20,7 @@ public interface PatientManager {
     public Patient viewMyInfo(Integer id);
     public List<Patient> getListOfPatients();
     public void removePatientById(Integer id);
-    public void modifyPatientInfo(Integer id, String name, Date dob, Gender gender,Integer phone, Integer doctorId, Integer userId);
+    public void modifyPatientInfo(Integer id, String name,String surname, String NIF, Date dob, Gender gender, String phone, Integer doctorId, Integer userId);
     public Patient searchPatientById(Integer id);
     public List<Patient> searchPatientByName(String name);
     public List<Patient> getPatientsFromDoctor(Integer doctorId);

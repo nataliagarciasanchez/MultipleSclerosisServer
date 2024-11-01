@@ -4,6 +4,8 @@
  */
 package ServerJPA;
 
+import POJOs.Doctor;
+import POJOs.Patient;
 import ServerInterfaces.UserManager;
 import POJOs.Role;
 import POJOs.User;
@@ -165,7 +167,30 @@ public class JPAUserManager implements UserManager {
 	    }
 	}
     }
+
+    @Override
+    public Patient getPatientByUser(User user) {
+        //se utiliza para que cuando el patient haga el log in el server se conecte a la base de datos 
+        //busque por email y contraseña y devuelva el patient con su info
+        try {
+            Query query = em.createNativeQuery("SELECT p FROM Patient p WHERE p.user.user_id = "+user.getId(), Patient.class);
+            return (Patient) query.getSingleResult();
+        } catch (NoResultException e) {
+            return null; 
+        }
+    }
+
+    @Override
+    public Doctor getDoctorByUser(User user) {
+        //se usa para que al hacer el log in desde la app doctor se devuelva el doctor 
+        try {
+            Query query = em.createNativeQuery("SELECT d FROM DOCTOR d WHERE d.user.user_id = "+user.getId(), Patient.class);
+            return (Doctor) query.getSingleResult();
+        } catch (NoResultException e) {
+            return null; 
+        }
+    }
     
-   
+    
     
 }

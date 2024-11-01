@@ -15,23 +15,25 @@ import javax.persistence.*;
  * @author laura
  */
 @Entity
-@Table (name= "patients")
+@Table (name= "Patients")
 public class Patient implements Serializable{
     
     private static final long serialVersionUID = 1L;
     
     @Id
-    @GeneratedValue (generator = "patients")
-    @TableGenerator(name = "patients", table = "sqlite_sequence",  pkColumnName = "name", valueColumnName = "seq", pkColumnValue = "patients")
+    @GeneratedValue (generator = "Patients")
+    @TableGenerator(name = "Patients", table = "sqlite_sequence",  pkColumnName = "name", valueColumnName = "seq", pkColumnValue = "patients")
     private Integer id;
     
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     private String name;
+    private String surname;
+    private String NIF;
     private Date dob;
     private Gender gender;
-    private Integer phone;
+    private String phone;
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
@@ -44,7 +46,7 @@ public class Patient implements Serializable{
         super();
     }
 
-    public Patient(Integer id, String name, Date dob, Gender gender, Integer phone, Doctor doctor, List<Report> reports, User user) {
+    public Patient(Integer id, String name, String surname, String NIF, Date dob, Gender gender, String phone, Doctor doctor, List<Report> reports, User user) {
         this.id = id;
         this.name = name;
         this.dob = dob;
@@ -55,9 +57,11 @@ public class Patient implements Serializable{
         this.user = user;
     }
     
-    public Patient(Integer id, String name, Date dob, Gender gender, Integer phone) {
+    public Patient(Integer id, String name,String surname,String NIF, Date dob, Gender gender, String phone) {
         this.id = id;
         this.name = name;
+        this.surname=surname;
+        this.NIF=NIF;
         this.dob = dob;
         this.gender = gender;
         this.phone = phone;
@@ -84,13 +88,22 @@ public class Patient implements Serializable{
         return gender;
     }
 
-    public Integer getPhone() {
+    public String getPhone() {
         return phone;
     }
 
     public Doctor getDoctor() {
         return doctor;
     }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public String getNIF() {
+        return NIF;
+    }
+    
     
     public User getUser(){
         return user;
@@ -116,7 +129,7 @@ public class Patient implements Serializable{
         this.gender = gender;
     }
 
-    public void setPhone(Integer phone) {
+    public void setPhone(String phone) {
         this.phone = phone;
     }
 

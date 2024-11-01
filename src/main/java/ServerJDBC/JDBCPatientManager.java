@@ -30,15 +30,17 @@ public class JDBCPatientManager implements PatientManager{
     @Override
     public void createPatient(Patient p) {
         try{
-            String sql = "INSERT INTO patients (name, dob, gender, phone, doctor_id, user_id)"
+            String sql = "INSERT INTO Patients (name, surname, NIF, dob, gender, phone, doctor_id, user_id)"
                           +"values (?,?,?,?,?,?)";
             PreparedStatement ps = manager.getConnection().prepareStatement(sql);
             ps.setString(1,p.getName());
-            ps.setString(2,p.getDob().toString());
-            ps.setString(3,p.getGender().toString());
-            ps.setInt(4,p.getPhone());
-            ps.setInt(6,p.getDoctor().getId());
-            ps.setInt(6,p.getUser().getId());
+            ps.setString(2,p.getSurname());
+            ps.setString(3,p.getNIF());
+            ps.setString(4,p.getDob().toString());
+            ps.setString(5,p.getGender().toString());
+            ps.setString(6,p.getPhone());
+            ps.setInt(7,p.getDoctor().getId());
+            ps.setInt(8,p.getUser().getId());
             ps.executeUpdate();
             ps.close();
 
@@ -51,8 +53,8 @@ public class JDBCPatientManager implements PatientManager{
     public Patient viewMyInfo(Integer id) {
         Patient patient = null;
         try{
-            String sql = "SELECT * FROM patients " +
-	                     "WHERE patients.id = ?";
+            String sql = "SELECT * FROM Patients " +
+	                     "WHERE Patients.id = ?";
 	        PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	        stmt.setInt(1, id);
 	        ResultSet rs = stmt.executeQuery();
@@ -60,11 +62,13 @@ public class JDBCPatientManager implements PatientManager{
 	        if (rs.next()) {
 	            Integer p_id = rs.getInt("id");
 	            String name = rs.getString("name");
+                    String surname=rs.getString("surname");
+                    String NIF=rs.getString("NIF");
                     Date dob = rs.getDate("dob");
                     String genderString = rs.getString("gender");
                     Gender gender = Gender.valueOf(genderString);
-                    Integer phone = rs.getInt("phone");
-	            patient = new Patient(p_id, name, dob, gender, phone);
+                    String phone = rs.getString("phone");
+	            patient = new Patient(p_id, name, surname, NIF, dob, gender, phone);
 	        } else {
 	            System.out.println("Patient with ID " + id + " not found.");
 	        }
@@ -81,19 +85,21 @@ public class JDBCPatientManager implements PatientManager{
     public List<Patient> getListOfPatients() {
         List<Patient> patients = new ArrayList<>();
 	try {
-	    String sql = "SELECT * FROM patients";
+	    String sql = "SELECT * FROM Patients";
 	    PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	    ResultSet rs = stmt.executeQuery();
 
 	    while (rs.next()) {
-	        Integer id = rs.getInt("ID");
-	        String name = rs.getString("name");
+	        Integer p_id = rs.getInt("id");
+                String name = rs.getString("name");
+                String surname = rs.getString("surname");
+                String NIF = rs.getString("NIF");
                 Date dob = rs.getDate("dob");
                 String genderString = rs.getString("gender");
                 Gender gender = Gender.valueOf(genderString);
-                Integer phone = rs.getInt("phone");
-	        
-                Patient patient = new Patient(id, name, dob, gender, phone);
+                String phone = rs.getString("phone");
+                
+                Patient patient = new Patient(p_id, name, surname, NIF, dob, gender, phone);
 	        patients.add(patient);
 	        }
 
@@ -108,7 +114,7 @@ public class JDBCPatientManager implements PatientManager{
     @Override
     public void removePatientById(Integer id) {
         try {
-            String sql = "DELETE FROM patients WHERE id=?";
+            String sql = "DELETE FROM Patients WHERE id=?";
             PreparedStatement prep = manager.getConnection().prepareStatement(sql);
             prep.setInt(1, id);
             prep.executeUpdate();			
@@ -121,20 +127,22 @@ public class JDBCPatientManager implements PatientManager{
     public Patient searchPatientById(Integer id) {
         Patient patient = null;
         try{
-            String sql = "SELECT * FROM patients WHERE ID = ?";
+            String sql = "SELECT * FROM Patients WHERE ID = ?";
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	    stmt.setInt(1, id);
 	    ResultSet rs = stmt.executeQuery();
             
             if (rs.next()) {
-	        Integer p_id = rs.getInt("ID");
-	        String name = rs.getString("name");
+	        
+                String name = rs.getString("name");
+                String surname = rs.getString("surname");
+                String NIF = rs.getString("NIF");
                 Date dob = rs.getDate("dob");
                 String genderString = rs.getString("gender");
                 Gender gender = Gender.valueOf(genderString);
-                Integer phone = rs.getInt("phone");
-	        
-                patient = new Patient(p_id, name, dob, gender, phone);
+                String phone = rs.getString("phone");
+                
+                patient = new Patient(id, name, surname, NIF, dob, gender, phone);
 	        }else {
 	            System.out.println("Patient with ID " + id + " not found.");
 	        }
@@ -151,20 +159,22 @@ public class JDBCPatientManager implements PatientManager{
     public List<Patient> searchPatientByName(String name) {
         List<Patient> patients = new ArrayList<>();
         try{
-            String sql = "SELECT * FROM patients WHERE name LIKE ?";
+            String sql = "SELECT * FROM Patients WHERE name LIKE ?";
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	    stmt.setString(1,  "%" + name + "%");
 	    ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {
-	        Integer id = rs.getInt("ID");
+	        Integer p_id = rs.getInt("ID");
 	        String n = rs.getString("name");
+                 String surname = rs.getString("surname");
+                String NIF = rs.getString("NIF");
                 Date dob = rs.getDate("dob");
                 String genderString = rs.getString("gender");
                 Gender gender = Gender.valueOf(genderString);
-                Integer phone = rs.getInt("phone");
+                String phone = rs.getString("phone");
 	        
-                patients.add(new Patient(id, n, dob, gender, phone));
+                patients.add(new Patient(p_id, n,surname,NIF, dob, gender, phone));
                 
 	    }
             if(patients.isEmpty()) {
@@ -183,7 +193,7 @@ public class JDBCPatientManager implements PatientManager{
     public List<Patient> getPatientsFromDoctor(Integer doctorId) {
         List<Patient> patients = new ArrayList<>();
         try{
-            String sql = "SELECT * FROM patients WHERE doctor_id = ?";
+            String sql = "SELECT * FROM Patients WHERE doctor_id = ?";
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	    stmt.setInt(1,  doctorId);
 	    ResultSet rs = stmt.executeQuery();
@@ -191,12 +201,14 @@ public class JDBCPatientManager implements PatientManager{
             while (rs.next()) {
 	        Integer id = rs.getInt("ID");
 	        String n = rs.getString("name");
+                String surname = rs.getString("surname");
+                String NIF = rs.getString("NIF");
                 Date dob = rs.getDate("dob");
                 String genderString = rs.getString("gender");
                 Gender gender = Gender.valueOf(genderString);
-                Integer phone = rs.getInt("phone");
+                String phone = rs.getString("phone");
 	        
-                patients.add(new Patient(id, n, dob, gender, phone));
+                patients.add(new Patient(id, n,surname, NIF, dob, gender, phone));
                 
 	    }
             if(patients.isEmpty()) {
@@ -210,23 +222,26 @@ public class JDBCPatientManager implements PatientManager{
         }
         return patients;}
 
+
     @Override
-    public void modifyPatientInfo(Integer id, String name, Date dob, Gender gender,Integer phone, Integer doctorId, Integer userId){
-        String sql = "UPDATE patients SET name = ?, dob = ?, gender = ?, phone = ?, doctor_id = ?, user_id = ? WHERE id = ?";
+    public void modifyPatientInfo(Integer id, String name, String surname, String NIF, Date dob, Gender gender, String phone, Integer doctorId, Integer userId) {
+        
+        String sql = "UPDATE Patients SET name = ?, surname= ?, NIF= ?, dob = ?, gender = ?, phone = ?, doctor_id = ?, user_id = ? WHERE id = ?";
 	try {
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	        stmt.setString(1, name);
-                stmt.setDate(2,dob);
-                stmt.setString(3, gender.toString());
-                stmt.setInt(4, phone);
-	        stmt.setInt(5, doctorId);
-                stmt.setInt(6, userId);
+                stmt.setString(2, surname);
+                stmt.setString(3, NIF);
+                stmt.setDate(4,dob);
+                stmt.setString(5, gender.toString());
+                stmt.setString(6, phone);
+	        stmt.setInt(7, doctorId);
+                stmt.setInt(8, userId);
 
 	        stmt.executeUpdate();
 	    } catch (SQLException ex) {
 	        ex.printStackTrace();
 	    }
-    
-    };
+    }
     
 }
