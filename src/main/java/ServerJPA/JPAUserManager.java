@@ -68,7 +68,7 @@ public class JPAUserManager implements UserManager {
     }
 
     @Override
-    public void newUser(User user) {
+    public void register(User user) {
         if (user == null) {
             throw new IllegalArgumentException("El usuario no puede ser nulo");
         }
@@ -184,11 +184,26 @@ public class JPAUserManager implements UserManager {
     public Doctor getDoctorByUser(User user) {
         //se usa para que al hacer el log in desde la app doctor se devuelva el doctor 
         try {
-            Query query = em.createNativeQuery("SELECT d FROM DOCTOR d WHERE d.user.user_id = "+user.getId(), Patient.class);
+            Query query = em.createNativeQuery("SELECT d FROM Doctor d WHERE d.user.user_id = "+user.getId(), Patient.class);
             return (Doctor) query.getSingleResult();
         } catch (NoResultException e) {
             return null; 
         }
+    }
+
+    @Override
+    public User login(String email, String password) {
+        
+        try{
+            Query query=em.createNativeQuery("SELECT u FROM Users u WHERE u.email= ? AND u.password=?");
+            query.setParameter(1, email);
+            query.setParameter(2, password);
+            return (User)query.getSingleResult();
+            
+        }catch (NoResultException e) {
+            return null; 
+        }
+        
     }
     
     

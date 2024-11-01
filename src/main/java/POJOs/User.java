@@ -19,10 +19,10 @@ public class User implements Serializable{
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue (generator = "users")
-    @TableGenerator(name = "users", table = "sqlite_sequence",  pkColumnName = "name", valueColumnName = "seq", pkColumnValue = "users")
+    @GeneratedValue (generator = "Users")
+    @TableGenerator(name = "Users", table = "sqlite_sequence",  pkColumnName = "name", valueColumnName = "seq", pkColumnValue = "Users")
     private Integer id;
-    private String email;
+    private String email;//username
     @Lob
     private byte[] password;
     @ManyToOne

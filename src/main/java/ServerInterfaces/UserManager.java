@@ -17,7 +17,8 @@ import java.util.List;
 public interface UserManager {
     public void connect();
     public void disconnect();
-    public void newUser(User user);
+    public void register(User user);
+    public User login(String email, String password);
     public List<Role> getRoles();
     public void newRole(Role role);
     public Role getRole(Integer id);
