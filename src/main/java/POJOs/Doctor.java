@@ -27,7 +27,7 @@ public class Doctor implements Serializable{
     @TableGenerator(name = "doctors", table = "sqlite_sequence",  pkColumnName = "name", valueColumnName = "seq", pkColumnValue = "doctors")
     private Integer id;
     private String name;
-    private String specialty;
+    private Specialty specialty;
     
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -43,11 +43,17 @@ public class Doctor implements Serializable{
     super();
     }
 
-    public Doctor(String name, Integer id, String specialty, User user) {
+    public Doctor(String name, Integer id, Specialty specialty, User user) {
         this.name = name;
         this.id = id;
         this.specialty = specialty;
         this.user = user;
+    }
+    
+    public Doctor(String name, Integer id, Specialty specialty) {
+        this.name = name;
+        this.id = id;
+        this.specialty = specialty;
     }
 
     public static long getSerialVersionUID() {
@@ -62,7 +68,7 @@ public class Doctor implements Serializable{
         return id;
     }
 
-    public String getSpecialty() {
+    public Specialty getSpecialty() {
         return specialty;
     }
 
@@ -78,7 +84,7 @@ public class Doctor implements Serializable{
         this.id = id;
     }
 
-    public void setSpecialty(String specialty) {
+    public void setSpecialty(Specialty specialty) {
         this.specialty = specialty;
     }
 

@@ -7,6 +7,10 @@ import POJOs.Doctor;
 import POJOs.Specialty;
 import POJOs.User;
 import ServerInterfaces.DoctorManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,50 +18,163 @@ import java.util.List;
  * @author Andreoti
  */
 public class JDBCDoctorManager implements DoctorManager {
+    
+    private JDBCManager manager;
+   
+
+    public JDBCDoctorManager(JDBCManager manager) {
+        this.manager = manager;
+        }
 
     @Override
     public void createDoctor(Doctor d) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try{
+            String sql = "INSERT INTO doctors (name,specialty,userId)"
+                          +"values (?,?,?)";
+            PreparedStatement p = manager.getConnection().prepareStatement(sql);
+            p.setString(1,d.getName());
+            p.setString(2,d.getSpecialty().toString());
+            p.setInt(1,d.getUser().getId());
+            p.executeUpdate();
+            p.close();
+
+                }catch(SQLException e) {
+                    e.printStackTrace();
+                }    
     }
 
     @Override
-    public Doctor viewMyInfo(Integer id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Doctor viewMyInfo(Integer doctorId) {
+        Doctor doctor = null;
+        try{
+            String sql = "SELECT name, specialty FROM doctors " +
+	                     "WHERE doctors.id = ?";
+	        PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+	        stmt.setInt(1, doctorId);
+	        ResultSet rs = stmt.executeQuery();
+
+	        if (rs.next()) {
+	            Integer id = rs.getInt("id");
+	            String name = rs.getString("name");
+	            String specialtyString = rs.getString("specialty");
+
+                    Specialty specialty = Specialty.valueOf(specialtyString);
+	            doctor = new Doctor(name, id, specialty);
+	        } else {
+	            System.out.println("Doctor with ID " + doctorId + " not found.");
+	        }
+
+	        rs.close();
+	        stmt.close();
+        }catch(SQLException e){
+        e.printStackTrace();
+        }
+        return doctor;
     }
 
     @Override
     public List<Doctor> getListOfDoctors() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        List<Doctor> doctors = new ArrayList<>();
+	try {
+	    String sql = "SELECT * FROM doctors";
+	    PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+	    ResultSet rs = stmt.executeQuery();
+
+	    while (rs.next()) {
+	        Integer id = rs.getInt("ID");
+	        String name = rs.getString("name");
+                String specialtyString = rs.getString("specialty");
+                Specialty specialty = Specialty.valueOf(specialtyString);
+	        
+                Doctor doctor = new Doctor(name, id, specialty);
+	        doctors.add(doctor);
+	        }
+
+	        rs.close();
+	        stmt.close();
+
+	    }catch (SQLException e) {
+	    e.printStackTrace();
+	    }
+	return doctors;
     }
 
     @Override
     public void removeDoctorById(Integer id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            String sql = "DELETE FROM doctors WHERE id=?";
+            PreparedStatement prep = manager.getConnection().prepareStatement(sql);
+            prep.setInt(1, id);
+            prep.executeUpdate();			
+	}catch(Exception e){
+	e.printStackTrace();
+	}
     }
 
     @Override
-    public void modifyDoctorInfo(Integer id, String name, Specialty specialty, User user) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void modifyDoctorInfo(Integer id, String name, Specialty specialty) {
+        String sql = "UPDATE doctors SET name = ?, specialty = ? WHERE id = ?";
+	try {
+            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+	        stmt.setString(1, name);
+                stmt.setString(2,specialty.toString());
+	        stmt.setInt(3, id);
+
+	        stmt.executeUpdate();
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	    }
     }
 
     @Override
     public Doctor searchDoctorById(Integer id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Doctor doctor = null;
+        try{
+            String sql = "SELECT * FROM doctors WHERE ID = ?";
+            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+	    stmt.setInt(1, id);
+	    ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+	        Integer d_id = rs.getInt("ID");
+	        String name = rs.getString("name");
+                String specialtyString = rs.getString("specialty");
+                Specialty specialty = Specialty.valueOf(specialtyString);
+	           
+	        doctor = new Doctor (name, d_id, specialty);
+	        }
+
+	        rs.close();
+	        stmt.close();
+        }catch(SQLException e){
+        e.printStackTrace();
+        }
+        return doctor;
     }
 
     @Override
     public List<Doctor> searchDoctorByName(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        List<Doctor> doctors = new ArrayList<>();
+	try {
+            String sql = "SELECT * FROM doctors WHERE name LIKE ?";
+            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+            stmt.setString(1, "%" + name + "%");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Integer d_id = rs.getInt("ID");
+                String n = rs.getString("name");
+                String specialtyString = rs.getString("specialty");
+                Specialty specialty = Specialty.valueOf(specialtyString);
+
+                doctors.add( new Doctor (n, d_id,specialty));
+            }
+            rs.close();
+            stmt.close();
+            } catch (SQLException e) {
+	e.printStackTrace();
+	}
+	return doctors;
     }
 
-    @Override
-    public void assignPatient2Doctor(Integer doctorId, Integer patientId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void removePatientFromDoctor(Integer doctorId, Integer patientId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
     
 }
