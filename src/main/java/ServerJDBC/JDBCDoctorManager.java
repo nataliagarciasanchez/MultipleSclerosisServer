@@ -44,7 +44,7 @@ public class JDBCDoctorManager implements DoctorManager {
     }
 
     @Override
-    public Doctor viewMyInfo(Integer doctorId) {
+    public Doctor viewDoctorInfo(Integer doctorId) {
         Doctor doctor = null;
         try{
             String sql = "SELECT name, specialty FROM doctors " +
@@ -112,13 +112,13 @@ public class JDBCDoctorManager implements DoctorManager {
     }
 
     @Override
-    public void modifyDoctorInfo(Integer id, String name, Specialty specialty) {
+    public void updateDoctor(Doctor d) {
         String sql = "UPDATE doctors SET name = ?, specialty = ? WHERE id = ?";
 	try {
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	        stmt.setString(1, name);
-                stmt.setString(2,specialty.toString());
-	        stmt.setInt(3, id);
+	        stmt.setString(1, d.getName());
+                stmt.setString(2,d.getSpecialty().toString());
+	        stmt.setInt(3, d.getId());
 
 	        stmt.executeUpdate();
 	    } catch (SQLException ex) {
