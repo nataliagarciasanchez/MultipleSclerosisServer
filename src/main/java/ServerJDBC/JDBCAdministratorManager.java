@@ -28,7 +28,7 @@ public class JDBCAdministratorManager implements AdministratorManager {
     @Override
     public void createAdministrator(Administrator a) {
         try{
-            String sql = "INSERT INTO administrators (name)"
+            String sql = "INSERT INTO administrators (name, user_id)"
                     +"values (?)";
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1,a.getName());
@@ -102,6 +102,7 @@ public class JDBCAdministratorManager implements AdministratorManager {
 	}catch(Exception e){
             e.printStackTrace();
         }
+        
     }
 
     @Override
@@ -132,6 +133,8 @@ public class JDBCAdministratorManager implements AdministratorManager {
 	            Integer a_id = rs.getInt("ID");
 	            String name = rs.getString("name");
                     administrator = new Administrator (name,a_id);
+	        }else {
+	            System.out.println("Administrator with ID " + id + " not found.");
 	        }
 
 	        rs.close();
@@ -147,7 +150,7 @@ public class JDBCAdministratorManager implements AdministratorManager {
 
     @Override
     public List<Administrator> searchAdministratorByName(String name) {
-        List<Administrator> administrator = new ArrayList<>();
+        List<Administrator> administrators = new ArrayList<>();
         try {
             String sql = "SELECT * FROM administrators WHERE name LIKE ?";
 	    PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
@@ -157,16 +160,18 @@ public class JDBCAdministratorManager implements AdministratorManager {
 	      	Integer a_id = rs.getInt("ID");
 	        String n = rs.getString("name");
 	        	           
-	        administrator.add( new Administrator (n, a_id));
+	        administrators.add( new Administrator (n, a_id));
 		        
-	    }
+	    }if(administrators.isEmpty()){
+	            System.out.println("Administrator with name " + name + " not found.");
+	        }
 	
             rs.close();
 	    stmt.close();
 	} catch (SQLException e) {
 	    e.printStackTrace();
 	}
-	return administrator;
+	return administrators;
     }
     
 }

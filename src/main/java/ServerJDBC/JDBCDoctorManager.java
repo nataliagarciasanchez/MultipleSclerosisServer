@@ -29,7 +29,7 @@ public class JDBCDoctorManager implements DoctorManager {
     @Override
     public void createDoctor(Doctor d) {
         try{
-            String sql = "INSERT INTO doctors (name,specialty,userId)"
+            String sql = "INSERT INTO doctors (name,specialty,user_id)"
                           +"values (?,?,?)";
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1,d.getName());
@@ -142,6 +142,8 @@ public class JDBCDoctorManager implements DoctorManager {
                 Specialty specialty = Specialty.valueOf(specialtyString);
 	           
 	        doctor = new Doctor (name, d_id, specialty);
+	        }else {
+	            System.out.println("Doctor with ID " + id + " not found.");
 	        }
 
 	        rs.close();
@@ -168,6 +170,9 @@ public class JDBCDoctorManager implements DoctorManager {
 
                 doctors.add( new Doctor (n, d_id,specialty));
             }
+            if(doctors.isEmpty()){
+	            System.out.println("Doctor with name " + name + " not found.");
+	        }
             rs.close();
             stmt.close();
             } catch (SQLException e) {

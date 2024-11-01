@@ -47,7 +47,7 @@ public class JDBCManager {
             String create_table_administrators = "CREATE TABLE IF NOT EXIST Administrators ("
 		+ "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "    name TEXT NOT NULL, "
-		+ "    user_id,"
+		+ "    user_id INTEGER NOT NULL,"
 		+ "    FOREIGN KEY (user_id) REFERENCES Users(id)"
 		+ ");";
 		
@@ -65,7 +65,7 @@ public class JDBCManager {
 		+ "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "    name TEXT NOT NULL, "
 		+ "    specialty TEXT("+enumValuesSpecialty.toString()+") NOT NULL,"
-		+ "    user_id,"
+		+ "    user_id INTEGER NOT NULL,"
 		+ "    FOREIGN KEY (user_id) REFERENCES Users(id)"
 		+ ");";
 		

@@ -44,7 +44,7 @@ public class Patient implements Serializable{
         super();
     }
 
-    public Patient(Integer id, String name, Date dob, Gender gender, Integer phone, Doctor doctor, List<Report> reports) {
+    public Patient(Integer id, String name, Date dob, Gender gender, Integer phone, Doctor doctor, List<Report> reports, User user) {
         this.id = id;
         this.name = name;
         this.dob = dob;
@@ -52,6 +52,16 @@ public class Patient implements Serializable{
         this.phone = phone;
         this.doctor = doctor;
         this.reports = reports;
+        this.user = user;
+    }
+    
+    public Patient(Integer id, String name, Date dob, Gender gender, Integer phone) {
+        this.id = id;
+        this.name = name;
+        this.dob = dob;
+        this.gender = gender;
+        this.phone = phone;
+        
     }
 
     public static long getSerialVersionUID() {
@@ -81,6 +91,10 @@ public class Patient implements Serializable{
     public Doctor getDoctor() {
         return doctor;
     }
+    
+    public User getUser(){
+        return user;
+    }
 
     public List<Report> getReports() {
         return reports;
@@ -108,6 +122,10 @@ public class Patient implements Serializable{
 
     public void setDoctor(Doctor doctor) {
         this.doctor = doctor;
+    }
+    
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public void setReports(List<Report> reports) {

@@ -5,7 +5,9 @@
 package ServerInterfaces;
 
 
+import POJOs.Gender;
 import POJOs.Patient;
+import java.sql.Date;
 //import POJOs.User;
 import java.util.List;
 
@@ -18,11 +20,9 @@ public interface PatientManager {
     public Patient viewMyInfo(Integer id);
     public List<Patient> getListOfPatients();
     public void removePatientById(Integer id);
-    //public void modifyPatientInfo(Integer id, String name, String specialty, User user);
+    public void modifyPatientInfo(Integer id, String name, Date dob, Gender gender,Integer phone, Integer doctorId, Integer userId);
     public Patient searchPatientById(Integer id);
     public List<Patient> searchPatientByName(String name);
-    public List<Patient> searchPatientByDoctor(Integer doctorId);
-    public void removePatientFromDoctor(Integer doctorId, Integer patientId);
-    public void assignPatient2Doctor(Integer doctorId, Integer patientId);
-    
+    public List<Patient> getPatientsFromDoctor(Integer doctorId);
+       
 }
