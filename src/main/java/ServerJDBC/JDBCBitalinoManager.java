@@ -5,6 +5,7 @@
 package ServerJDBC;
 
 import POJOs.Bitalino;
+import POJOs.Report;
 import POJOs.SignalType;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -12,13 +13,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.*;
+//DUARTION IS FLOAT NOT INTEGER
 /**
  *
  * @author noeli
  */
 public class JDBCBitalinoManager {
      private JDBCManager manager;
+     private JDBCReportManager reportman;
    
     public JDBCBitalinoManager(JDBCManager manager) {
         this.manager = manager;
@@ -46,7 +48,7 @@ public class JDBCBitalinoManager {
     public Bitalino viewBitalino(Integer id) {
         Bitalino bitalino = null;
         try{
-            String sql = "SELECT date,signal_type, duration FROM Bitalinos " +
+            String sql = "SELECT date ,signal_type, file_path, duration, report_id FROM Bitalinos " +
 	                     "WHERE bitalinos.id = ?";
 	        PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	        stmt.setInt(1, id);
@@ -55,10 +57,12 @@ public class JDBCBitalinoManager {
 	        if (rs.next()) {
 	            Date b_date = rs.getDate("date");
 	            String signalTypeString = rs.getString("signal_type");
-                    Integer b_duration= rs.getInt ("duration");
                     String b_file_path= rs.getNString("file_path");
+                    Integer b_duration= rs.getInt ("duration");
+                    Integer report_id= rs.getInt("report_id");
+                    Report r= reportman.searchReportById(report_id);
                     SignalType signal_type = SignalType.valueOf(signalTypeString);
-                    bitalino = new Bitalino(b_date, signal_type,b_file_path, b_duration);
+                    bitalino = new Bitalino(b_date, signal_type,b_file_path, b_duration, r);
 	        } else {
 	            System.out.println("Bitalino with ID " + id + " not found.");
 	        }
@@ -86,8 +90,9 @@ public class JDBCBitalinoManager {
                 Integer duration= rs.getInt("duration");
                 String signalTypeString = rs.getString("signal_type");
                 SignalType ST = SignalType.valueOf(signalTypeString);
-                
-	        Bitalino b= new Bitalino(id,date,ST,file_path, duration);
+                Integer report_id= rs.getInt("report_id");
+                Report r= reportman.searchReportById(report_id);
+	        Bitalino b= new Bitalino(id,date,ST,file_path, duration,r);
 	        bitalinos.add(b);
 	        }
 	        rs.close();
