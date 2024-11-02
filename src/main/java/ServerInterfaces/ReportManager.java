@@ -5,6 +5,7 @@
 package ServerInterfaces;
 
 import POJOs.Report;
+import java.sql.Date;
 import java.util.List;
 
 
@@ -14,10 +15,12 @@ import java.util.List;
  */
 public interface ReportManager {
     public void createReport(Report r);
-    public void removeReportById(int id);
-    public Report viewReport(int id);
+    public void removeReportById(Integer id);
+    public void updateReport(Report r);
+    public Report getReportInfo(Integer id);
     public List<Report> getListOfReports();
-    public Report searchReportById(int id);
-    public List<Report> getListOfReportsOfPatient(int patientId);   
+    public List<Report> getReportsFromPatient(Integer patientId);   
+    public Report searchReportById(Integer id);
+    public List<Report> searchReportByDate(Date d);
     
 }

@@ -114,9 +114,9 @@ public class JDBCAdministratorManager implements AdministratorManager {
 	    stmt.setInt(2, a.getId());
 
 	    stmt.executeUpdate();
-	    } catch (SQLException ex) {
-	        ex.printStackTrace();
-	    }    
+	} catch (SQLException e) {
+	     e.printStackTrace();
+	}    
     }
 
     @Override

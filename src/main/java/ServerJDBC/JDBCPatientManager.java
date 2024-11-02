@@ -220,7 +220,8 @@ public class JDBCPatientManager implements PatientManager{
         }catch(SQLException e){
         e.printStackTrace();
         }
-        return patients;}
+        return patients;
+    }
 
 
     @Override
