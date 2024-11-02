@@ -4,9 +4,14 @@
  */
 package ServerJDBC;
 
+import POJOs.Bitalino;
+import POJOs.SignalType;
 import POJOs.Symptom;
+import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,7 +62,33 @@ public class JDBCReport_SymptomsManager {
    //delete all the symptoms associated with a report 
     } 
     public List <Symptom> getSymptomsFromReport(Integer reportId){
-        
+        List<Symptom> symptoms = new ArrayList<>();
+        try{
+            String sql = "SELECT * FROM Report_Symptoms WHERE report_id = ?";
+            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+	    stmt.setInt(1, reportId);
+	    ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+	        Integer b_id = rs.getInt("id");
+                Date b_date = rs.getDate("date");
+                String SignalTypeString = rs.getString("signal_type");
+                SignalType ST = SignalType.valueOf(SignalTypeString);
+                String file_path = rs.getString("file_path");
+	        Integer b_duration= rs.getInt("duration");
+                bitalinos.add(new Bitalino(b_id, b_date, ST, file_path, b_duration));
+	   
+	        }else {
+	            System.out.println("Bitalinos with ReportID " + report_id + " not found.");
+	        }
+
+	        rs.close();
+	        stmt.close();
+        }catch(SQLException e){
+        e.printStackTrace();
+        }
+        return bitalinos;
+    }
     }
     
 }
