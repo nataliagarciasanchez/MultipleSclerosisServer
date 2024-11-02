@@ -13,12 +13,13 @@ import java.util.List;
  * @author Andreoti
  */
 public interface FeedbackManager {
-    public void addFeedback(Feedback f);
-    public Feedback viewFeedbackInfo(Integer id);
+    public void createFeedback(Feedback f);
     public void removeFeedbackById(Integer id);
+    public void updateFeedback(Feedback f);
+    public Feedback getFeedBackById(Integer id);
+    public List<Feedback> getFeedBackByDate(Date date);
     public List<Feedback> getListOfFeedbacksOfPatient(Integer patient_id);
     public List<Feedback> getListOfFeedbacksOfDoctor(Integer doctor_id);
-    public Feedback searchFeedbackById(Integer id);
-    public void modifyFeedback(Integer id, String message, Date date, Integer doctor_id, Integer patient_id);
+    
     
 }
