@@ -100,13 +100,13 @@ public class JDBCAdministratorManager implements AdministratorManager {
         Administrator administrator=null;
 	
 	    try {
-	        String sql = "SELECT * FROM administrators WHERE ID=?";
+	        String sql = "SELECT * FROM administrators WHERE id=?";
 	        PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	        stmt.setInt(1, id);
 	        ResultSet rs = stmt.executeQuery();
 
 	        if (rs.next()) {
-	            Integer a_id = rs.getInt("ID");
+	            Integer a_id = rs.getInt("id");
 	            String name = rs.getString("name");
                     administrator = new Administrator (name,a_id);
 	        }else {

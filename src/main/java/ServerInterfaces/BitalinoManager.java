@@ -5,7 +5,6 @@
 package ServerInterfaces;
 
 import POJOs.Bitalino;
-import POJOs.SignalType;
 import java.sql.Date;
 import java.util.List;
 
@@ -15,10 +14,11 @@ import java.util.List;
  */
 public interface BitalinoManager {
     public void createBitalino(Bitalino b);
-    public Bitalino viewBitalino(Integer id);
-    public List<Bitalino> getListOfBitalinos();
     public void removeBitalinoById(Integer id);
-    public void modifyBitalinoInfo(Integer id, Date date, SignalType signal, String filepath, Float duration, Integer report_id);
+    public void updateBitalino(Bitalino b);
+    public List<Bitalino> getListOfBitalinos();
+    public Bitalino getBitalinoById(Integer id);
+    public List<Bitalino> getBitalinosByDate(Date d);
     public List<Bitalino> getBitalinosOfReport(Integer report_id);
     
 }
