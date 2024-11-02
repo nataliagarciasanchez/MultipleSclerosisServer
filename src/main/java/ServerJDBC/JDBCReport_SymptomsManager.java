@@ -21,6 +21,7 @@ import java.util.List;
 public class JDBCReport_SymptomsManager {
     
     private JDBCManager manager;
+    private JDBCSymptom symptomman;
    
     public JDBCReport_SymptomsManager(JDBCManager manager) {
         this.manager = manager;
@@ -63,6 +64,7 @@ public class JDBCReport_SymptomsManager {
     } 
     public List <Symptom> getSymptomsFromReport(Integer reportId){
         List<Symptom> symptoms = new ArrayList<>();
+        
         try{
             String sql = "SELECT * FROM Report_Symptoms WHERE report_id = ?";
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
@@ -70,16 +72,12 @@ public class JDBCReport_SymptomsManager {
 	    ResultSet rs = stmt.executeQuery();
             
             if (rs.next()) {
-	        Integer b_id = rs.getInt("id");
-                Date b_date = rs.getDate("date");
-                String SignalTypeString = rs.getString("signal_type");
-                SignalType ST = SignalType.valueOf(SignalTypeString);
-                String file_path = rs.getString("file_path");
-	        Integer b_duration= rs.getInt("duration");
-                bitalinos.add(new Bitalino(b_id, b_date, ST, file_path, b_duration));
+                Integer symptom_id= rs.getInt("symptom_id");
+	        Symptom s= symptomman.searchSymptomById(symptom_id);
+                symptoms.add(s);
 	   
 	        }else {
-	            System.out.println("Bitalinos with ReportID " + report_id + " not found.");
+	            System.out.println("Symptoms with ReportID " + reportId + " not found.");
 	        }
 
 	        rs.close();
@@ -87,8 +85,7 @@ public class JDBCReport_SymptomsManager {
         }catch(SQLException e){
         e.printStackTrace();
         }
-        return bitalinos;
+        return symptoms;
     }
     }
     
-}
