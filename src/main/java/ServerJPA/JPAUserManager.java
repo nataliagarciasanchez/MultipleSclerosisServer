@@ -134,6 +134,20 @@ public class JPAUserManager implements UserManager {
 	}
 	return user;
     }
+    
+    @Override
+    public User getUserById(Integer id) {
+        User user=null;
+	try {
+	Query query = em.createNativeQuery("SELECT * FROM Users WHERE id ="+id, User.class);
+	 user = (User) query.getSingleResult();
+	}catch(NoResultException nre) {
+		System.out.println("No user found with id: " + id);
+	}catch(Exception e) {
+		e.printStackTrace();
+	}
+	return user;
+    }
 
     @Override
     public User checkPassword(String email, String password) {

@@ -29,5 +29,6 @@ public interface UserManager {
     public void changePassword(User user, String new_password);   
     public Patient getPatientByUser(User user); 
     public Doctor getDoctorByUser(User user);
+    public User getUserById(Integer id);
     
 }
