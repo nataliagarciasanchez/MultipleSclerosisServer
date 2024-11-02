@@ -28,9 +28,10 @@ public class Administrator implements Serializable{
     private User user;
     
 
-    public Administrator(String name, Integer id) {
-        this.name = name;
+    public Administrator(Integer id,String name, User user) {
         this.id = id;
+        this.name = name;
+        this.user = user;
     }
 
     public String getName() {
