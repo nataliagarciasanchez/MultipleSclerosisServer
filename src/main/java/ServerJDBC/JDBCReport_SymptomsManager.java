@@ -7,6 +7,7 @@ package ServerJDBC;
 import POJOs.Bitalino;
 import POJOs.SignalType;
 import POJOs.Symptom;
+import ServerInterfaces.Report_SymptomsManager;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,23 +19,18 @@ import java.util.List;
  *
  * @author noeli
  */
-public class JDBCReport_SymptomsManager {
+public class JDBCReport_SymptomsManager implements Report_SymptomsManager{
     
     private JDBCManager manager;
-    private JDBCSymptom symptomman;
+    private JDBCSymptomManager symptomman;
    
     public JDBCReport_SymptomsManager(JDBCManager manager) {
         this.manager = manager;
         }
-    Report_Symptoms ("
-                + "      symptom_id INTEGER NOT NULL,"
-                + "      report_id INTEGER NOT NULL,"
-                + "      PRIMARY KEY(report_id, symptom_id)"
-                + "     FOREIGN KEY (patient_id) REFERENCES Patients(id)"
-                + "     FOREIGN KEY (report_id) REFERENCES Reports(id)"
-                + ");";
-     public void addSymptomToReport(Integer symptomId, Integer reportId){
-         try{
+    
+    @Override
+    public void addSymptomToReport(Integer symptomId, Integer reportId) {
+        try{
             String sql = "INSERT INTO Report_Symptoms (symptom_id, report_id)"
                     +"values (?,?)";
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
@@ -46,12 +42,27 @@ public class JDBCReport_SymptomsManager {
         }catch(SQLException e) {
             e.printStackTrace();
         }
-     }
-    public void removeSymptomFromReport(Integer symptomId, Integer reportId){
+    }
+
+    @Override
+    public void removeSymptomFromReport(Integer symptomId, Integer reportId) {
         try {
-            String sql = "DELETE FROM Report_Symptoms WHERE symptom_id, report_id";
+            String sql = "DELETE FROM Report_Symptoms WHERE symptom_id = ?, report_id = ?";
             PreparedStatement prep = manager.getConnection().prepareStatement(sql);
             prep.setInt(1, symptomId);
+            prep.setInt(2, reportId);
+
+            prep.executeUpdate();			
+	}catch(Exception e){
+	e.printStackTrace();
+	}
+    }
+
+    @Override
+    public void emptyReport(Integer reportId) {
+        try {
+            String sql = "DELETE FROM Report_Symptoms WHERE report_id = ?";
+            PreparedStatement prep = manager.getConnection().prepareStatement(sql);
             prep.setInt(1, reportId);
 
             prep.executeUpdate();			
@@ -59,10 +70,9 @@ public class JDBCReport_SymptomsManager {
 	e.printStackTrace();
 	}
     }
-    public void emptyReport(Integer reportId){
-   //delete all the symptoms associated with a report 
-    } 
-    public List <Symptom> getSymptomsFromReport(Integer reportId){
+
+    @Override
+    public List<Symptom> getSymptomsFromReport(Integer reportId) {
         List<Symptom> symptoms = new ArrayList<>();
         
         try{
@@ -77,7 +87,7 @@ public class JDBCReport_SymptomsManager {
                 symptoms.add(s);
 	   
 	        }else {
-	            System.out.println("Symptoms with ReportID " + reportId + " not found.");
+	            System.out.println("Report with id " + reportId + " has no symptoms associated.");
 	        }
 
 	        rs.close();
