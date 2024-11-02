@@ -43,6 +43,15 @@ public class Doctor implements Serializable{
     super();
     }
 
+    public Doctor(Integer id, String name, Specialty specialty, User user, List<Patient> patients, List<Feedback> feedback) {
+        this.id = id;
+        this.name = name;
+        this.specialty = specialty;
+        this.user = user;
+        this.patients = patients;
+        this.feedback = feedback;
+    }
+
     public Doctor(String name, Integer id, Specialty specialty, User user) {
         this.name = name;
         this.id = id;
