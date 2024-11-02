@@ -4,11 +4,9 @@
  */
 package ServerJDBC;
 
-import POJOs.Bitalino;
-import POJOs.SignalType;
+
 import POJOs.Symptom;
 import ServerInterfaces.Report_SymptomsManager;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
