@@ -19,10 +19,9 @@ public interface PatientManager {
     public void createPatient(Patient p);
     public void removePatientById(Integer id);
     public void updatePatient(Patient p);
-    public Patient viewPatientInfo(Integer id);
     public List<Patient> getListOfPatients();
-    public Patient searchPatientById(Integer id);
-    public List<Patient> searchPatientByName(String name);
+    public Patient getPatientById(Integer id);
+    public List<Patient> getPatientByName(String name);
     public List<Patient> getPatientsFromDoctor(Integer doctorId);
        
 }

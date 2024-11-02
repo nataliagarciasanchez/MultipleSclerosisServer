@@ -18,8 +18,7 @@ public interface DoctorManager {
     public void createDoctor(Doctor d);
     public void removeDoctorById(Integer id);
     public void updateDoctor(Doctor d);
-    public Doctor viewDoctorInfo(Integer id);
     public List<Doctor> getListOfDoctors();
-    public Doctor searchDoctorById(Integer id);
-    public List<Doctor> searchDoctorByName(String name);//es una lista porque puede haber doctores con el mismo nombre 
+    public Doctor getDoctorById(Integer id);
+    public List<Doctor> getDoctorByName(String name);//es una lista porque puede haber doctores con el mismo nombre 
 }

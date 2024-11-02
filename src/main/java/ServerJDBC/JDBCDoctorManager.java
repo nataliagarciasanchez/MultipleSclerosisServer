@@ -44,32 +44,30 @@ public class JDBCDoctorManager implements DoctorManager {
     }
 
     @Override
-    public Doctor viewDoctorInfo(Integer id) {
-        Doctor doctor = null;
-        try{
-            String sql = "SELECT name, specialty FROM doctors " +
-	                     "WHERE doctors.id = ?";
-	        PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	        stmt.setInt(1, id);
-	        ResultSet rs = stmt.executeQuery();
+    public void removeDoctorById(Integer id) {
+        try {
+            String sql = "DELETE FROM doctors WHERE id=?";
+            PreparedStatement prep = manager.getConnection().prepareStatement(sql);
+            prep.setInt(1, id);
+            prep.executeUpdate();			
+	}catch(Exception e){
+	e.printStackTrace();
+	}
+    }
 
-	        if (rs.next()) {
-	            Integer d_id = rs.getInt("id");
-	            String name = rs.getString("name");
-	            String specialtyString = rs.getString("specialty");
+    @Override
+    public void updateDoctor(Doctor d) {
+        String sql = "UPDATE doctors SET name = ?, specialty = ? WHERE id = ?";
+	try {
+            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+	        stmt.setString(1, d.getName());
+                stmt.setString(2,d.getSpecialty().toString());
+	        stmt.setInt(3, d.getId());
 
-                    Specialty specialty = Specialty.valueOf(specialtyString);
-	            doctor = new Doctor(name, d_id, specialty);
-	        } else {
-	            System.out.println("Doctor with ID " + id + " not found.");
-	        }
-
-	        rs.close();
-	        stmt.close();
-        }catch(SQLException e){
-        e.printStackTrace();
-        }
-        return doctor;
+	        stmt.executeUpdate();
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	    }
     }
 
     @Override
@@ -99,35 +97,10 @@ public class JDBCDoctorManager implements DoctorManager {
 	return doctors;
     }
 
-    @Override
-    public void removeDoctorById(Integer id) {
-        try {
-            String sql = "DELETE FROM doctors WHERE id=?";
-            PreparedStatement prep = manager.getConnection().prepareStatement(sql);
-            prep.setInt(1, id);
-            prep.executeUpdate();			
-	}catch(Exception e){
-	e.printStackTrace();
-	}
-    }
+    
 
     @Override
-    public void updateDoctor(Doctor d) {
-        String sql = "UPDATE doctors SET name = ?, specialty = ? WHERE id = ?";
-	try {
-            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	        stmt.setString(1, d.getName());
-                stmt.setString(2,d.getSpecialty().toString());
-	        stmt.setInt(3, d.getId());
-
-	        stmt.executeUpdate();
-	    } catch (SQLException ex) {
-	        ex.printStackTrace();
-	    }
-    }
-
-    @Override
-    public Doctor searchDoctorById(Integer id) {
+    public Doctor getDoctorById(Integer id) {
         Doctor doctor = null;
         try{
             String sql = "SELECT * FROM doctors WHERE ID = ?";
@@ -155,7 +128,7 @@ public class JDBCDoctorManager implements DoctorManager {
     }
 
     @Override
-    public List<Doctor> searchDoctorByName(String name) {
+    public List<Doctor> getDoctorByName(String name) {
         List<Doctor> doctors = new ArrayList<>();
 	try {
             String sql = "SELECT * FROM doctors WHERE name LIKE ?";

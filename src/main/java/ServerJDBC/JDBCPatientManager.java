@@ -22,6 +22,10 @@ import java.util.List;
 public class JDBCPatientManager implements PatientManager{
     
     private JDBCManager manager;
+    private JDBCDoctorManager doctorMan;
+   // private JDBCUserManager userMan;
+
+    
    
     public JDBCPatientManager(JDBCManager manager) {
         this.manager = manager;
@@ -36,7 +40,7 @@ public class JDBCPatientManager implements PatientManager{
             ps.setString(1,p.getName());
             ps.setString(2,p.getSurname());
             ps.setString(3,p.getNIF());
-            ps.setString(4,p.getDob().toString());
+            ps.setDate(4,p.getDob());
             ps.setString(5,p.getGender().toString());
             ps.setString(6,p.getPhone());
             ps.setInt(7,p.getDoctor().getId());
@@ -48,38 +52,42 @@ public class JDBCPatientManager implements PatientManager{
             e.printStackTrace();
         }   
     }
-
+    
     @Override
-    public Patient viewPatientInfo(Integer id) {
-        Patient patient = null;
-        try{
-            String sql = "SELECT * FROM Patients " +
-	                     "WHERE Patients.id = ?";
-	        PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	        stmt.setInt(1, id);
-	        ResultSet rs = stmt.executeQuery();
-
-	        if (rs.next()) {
-	            Integer p_id = rs.getInt("id");
-	            String name = rs.getString("name");
-                    String surname=rs.getString("surname");
-                    String NIF=rs.getString("NIF");
-                    Date dob = rs.getDate("dob");
-                    String genderString = rs.getString("gender");
-                    Gender gender = Gender.valueOf(genderString);
-                    String phone = rs.getString("phone");
-	            patient = new Patient(p_id, name, surname, NIF, dob, gender, phone);
-	        } else {
-	            System.out.println("Patient with ID " + id + " not found.");
-	        }
-
-	        rs.close();
-	        stmt.close();
-        }catch(SQLException e){
-        e.printStackTrace();
-        }
-        return patient;
+    public void removePatientById(Integer id) {
+        try {
+            String sql = "DELETE FROM Patients WHERE id=?";
+            PreparedStatement prep = manager.getConnection().prepareStatement(sql);
+            prep.setInt(1, id);
+            prep.executeUpdate();			
+	}catch(Exception e){
+	e.printStackTrace();
+	}
     }
+    
+    @Override
+    public void updatePatient(Patient p) {
+        
+        String sql = "UPDATE Patients SET name = ?, surname= ?, NIF= ?, dob = ?, gender = ?, phone = ?, doctor_id = ?, user_id = ? WHERE id = ?";
+	try {
+            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+	        stmt.setString(1, p.getName());
+                stmt.setString(2, p.getSurname());
+                stmt.setString(3, p.getNIF());
+                stmt.setDate(4, p.getDob());
+                stmt.setString(5, p.getGender().toString());
+                stmt.setString(6, p.getPhone());
+	        stmt.setInt(7, p.getDoctor().getId());
+                stmt.setInt(8, p.getUser().getId());
+                stmt.setInt(8, p.getId());
+
+	        stmt.executeUpdate();
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	    }
+    }
+  
+    
 
     @Override
     public List<Patient> getListOfPatients() {
@@ -99,6 +107,12 @@ public class JDBCPatientManager implements PatientManager{
                 Gender gender = Gender.valueOf(genderString);
                 String phone = rs.getString("phone");
                 
+                Integer doctor_id = rs.getInt("doctor_id");
+                Doctor d = doctorMan.getDoctorById(doctor_id);
+                
+               /* Integer user_id = rs.getInt("user_id");
+                User u = userMan.getUserById(user_id); */
+                
                 Patient patient = new Patient(p_id, name, surname, NIF, dob, gender, phone);
 	        patients.add(patient);
 	        }
@@ -111,23 +125,13 @@ public class JDBCPatientManager implements PatientManager{
 	    }
 	return patients;}
 
-    @Override
-    public void removePatientById(Integer id) {
-        try {
-            String sql = "DELETE FROM Patients WHERE id=?";
-            PreparedStatement prep = manager.getConnection().prepareStatement(sql);
-            prep.setInt(1, id);
-            prep.executeUpdate();			
-	}catch(Exception e){
-	e.printStackTrace();
-	}
-    }
+   
 
     @Override
-    public Patient searchPatientById(Integer id) {
+    public Patient getPatientById(Integer id) {
         Patient patient = null;
         try{
-            String sql = "SELECT * FROM Patients WHERE ID = ?";
+            String sql = "SELECT * FROM Patients WHERE id = ?";
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	    stmt.setInt(1, id);
 	    ResultSet rs = stmt.executeQuery();
@@ -142,6 +146,11 @@ public class JDBCPatientManager implements PatientManager{
                 Gender gender = Gender.valueOf(genderString);
                 String phone = rs.getString("phone");
                 
+                Integer doctor_id = rs.getInt("doctor_id");
+                Doctor d = doctorMan.getDoctorById(doctor_id);
+                
+                /*Integer user_id = rs.getInt("user_id");
+                User u = userMan.getUserById(user_id);*/
                 patient = new Patient(id, name, surname, NIF, dob, gender, phone);
 	        }else {
 	            System.out.println("Patient with ID " + id + " not found.");
@@ -156,7 +165,7 @@ public class JDBCPatientManager implements PatientManager{
     }
 
     @Override
-    public List<Patient> searchPatientByName(String name) {
+    public List<Patient> getPatientByName(String name) {
         List<Patient> patients = new ArrayList<>();
         try{
             String sql = "SELECT * FROM Patients WHERE name LIKE ?";
@@ -165,7 +174,7 @@ public class JDBCPatientManager implements PatientManager{
 	    ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {
-	        Integer p_id = rs.getInt("ID");
+	        Integer p_id = rs.getInt("id");
 	        String n = rs.getString("name");
                 String surname = rs.getString("surname");
                 String NIF = rs.getString("NIF");
@@ -173,7 +182,12 @@ public class JDBCPatientManager implements PatientManager{
                 String genderString = rs.getString("gender");
                 Gender gender = Gender.valueOf(genderString);
                 String phone = rs.getString("phone");
-	        
+                
+	        Integer doctor_id = rs.getInt("doctor_id");
+                Doctor d = doctorMan.getDoctorById(doctor_id);
+                
+                /*Integer user_id = rs.getInt("user_id");
+                User u = userMan.getUserById(user_id);*/
                 patients.add(new Patient(p_id, n,surname,NIF, dob, gender, phone));
                 
 	    }
@@ -208,6 +222,11 @@ public class JDBCPatientManager implements PatientManager{
                 Gender gender = Gender.valueOf(genderString);
                 String phone = rs.getString("phone");
 	        
+                Integer doctor_id = rs.getInt("doctor_id");
+                Doctor d = doctorMan.getDoctorById(doctor_id);
+                
+                /*Integer user_id = rs.getInt("user_id");
+                User u = userMan.getUserById(user_id);*/
                 patients.add(new Patient(id, n,surname, NIF, dob, gender, phone));
                 
 	    }
@@ -224,25 +243,6 @@ public class JDBCPatientManager implements PatientManager{
     }
 
 
-    @Override
-    public void updatePatient(Patient p) {
-        
-        String sql = "UPDATE Patients SET name = ?, surname= ?, NIF= ?, dob = ?, gender = ?, phone = ?, doctor_id = ?, user_id = ? WHERE id = ?";
-	try {
-            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	        stmt.setString(1, p.getName());
-                stmt.setString(2, p.getSurname());
-                stmt.setString(3, p.getNIF());
-                stmt.setDate(4, p.getDob());
-                stmt.setString(5, p.getGender().toString());
-                stmt.setString(6, p.getPhone());
-	        stmt.setInt(7, p.getDoctor().getId());
-                stmt.setInt(8, p.getUser().getId());
-
-	        stmt.executeUpdate();
-	    } catch (SQLException ex) {
-	        ex.printStackTrace();
-	    }
-    }
+    
     
 }

@@ -89,9 +89,9 @@ public class JDBCFeedbackManager implements FeedbackManager {
 	        Date date = rs.getDate("date");
                 String message = rs.getString("message");
                 Integer doctor_id= rs.getInt("doctor_id");
-                Doctor d= doctorman.searchDoctorById(doctor_id);
+                Doctor d= doctorman.getDoctorById(doctor_id);
                 Integer patient_id= rs.getInt("patient_id");
-                Patient p= patientman.searchPatientById(patient_id);                
+                Patient p= patientman.getPatientById(patient_id);                
                 feedback = new Feedback(id, message, date, d, p);
 	        }else {
 	            System.out.println("Feedback with ID " + id + " not found.");
@@ -118,9 +118,9 @@ public class JDBCFeedbackManager implements FeedbackManager {
                 Integer id = rs.getInt("id");
 	        String message = rs.getString("message");
                 Integer doctor_id = rs.getInt("doctor_id");
-                Doctor d = doctorman.searchDoctorById(doctor_id);
+                Doctor d = doctorman.getDoctorById(doctor_id);
                 Integer patient_id = rs.getInt("patient_id");
-                Patient p = patientman.searchPatientById(patient_id); 
+                Patient p = patientman.getPatientById(patient_id); 
                 
                 feedbacks.add(new Feedback(id, message, date, d, p));
             }
@@ -149,8 +149,8 @@ public class JDBCFeedbackManager implements FeedbackManager {
 	        Date date = rs.getDate("date");
                 String message = rs.getString("message");
                 Integer doctor_id= rs.getInt("doctor_id");
-                Doctor d = doctorman.searchDoctorById(doctor_id);
-                Patient p = patientman.searchPatientById(patient_id); 
+                Doctor d = doctorman.getDoctorById(doctor_id);
+                Patient p = patientman.getPatientById(patient_id); 
                 
                 feedbacks.add(new Feedback(id, message, date, d, p));
             }
@@ -179,9 +179,9 @@ public class JDBCFeedbackManager implements FeedbackManager {
                 Integer id= rs.getInt("id");
 	        Date date = rs.getDate("date");
                 String message = rs.getString("message");
-                Doctor d = doctorman.searchDoctorById(doctor_id);
+                Doctor d = doctorman.getDoctorById(doctor_id);
                 Integer patient_id= rs.getInt("patient_id");
-                Patient p = patientman.searchPatientById(patient_id); 
+                Patient p = patientman.getPatientById(patient_id); 
                 
                 feedbacks.add(new Feedback(id, message, date, d, p));
             }
