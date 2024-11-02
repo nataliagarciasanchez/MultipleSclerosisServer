@@ -28,7 +28,7 @@ public class JDBCSymptomManager implements SymptomManager{
     @Override
     public void createSymptom(Symptom symptom) {
         try{
-            String sql = "INSERT INTO symptoms (name)"
+            String sql = "INSERT INTO Symptoms (name)"
                     +"values (?)";
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1,symptom.getName());
@@ -37,20 +37,72 @@ public class JDBCSymptomManager implements SymptomManager{
             
         }catch(SQLException e) {
             e.printStackTrace();
-        }}
+        }
+    }
+    
+    @Override
+    public void removeSymptom(Integer id) {
+        try {
+            String sql = "DELETE FROM Symptoms WHERE id = ?";
+            PreparedStatement prep = manager.getConnection().prepareStatement(sql);
+            prep.setInt(1, id);
+            prep.executeUpdate();			
+	}catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    
+    @Override
+    public void updateSymptom(Symptom symptom) {
+        String sql = "UPDATE Symptoms SET name = ? WHERE id = ?";
+	try {
+            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+	   
+	    stmt.setString(1, symptom.getName());
+	    stmt.setInt(2, symptom.getId());
+
+	    stmt.executeUpdate();
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	    } 
+    }
+    
+    @Override
+    public List<Symptom> getListOfSymptoms() {
+        List<Symptom> symptoms = new ArrayList<>();
+	try {
+	    String sql = "SELECT * FROM Symptoms";
+	    PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+	    ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Integer id = rs.getInt("id");
+                String name = rs.getString("name");
+
+                Symptom symptom = new Symptom(id, name);
+                symptoms.add(symptom);
+            }
+	            
+            rs.close();
+	    stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return symptoms;
+    }
+
 
     @Override
-    public Symptom searchSymptomById(Integer id) {
+    public Symptom getSymptomById(Integer id) {
         Symptom symptom=null;
 	
 	    try {
-	        String sql = "SELECT * FROM symptoms WHERE ID=?";
+	        String sql = "SELECT * FROM Symptoms WHERE id = ?";
 	        PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	        stmt.setInt(1, id);
 	        ResultSet rs = stmt.executeQuery();
 
 	        if (rs.next()) {
-	            Integer s_id = rs.getInt("ID");
+	            Integer s_id = rs.getInt("id");
 	            String name = rs.getString("name");
                     symptom = new Symptom (s_id,name);
 	        }else {
@@ -68,17 +120,17 @@ public class JDBCSymptomManager implements SymptomManager{
     }
     
     @Override
-    public List<Symptom> searchSymptomByName(String name) {
+    public List<Symptom> getSymptomByName(String name) {
         List<Symptom> symptoms = new ArrayList();
 	
 	    try {
-	        String sql = "SELECT * FROM symptoms WHERE name LIKE ?";
+	        String sql = "SELECT * FROM Symptoms WHERE name LIKE ?";
 	        PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	        stmt.setString(1, name);
 	        ResultSet rs = stmt.executeQuery();
 
 	        if (rs.next()) {
-	            Integer s_id = rs.getInt("ID");
+	            Integer s_id = rs.getInt("id");
 	            String n = rs.getString("name");
                     
                     symptoms.add(new Symptom (s_id,n));
@@ -96,51 +148,5 @@ public class JDBCSymptomManager implements SymptomManager{
 	    return symptoms;
     }
 
-    @Override
-    public void updateSymptom(Symptom symptom) {
-        String sql = "UPDATE symptoms SET name = ? WHERE id = ?";
-	try {
-            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	   
-	    stmt.setString(1, symptom.getName());
-	    stmt.setInt(2, symptom.getId());
-
-	    stmt.executeUpdate();
-	    } catch (SQLException ex) {
-	        ex.printStackTrace();
-	    } }
-
-    @Override
-    public void removeSymptom(Integer id) {
-        try {
-            String sql = "DELETE FROM symptoms WHERE id=?";
-            PreparedStatement prep = manager.getConnection().prepareStatement(sql);
-            prep.setInt(1, id);
-            prep.executeUpdate();			
-	}catch(Exception e){
-            e.printStackTrace();
-        }}
-
-    @Override
-    public List<Symptom> getListOfSymptoms() {
-        List<Symptom> symptoms = new ArrayList<>();
-	try {
-	    String sql = "SELECT * FROM symptoms";
-	    PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	    ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Integer id = rs.getInt("ID");
-                String name = rs.getString("name");
-
-                Symptom symptom = new Symptom(id, name);
-                symptoms.add(symptom);
-            }
-	            
-            rs.close();
-	    stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return symptoms;}
     
 }

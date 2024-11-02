@@ -81,7 +81,7 @@ public class JDBCReport_SymptomsManager implements Report_SymptomsManager{
             
             if (rs.next()) {
                 Integer symptom_id= rs.getInt("symptom_id");
-	        Symptom s= symptomman.searchSymptomById(symptom_id);
+	        Symptom s= symptomman.getSymptomById(symptom_id);
                 symptoms.add(s);
 	   
 	        }else {
