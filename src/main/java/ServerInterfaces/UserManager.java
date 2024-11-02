@@ -26,7 +26,8 @@ public interface UserManager {
     public Role getRoleFromType(String roleName);
     public User getUser(String email);
     public User checkPassword(String email, String password);
-    public void changePassword(User user, String new_password);
+    public void changePassword(User user, String new_password);   
     public Patient getPatientByUser(User user); 
     public Doctor getDoctorByUser(User user);
+    
 }
