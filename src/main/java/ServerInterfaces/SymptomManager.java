@@ -18,6 +18,6 @@ public interface SymptomManager {
     public Symptom searchSymptomById(Integer id);
     public List<Symptom> searchSymptomByName(String name);
     public void updateSymptom(Symptom symptom);
-    public void deleteSymptom(Integer id);
-    public List<Symptom> getAllSymptoms();
+    public void removeSymptom(Integer id);
+    public List<Symptom> getListOfSymptoms();
 }

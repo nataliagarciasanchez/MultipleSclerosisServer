@@ -111,7 +111,7 @@ public class JDBCSymptomManager implements SymptomManager{
 	    } }
 
     @Override
-    public void deleteSymptom(Integer id) {
+    public void removeSymptom(Integer id) {
         try {
             String sql = "DELETE FROM symptoms WHERE id=?";
             PreparedStatement prep = manager.getConnection().prepareStatement(sql);
@@ -122,7 +122,7 @@ public class JDBCSymptomManager implements SymptomManager{
         }}
 
     @Override
-    public List<Symptom> getAllSymptoms() {
+    public List<Symptom> getListOfSymptoms() {
         List<Symptom> symptoms = new ArrayList<>();
 	try {
 	    String sql = "SELECT * FROM symptoms";
