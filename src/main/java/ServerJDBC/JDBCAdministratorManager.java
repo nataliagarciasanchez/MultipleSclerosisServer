@@ -28,7 +28,7 @@ public class JDBCAdministratorManager implements AdministratorManager {
     @Override
     public void createAdministrator(Administrator a) {
         try{
-            String sql = "INSERT INTO administrators (name, user_id)"
+            String sql = "INSERT INTO Administrators (name, user_id)"
                     +"values (?,?)";
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1,a.getName());
@@ -44,7 +44,7 @@ public class JDBCAdministratorManager implements AdministratorManager {
     @Override
     public void removeAdministratorById(Integer id) {
         try {
-            String sql = "DELETE FROM administrators WHERE id=?";
+            String sql = "DELETE FROM Administrators WHERE id=?";
             PreparedStatement prep = manager.getConnection().prepareStatement(sql);
             prep.setInt(1, id);
             prep.executeUpdate();			
@@ -56,7 +56,7 @@ public class JDBCAdministratorManager implements AdministratorManager {
 
     @Override
     public void updateAdministrator(Administrator a) {
-        String sql = "UPDATE administrators SET name = ? WHERE id = ?";
+        String sql = "UPDATE Administrators SET name = ? WHERE id = ?";
 	try {
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	   
@@ -75,7 +75,7 @@ public class JDBCAdministratorManager implements AdministratorManager {
     public List<Administrator> getListOfAdministrators() {
         List<Administrator> administrators = new ArrayList<>();
 	try {
-	    String sql = "SELECT * FROM administrators";
+	    String sql = "SELECT * FROM Administrators";
 	    PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	    ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -100,7 +100,7 @@ public class JDBCAdministratorManager implements AdministratorManager {
         Administrator administrator=null;
 	
 	    try {
-	        String sql = "SELECT * FROM administrators WHERE id=?";
+	        String sql = "SELECT * FROM Administrators WHERE id=?";
 	        PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	        stmt.setInt(1, id);
 	        ResultSet rs = stmt.executeQuery();
@@ -128,7 +128,7 @@ public class JDBCAdministratorManager implements AdministratorManager {
     public List<Administrator> getAdministratorByName(String name) {
         List<Administrator> administrators = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM administrators WHERE name LIKE ?";
+            String sql = "SELECT * FROM Administrators WHERE name LIKE ?";
 	    PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	    stmt.setString(1, "%" + name + "%");
 	    ResultSet rs = stmt.executeQuery();
