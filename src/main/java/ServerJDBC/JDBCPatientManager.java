@@ -6,8 +6,10 @@ package ServerJDBC;
 import POJOs.Doctor;
 import POJOs.Gender;
 import POJOs.Patient;
+import POJOs.Report;
 import POJOs.User;
 import ServerInterfaces.PatientManager;
+import ServerJPA.JPAUserManager;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,7 +25,8 @@ public class JDBCPatientManager implements PatientManager{
     
     private JDBCManager manager;
     private JDBCDoctorManager doctorMan;
-   // private JDBCUserManager userMan;
+    private JPAUserManager userMan;
+    private JDBCReportManager reportMan;
 
     
    
@@ -110,10 +113,13 @@ public class JDBCPatientManager implements PatientManager{
                 Integer doctor_id = rs.getInt("doctor_id");
                 Doctor d = doctorMan.getDoctorById(doctor_id);
                 
-               /* Integer user_id = rs.getInt("user_id");
-                User u = userMan.getUserById(user_id); */
+                List <Report> reports = reportMan.getReportsFromPatient(p_id);
                 
-                Patient patient = new Patient(p_id, name, surname, NIF, dob, gender, phone);
+                Integer user_id = rs.getInt("user_id");
+                User u = userMan.getUserById(user_id); 
+                
+                             
+                Patient patient = new Patient(p_id, name, surname, NIF, dob, gender, phone, d, reports, u);
 	        patients.add(patient);
 	        }
 
@@ -145,14 +151,17 @@ public class JDBCPatientManager implements PatientManager{
                 String genderString = rs.getString("gender");
                 Gender gender = Gender.valueOf(genderString);
                 String phone = rs.getString("phone");
-                
+                                	        
                 Integer doctor_id = rs.getInt("doctor_id");
                 Doctor d = doctorMan.getDoctorById(doctor_id);
                 
-                /*Integer user_id = rs.getInt("user_id");
-                User u = userMan.getUserById(user_id);*/
-                patient = new Patient(id, name, surname, NIF, dob, gender, phone);
-	        }else {
+                List <Report> reports = reportMan.getReportsFromPatient(id);
+                
+                Integer user_id = rs.getInt("user_id");
+                User u = userMan.getUserById(user_id); 
+                                             
+                patient = new Patient(id, name, surname, NIF, dob, gender, phone, d, reports, u);
+            }else {
 	            System.out.println("Patient with ID " + id + " not found.");
 	        }
 
@@ -186,10 +195,12 @@ public class JDBCPatientManager implements PatientManager{
 	        Integer doctor_id = rs.getInt("doctor_id");
                 Doctor d = doctorMan.getDoctorById(doctor_id);
                 
-                /*Integer user_id = rs.getInt("user_id");
-                User u = userMan.getUserById(user_id);*/
-                patients.add(new Patient(p_id, n,surname,NIF, dob, gender, phone));
+                List <Report> reports = reportMan.getReportsFromPatient(p_id);
                 
+                Integer user_id = rs.getInt("user_id");
+                User u = userMan.getUserById(user_id); 
+                                            
+                patients.add(new Patient(p_id, name, surname, NIF, dob, gender, phone, d, reports, u));  
 	    }
             if(patients.isEmpty()) {
 	            System.out.println("Patient with name " + name + " not found.");
@@ -225,10 +236,12 @@ public class JDBCPatientManager implements PatientManager{
                 Integer doctor_id = rs.getInt("doctor_id");
                 Doctor d = doctorMan.getDoctorById(doctor_id);
                 
-                /*Integer user_id = rs.getInt("user_id");
-                User u = userMan.getUserById(user_id);*/
-                patients.add(new Patient(id, n,surname, NIF, dob, gender, phone));
+                List <Report> reports = reportMan.getReportsFromPatient(id);
                 
+                Integer user_id = rs.getInt("user_id");
+                User u = userMan.getUserById(user_id); 
+                                            
+                patients.add(new Patient(id, n, surname, NIF, dob, gender, phone, d, reports, u));
 	    }
             if(patients.isEmpty()) {
 	            System.out.println("Doctor with ID " + doctorId + " has no patients.");
