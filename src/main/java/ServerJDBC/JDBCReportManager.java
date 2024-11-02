@@ -4,7 +4,10 @@
  */
 package ServerJDBC;
 
+import POJOs.Bitalino;
+import POJOs.Patient;
 import POJOs.Report;
+import POJOs.Symptom;
 import ServerInterfaces.ReportManager;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -19,7 +22,10 @@ import java.util.ArrayList;
  */
 public class JDBCReportManager implements ReportManager{
     private JDBCManager manager;
-   
+    private JDBCReport_SymptomsManager rep_symMan;
+    private JDBCBitalinoManager bitalinoMan;
+    private JDBCPatientManager patientMan;
+      
     public JDBCReportManager(JDBCManager manager) {
         this.manager = manager;
         }
@@ -77,7 +83,14 @@ public class JDBCReportManager implements ReportManager{
                 Integer id = rs.getInt("id");
                 Date date = rs.getDate("date");
                 
-                Report report = new Report(id, date);
+                Integer patient_id = rs.getInt("patient_id");
+                Patient p = patientMan.getPatientById(patient_id);
+                
+                List <Bitalino> bitalinos = bitalinoMan.getBitalinosOfReport(id);
+                
+                List <Symptom> symptoms = rep_symMan.getSymptomsFromReport(id);
+                
+                Report report = new Report(id, date, p, bitalinos, symptoms);
                 reports.add(report);
             }
 	            
@@ -101,8 +114,15 @@ public class JDBCReportManager implements ReportManager{
             while (rs.next()) {
 	        Integer id = rs.getInt("id");
 	        Date date = rs.getDate("date");
-                        
-                reports.add(new Report(id, date));
+                Integer patient_id = rs.getInt("patient_id");
+                Patient p = patientMan.getPatientById(patient_id);
+                
+                List <Bitalino> bitalinos = bitalinoMan.getBitalinosOfReport(id);
+                
+                List <Symptom> symptoms = rep_symMan.getSymptomsFromReport(id);
+                
+                Report report = new Report(id, date, p, bitalinos, symptoms);       
+                reports.add(report);
                 
 	    }
             if(reports.isEmpty()) {
@@ -129,8 +149,14 @@ public class JDBCReportManager implements ReportManager{
             if (rs.next()) {
 	        
                 Date date = rs.getDate("date");
-                                
-                report = new Report(id, date);
+                Integer patient_id = rs.getInt("patient_id");
+                Patient p = patientMan.getPatientById(patient_id);
+                
+                List <Bitalino> bitalinos = bitalinoMan.getBitalinosOfReport(id);
+                
+                List <Symptom> symptoms = rep_symMan.getSymptomsFromReport(id);
+                
+                report = new Report(id, date, p, bitalinos, symptoms);
 	        }else {
 	            System.out.println("Report with ID " + id + " not found.");
 	        }
@@ -155,8 +181,17 @@ public class JDBCReportManager implements ReportManager{
             if (rs.next()) {
 	        
                 Integer id = rs.getInt("id");
+                
+                Integer patient_id = rs.getInt("patient_id");
+                Patient p = patientMan.getPatientById(patient_id);
+                
+                List <Bitalino> bitalinos = bitalinoMan.getBitalinosOfReport(id);
+                
+                List <Symptom> symptoms = rep_symMan.getSymptomsFromReport(id);
+                
+                Report report = new Report(id, date, p, bitalinos, symptoms);
                                 
-                reports.add(new Report(id, date));
+                reports.add(report);
 	        }else {
 	            System.out.println("Report with date " + date + " not found.");
 	        }
