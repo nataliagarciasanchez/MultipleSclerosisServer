@@ -44,24 +44,24 @@ public class JDBCDoctorManager implements DoctorManager {
     }
 
     @Override
-    public Doctor viewDoctorInfo(Integer doctorId) {
+    public Doctor viewDoctorInfo(Integer id) {
         Doctor doctor = null;
         try{
             String sql = "SELECT name, specialty FROM doctors " +
 	                     "WHERE doctors.id = ?";
 	        PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	        stmt.setInt(1, doctorId);
+	        stmt.setInt(1, id);
 	        ResultSet rs = stmt.executeQuery();
 
 	        if (rs.next()) {
-	            Integer id = rs.getInt("id");
+	            Integer d_id = rs.getInt("id");
 	            String name = rs.getString("name");
 	            String specialtyString = rs.getString("specialty");
 
                     Specialty specialty = Specialty.valueOf(specialtyString);
-	            doctor = new Doctor(name, id, specialty);
+	            doctor = new Doctor(name, d_id, specialty);
 	        } else {
-	            System.out.println("Doctor with ID " + doctorId + " not found.");
+	            System.out.println("Doctor with ID " + id + " not found.");
 	        }
 
 	        rs.close();

@@ -43,20 +43,20 @@ public class JDBCAdministratorManager implements AdministratorManager {
     
 
     @Override
-    public Administrator viewAdministratorInfo(Integer administratorId) {
+    public Administrator viewAdministratorInfo(Integer id) {
         Administrator administrator = null;
         try{
             String sql = "SELECT administrators.*"+
 	                     "WHERE administrators.id = ?";
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	        stmt.setInt(1, administratorId);
+	        stmt.setInt(1, id);
 	        ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-	            Integer id = rs.getInt("id");
+	            Integer a_id = rs.getInt("id");
 	            String name = rs.getString("name");
-	            administrator = new Administrator(name, id);
+	            administrator = new Administrator(name, a_id);
 	        } else {
-	            System.out.println("Administrator with ID " + administratorId + " not found.");
+	            System.out.println("Administrator with ID " + id + " not found.");
 	        }
 
 	        rs.close();
