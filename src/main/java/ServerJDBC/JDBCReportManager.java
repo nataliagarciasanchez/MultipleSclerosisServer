@@ -41,7 +41,7 @@ public class JDBCReportManager implements ReportManager{
     @Override
     public void removeReportById(Integer id) {
         try {
-            String sql = "DELETE FROM Reports WHERE id=?";
+            String sql = "DELETE FROM Reports WHERE id = ?";
             PreparedStatement prep = manager.getConnection().prepareStatement(sql);
             prep.setInt(1, id);
             prep.executeUpdate();			
@@ -65,31 +65,7 @@ public class JDBCReportManager implements ReportManager{
 	}  
     }
 
-    @Override
-    public Report getReportInfo(Integer id) {
-        Report report = null;
-        try{
-            String sql = "SELECT Reports.*"+
-	                     "WHERE Reports.id = ?";
-            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	        stmt.setInt(1, id);
-	        ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-	            Integer r_id = rs.getInt("id");
-	            Date date = rs.getDate("date");
-	            report = new Report(r_id, date);
-	        } else {
-	            System.out.println("Report with ID " + id + " not found.");
-	        }
-
-	        rs.close();
-	        stmt.close();
-            
-        }catch(SQLException e) {
-            e.printStackTrace();
-        }
-        return report;}
-
+   
     @Override
     public List<Report> getListOfReports() {
         List<Report> reports = new ArrayList<>();
@@ -142,7 +118,7 @@ public class JDBCReportManager implements ReportManager{
     }
 
     @Override
-    public Report searchReportById(Integer id) {
+    public Report getReportById(Integer id) {
         Report report = null;
         try{
             String sql = "SELECT * FROM Reports WHERE id = ?";
@@ -168,7 +144,7 @@ public class JDBCReportManager implements ReportManager{
     }
 
     @Override
-    public List<Report> searchReportByDate(Date date) {
+    public List<Report> getReportByDate(Date date) {
         List<Report> reports = new ArrayList<>();
         try{
             String sql = "SELECT * FROM Reports WHERE date = ?";

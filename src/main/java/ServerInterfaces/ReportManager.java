@@ -17,10 +17,9 @@ public interface ReportManager {
     public void createReport(Report r);
     public void removeReportById(Integer id);
     public void updateReport(Report r);
-    public Report getReportInfo(Integer id);
     public List<Report> getListOfReports();
     public List<Report> getReportsFromPatient(Integer patientId);   
-    public Report searchReportById(Integer id);
-    public List<Report> searchReportByDate(Date d);
+    public Report getReportById(Integer id);
+    public List<Report> getReportByDate(Date date);
     
 }
