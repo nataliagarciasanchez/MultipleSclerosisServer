@@ -59,7 +59,7 @@ public class JDBCPatientManager implements PatientManager{
     @Override
     public void removePatientById(Integer id) {
         try {
-            String sql = "DELETE FROM Patients WHERE id=?";
+            String sql = "DELETE FROM Patients WHERE id = ?";
             PreparedStatement prep = manager.getConnection().prepareStatement(sql);
             prep.setInt(1, id);
             prep.executeUpdate();			
