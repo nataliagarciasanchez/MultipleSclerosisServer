@@ -4,6 +4,8 @@
  */
 package IOCommunication;
 
+import POJOs.Patient;
+import POJOs.Role;
 import POJOs.User;
 import ServerJPA.JPAUserManager;
 import java.io.IOException;
@@ -41,6 +43,9 @@ public class ServerPatientCommunication implements Runnable{
                     break;
                 case "changePassword":
                     handleChangePassword(in, out);
+                    break;  
+                case "findPatient":
+                    handleFindPatient(in, out);
                     break;
                 default:
                     out.writeObject("Not recognized action");
@@ -84,6 +89,21 @@ public class ServerPatientCommunication implements Runnable{
             out.writeObject("Password changed correclty");
         } else {
             out.writeObject("Incorrect username or password");
+        }
+    }
+    
+    
+     private void handleFindPatient(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
+        String username = (String) in.readObject();
+        String password = (String) in.readObject();
+        
+        User user=new User(username, password, new Role("patient"));
+        Patient patient = userManager.getPatientByUser(user);
+        
+        if (patient != null) {
+            out.writeObject("Patient found: " + patient);
+        } else {
+            out.writeObject("Patient not found or incorrect credentials");
         }
     }
     

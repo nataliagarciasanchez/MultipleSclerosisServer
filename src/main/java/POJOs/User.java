@@ -4,7 +4,6 @@
  */
 package POJOs;
 import java.io.Serializable;
-import java.util.Arrays;
 import javax.persistence.*;
 
 
@@ -13,7 +12,7 @@ import javax.persistence.*;
  * @author nataliagarciasanchez
  */
 @Entity
-@Table (name= "users")
+@Table (name= "Users")
 public class User implements Serializable{
     
     private static final long serialVersionUID = 1L;
@@ -24,7 +23,7 @@ public class User implements Serializable{
     private Integer id;
     private String email;//username
     @Lob
-    private byte[] password;
+    private String password;
     @ManyToOne
     @JoinColumn (name="role_id")
     private Role role;
@@ -33,7 +32,7 @@ public class User implements Serializable{
 	super();
     }
 	
-    public User(String email, byte[] password, Role role) {
+    public User(String email, String password, Role role) {
 	super();
 	this.email = email;
 	this.password = password;
@@ -52,10 +51,10 @@ public class User implements Serializable{
     public void setEmail(String email) {
 	this.email = email;
     }
-    public byte[] getPassword() {
+    public String getPassword() {
 	return password;
     }
-    public void setPassword(byte[] password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -70,7 +69,7 @@ public class User implements Serializable{
 
     @Override
     public String toString() {
-        return "User [id=" + id + ", email=" + email + ", password=" + Arrays.toString(password) + ", role=" + role
+        return "User [id=" + id + ", email=" + email + ", password=" + password + ", role=" + role
 		+ "]";
     }
 }
