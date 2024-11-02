@@ -4,9 +4,7 @@
  */
 package ServerJDBC;
 
-import POJOs.Doctor;
 import POJOs.Feedback;
-import POJOs.Patient;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,6 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+//FALTA EL PATIENT_ID DOCTOR_ID
 /**
  *
  * @author noeli
@@ -155,19 +154,20 @@ public class JDBCFeedbackManager {
         }
         return feedback;
 }
-    public void modifyFeedback(Feedback f)]{}
-        String sql = "UPDATE Feedbacks SET date = ?, patient_id = ? WHERE id = ?";
+    public void modifyFeedback(Feedback f){
+        String sql = "UPDATE Feedbacks SET date = ?, message = ?, doctor_id= ?, patient_id= WHERE id = ?";
 	try {
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	   
-	    stmt.setDate(1, r.getDate());
-            stmt.setInt(2, r.getPatient().getId());
-	    stmt.setInt(3, r.getId());
+	    stmt.setDate(1, f.getDate());
+            stmt.setString (2, f.getMessage());
+            stmt.setInt(3, f.getPatient().getId());
+	    stmt.setInt(4, f.getId());
 
 	    stmt.executeUpdate();
 	} catch (SQLException e) {
 	     e.printStackTrace();
 	} 
+    }
 
 }
     
