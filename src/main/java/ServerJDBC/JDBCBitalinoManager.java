@@ -5,17 +5,14 @@
 package ServerJDBC;
 
 import POJOs.Bitalino;
-import POJOs.Doctor;
-import POJOs.Report;
 import POJOs.SignalType;
-import POJOs.Specialty;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.sql.*;
 /**
  *
  * @author noeli
@@ -113,9 +110,11 @@ public class JDBCBitalinoManager {
 	}catch(Exception e){
 	e.printStackTrace();
 	}
-        
-      public void modifyBitalinoInfo(Bitalino b){
-        String sql = "UPDATE Bitalinos SET date = ?, signal_type = ?, file_path = ?, duration = ?, report_id WHERE id = ?";
+   }  
+   
+    public void modifyBitalinoInfo(Bitalino b){
+        String sql = "UPDATE Bitalinos SET date = ?, signal_type = ?, file_path = ?,"
+                + " duration = ?, report_id=? WHERE id = ?";
             try {
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	        stmt.setDate(1, b.getDate());
@@ -123,6 +122,7 @@ public class JDBCBitalinoManager {
                 stmt.setString(3, b.getFile_path());
                 stmt.setInt(4, b.getDuration());
                 stmt.setInt(5, b.getReport().getId());
+                stmt.setInt(6, b.getId());
                
 
 	        stmt.executeUpdate();
@@ -130,9 +130,11 @@ public class JDBCBitalinoManager {
 	        ex.printStackTrace();
 	    }
     }
+   
+  
 
    
-    public List<Bitalino> getBitalinosByReport(Integer report_id)) {
+    public List<Bitalino> getBitalinosByReport(Integer report_id){
         List<Bitalino> bitalinos = new ArrayList<>();
         try{
             String sql = "SELECT * FROM Bitalinos WHERE report_id = ?";
