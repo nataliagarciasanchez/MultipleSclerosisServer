@@ -12,12 +12,13 @@ import javax.persistence.*;
  * @author Andreoti
  */
 @Entity
+@Table (name= "Symptoms")
 public class Symptom {
     
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue (generator = "symptoms")
-    @TableGenerator(name = "symptoms", table = "sqlite_sequence",  pkColumnName = "name", valueColumnName = "seq", pkColumnValue = "symptoms")
+    @GeneratedValue (generator = "Symptoms")
+    @TableGenerator(name = "Symptoms", table = "sqlite_sequence",  pkColumnName = "name", valueColumnName = "seq", pkColumnValue = "Symptoms")
     private Integer id;
     private String name;
     
