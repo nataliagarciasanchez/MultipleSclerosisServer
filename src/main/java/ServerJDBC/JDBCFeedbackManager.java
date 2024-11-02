@@ -4,7 +4,9 @@
  */
 package ServerJDBC;
 
+import POJOs.Doctor;
 import POJOs.Feedback;
+import POJOs.Patient;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,13 +14,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-//FALTA EL PATIENT_ID DOCTOR_ID
 /**
  *
  * @author noeli
  */
 public class JDBCFeedbackManager {
       private JDBCManager manager;
+      private JDBCDoctorManager doctorman;
+      private JDBCPatientManager patientman;
    
 
     public JDBCFeedbackManager(JDBCManager manager) {
@@ -54,7 +57,11 @@ public class JDBCFeedbackManager {
 	        if (rs.next()) {
 	            Date date = rs.getDate("date");
                     String message = rs.getString("message");
-                    feedback = new Feedback(date, message);
+                    Integer doctor_id= rs.getInt("doctor_id");
+                    Doctor d= doctorman.searchDoctorById(doctor_id);
+                    Integer patient_id= rs.getInt("patient_id");
+                    Patient p= patientman.searchPatientById(patient_id);
+                    feedback = new Feedback(date, message,d,p);
 	        } else {
 	            System.out.println("Feedback with ID " + id + " not found.");
 	        }
@@ -87,10 +94,13 @@ public class JDBCFeedbackManager {
 	    ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {
+                Integer id= rs.getInt("id");
 	        Date date = rs.getDate("date");
                 String message= rs.getString("message");
-                        
-                feedbacks.add(new Feedback(date, message));
+                Integer doctor_id= rs.getInt("doctor_id");
+                Doctor d= doctorman.searchDoctorById(doctor_id);
+                Patient p= patientman.searchPatientById(patient_id);        
+                feedbacks.add(new Feedback(id,date, message,d,p));
             }
             if(feedbacks.isEmpty()) {
 	            System.out.println("Patient ID " + patient_id + " has no feedback saved.");
@@ -113,10 +123,13 @@ public class JDBCFeedbackManager {
 	    ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {
+                Integer id= rs.getInt("id");
 	        Date date = rs.getDate("date");
                 String message= rs.getString("message");
-                        
-                feedbacks.add(new Feedback(date, message));
+                Doctor d= doctorman.searchDoctorById(doctor_id);
+                Integer patient_id= rs.getInt("patient_id");
+                Patient p= patientman.searchPatientById(patient_id);        
+                feedbacks.add(new Feedback(id,date, message,d,p));
             }
             if(feedbacks.isEmpty()) {
 	            System.out.println("Doctor ID " + doctor_id + " has no feedback saved.");
@@ -141,8 +154,11 @@ public class JDBCFeedbackManager {
             if (rs.next()) {
 	        Date date = rs.getDate("date");
                 String message = rs.getString("message");
-                                
-                feedback = new Feedback(date, message);
+                Integer doctor_id= rs.getInt("doctor_id");
+                Doctor d= doctorman.searchDoctorById(doctor_id);
+                Integer patient_id= rs.getInt("patient_id");
+                Patient p= patientman.searchPatientById(patient_id);                
+                feedback = new Feedback(date, message,d,p);
 	        }else {
 	            System.out.println("Feedback with ID " + id + " not found.");
 	        }
@@ -154,14 +170,16 @@ public class JDBCFeedbackManager {
         }
         return feedback;
 }
+    
     public void modifyFeedback(Feedback f){
-        String sql = "UPDATE Feedbacks SET date = ?, message = ?, doctor_id= ?, patient_id= WHERE id = ?";
+        String sql = "UPDATE Feedbacks SET date = ?, message = ?, doctor_id= ?, patient_id= ? WHERE id = ?";
 	try {
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	    stmt.setDate(1, f.getDate());
             stmt.setString (2, f.getMessage());
-            stmt.setInt(3, f.getPatient().getId());
-	    stmt.setInt(4, f.getId());
+            stmt.setInt(3, f.getDoctor().getId());
+            stmt.setInt(4, f.getPatient().getId());
+	    stmt.setInt(5, f.getId());
 
 	    stmt.executeUpdate();
 	} catch (SQLException e) {
