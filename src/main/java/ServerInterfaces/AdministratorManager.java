@@ -15,10 +15,8 @@ public interface AdministratorManager {
     public void createAdministrator(Administrator a);
     public void removeAdministratorById(Integer id);
     public void updateAdministrator(Administrator a);
-    public Administrator viewAdministratorInfo(Integer id);
     public List<Administrator> getListOfAdministrators();
-    public Administrator searchAdministratorById(Integer id);
-    public List<Administrator> searchAdministratorByName(String name);//es una lista porque puede haber doctores con el mismo nombre
-    
-    
+    public Administrator getAdministratorById(Integer id);
+    public List<Administrator> getAdministratorByName(String name);//es una lista porque puede haber doctores con el mismo nombre
+       
 }

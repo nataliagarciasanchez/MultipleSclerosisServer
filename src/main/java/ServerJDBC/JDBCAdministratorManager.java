@@ -41,56 +41,6 @@ public class JDBCAdministratorManager implements AdministratorManager {
         }
     }
     
-
-    @Override
-    public Administrator viewAdministratorInfo(Integer id) {
-        Administrator administrator = null;
-        try{
-            String sql = "SELECT administrators.*"+
-	                     "WHERE administrators.id = ?";
-            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	        stmt.setInt(1, id);
-	        ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-	            Integer a_id = rs.getInt("id");
-	            String name = rs.getString("name");
-	            administrator = new Administrator(name, a_id);
-	        } else {
-	            System.out.println("Administrator with ID " + id + " not found.");
-	        }
-
-	        rs.close();
-	        stmt.close();
-            
-        }catch(SQLException e) {
-            e.printStackTrace();
-        }
-        return administrator;
-    }
-
-    @Override
-    public List<Administrator> getListOfAdministrators() {
-        List<Administrator> administrators = new ArrayList<>();
-	try {
-	    String sql = "SELECT * FROM administrators";
-	    PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	    ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Integer id = rs.getInt("ID");
-                String name = rs.getString("name");
-
-                Administrator administrator = new Administrator(name, id);
-                administrators.add(administrator);
-            }
-	            
-            rs.close();
-	    stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return administrators;
-    }
-
     @Override
     public void removeAdministratorById(Integer id) {
         try {
@@ -119,8 +69,34 @@ public class JDBCAdministratorManager implements AdministratorManager {
 	}    
     }
 
+    
+
     @Override
-    public Administrator searchAdministratorById(Integer id) {
+    public List<Administrator> getListOfAdministrators() {
+        List<Administrator> administrators = new ArrayList<>();
+	try {
+	    String sql = "SELECT * FROM administrators";
+	    PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+	    ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Integer id = rs.getInt("ID");
+                String name = rs.getString("name");
+
+                Administrator administrator = new Administrator(name, id);
+                administrators.add(administrator);
+            }
+	            
+            rs.close();
+	    stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return administrators;
+    }
+
+   
+    @Override
+    public Administrator getAdministratorById(Integer id) {
         Administrator administrator=null;
 	
 	    try {
@@ -149,7 +125,7 @@ public class JDBCAdministratorManager implements AdministratorManager {
     
 
     @Override
-    public List<Administrator> searchAdministratorByName(String name) {
+    public List<Administrator> getAdministratorByName(String name) {
         List<Administrator> administrators = new ArrayList<>();
         try {
             String sql = "SELECT * FROM administrators WHERE name LIKE ?";
