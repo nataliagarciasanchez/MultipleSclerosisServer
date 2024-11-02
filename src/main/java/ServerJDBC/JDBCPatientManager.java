@@ -4,6 +4,7 @@
  */
 package ServerJDBC;
 import POJOs.Doctor;
+import POJOs.Feedback;
 import POJOs.Gender;
 import POJOs.Patient;
 import POJOs.Report;
@@ -27,6 +28,7 @@ public class JDBCPatientManager implements PatientManager{
     private JDBCDoctorManager doctorMan;
     private JPAUserManager userMan;
     private JDBCReportManager reportMan;
+    private JDBCFeedbackManager feedbackMan;
 
     
    
@@ -115,11 +117,12 @@ public class JDBCPatientManager implements PatientManager{
                 
                 List <Report> reports = reportMan.getReportsFromPatient(p_id);
                 
+                List <Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfPatient(p_id);
+                
                 Integer user_id = rs.getInt("user_id");
                 User u = userMan.getUserById(user_id); 
-                
-                             
-                Patient patient = new Patient(p_id, name, surname, NIF, dob, gender, phone, d, reports, u);
+                                             
+                Patient patient = new Patient(p_id, name, surname, NIF, dob, gender, phone, d, reports, feedbacks, u);
 	        patients.add(patient);
 	        }
 
@@ -157,10 +160,12 @@ public class JDBCPatientManager implements PatientManager{
                 
                 List <Report> reports = reportMan.getReportsFromPatient(id);
                 
+                List <Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfPatient(id);
+                
                 Integer user_id = rs.getInt("user_id");
                 User u = userMan.getUserById(user_id); 
                                              
-                patient = new Patient(id, name, surname, NIF, dob, gender, phone, d, reports, u);
+                patient = new Patient(id, name, surname, NIF, dob, gender, phone, d, reports, feedbacks, u);
             }else {
 	            System.out.println("Patient with ID " + id + " not found.");
 	        }
@@ -197,10 +202,12 @@ public class JDBCPatientManager implements PatientManager{
                 
                 List <Report> reports = reportMan.getReportsFromPatient(p_id);
                 
+                List <Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfPatient(p_id);
+                
                 Integer user_id = rs.getInt("user_id");
                 User u = userMan.getUserById(user_id); 
                                             
-                patients.add(new Patient(p_id, name, surname, NIF, dob, gender, phone, d, reports, u));  
+                patients.add(new Patient(p_id, name, surname, NIF, dob, gender, phone, d, reports, feedbacks, u));  
 	    }
             if(patients.isEmpty()) {
 	            System.out.println("Patient with name " + name + " not found.");
@@ -224,7 +231,7 @@ public class JDBCPatientManager implements PatientManager{
 	    ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {
-	        Integer id = rs.getInt("ID");
+	        Integer id = rs.getInt("id");
 	        String n = rs.getString("name");
                 String surname = rs.getString("surname");
                 String NIF = rs.getString("NIF");
@@ -238,10 +245,12 @@ public class JDBCPatientManager implements PatientManager{
                 
                 List <Report> reports = reportMan.getReportsFromPatient(id);
                 
+                List <Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfPatient(id);
+                
                 Integer user_id = rs.getInt("user_id");
                 User u = userMan.getUserById(user_id); 
                                             
-                patients.add(new Patient(id, n, surname, NIF, dob, gender, phone, d, reports, u));
+                patients.add(new Patient(id, n, surname, NIF, dob, gender, phone, d, reports, feedbacks, u));
 	    }
             if(patients.isEmpty()) {
 	            System.out.println("Doctor with ID " + doctorId + " has no patients.");

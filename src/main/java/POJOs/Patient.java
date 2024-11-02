@@ -40,13 +40,16 @@ public class Patient implements Serializable{
     
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<Report> reports;
+    
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
+    private List<Feedback> feedbacks; 
    
     
     public Patient() {
         super();
     }
 
-    public Patient(Integer id, String name, String surname, String NIF, Date dob, Gender gender, String phone, Doctor doctor, List<Report> reports, User user) {
+    public Patient(Integer id, String name, String surname, String NIF, Date dob, Gender gender, String phone, Doctor doctor, List<Report> reports, List <Feedback> feedbacks, User user) {
         this.id = id;
         this.name = name;
         this.dob = dob;
@@ -54,6 +57,7 @@ public class Patient implements Serializable{
         this.phone = phone;
         this.doctor = doctor;
         this.reports = reports;
+        this.feedbacks = feedbacks;
         this.user = user;
     }
     
