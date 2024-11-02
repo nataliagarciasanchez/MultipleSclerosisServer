@@ -32,7 +32,7 @@ public class JDBCBitalinoManager {
             String sql = "INSERT INTO Bitalinos (date,signal_type,file_path,duration,report_id)"
                           +"values (?,?,?,?,?)";
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
-            p.setString(1,b.getDate().toString());
+            p.setDate(1,b.getDate());
             p.setString(2,b.getSignal_type().toString());
             p.setString(3,b.getFile_path());
             p.setString(4,b.getDuration().toString());
@@ -102,17 +102,64 @@ public class JDBCBitalinoManager {
 	return bitalinos;
     }
     
-    public void removeDoctorById(Integer id) {
+        ;
+    
+   public void removeBitalinoById(Integer id) {
         try {
-            String sql = "DELETE FROM doctors WHERE id=?";
+            String sql = "DELETE FROM Bitalinos WHERE id=?";
             PreparedStatement prep = manager.getConnection().prepareStatement(sql);
             prep.setInt(1, id);
             prep.executeUpdate();			
 	}catch(Exception e){
 	e.printStackTrace();
 	}
-    
-    
+        
+      public void modifyBitalinoInfo(Bitalino b){
+        String sql = "UPDATE Bitalinos SET date = ?, signal_type = ?, file_path = ?, duration = ?, report_id WHERE id = ?";
+            try {
+            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+	        stmt.setDate(1, b.getDate());
+                stmt.setString(2, b.getSignal_type().toString());
+                stmt.setString(3, b.getFile_path());
+                stmt.setInt(4, b.getDuration());
+                stmt.setInt(5, b.getReport().getId());
+               
+
+	        stmt.executeUpdate();
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	    }
+    }
+
+   
+    public List<Bitalino> getBitalinosByReport(Integer report_id)) {
+        List<Bitalino> bitalinos = new ArrayList<>();
+        try{
+            String sql = "SELECT * FROM Bitalinos WHERE report_id = ?";
+            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+	    stmt.setInt(1, report_id);
+	    ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+	        Integer b_id = rs.getInt("id");
+                Date b_date = rs.getDate("date");
+                String SignalTypeString = rs.getString("signal_type");
+                SignalType ST = SignalType.valueOf(SignalTypeString);
+                String file_path = rs.getString("file_path");
+	        Integer b_duration= rs.getInt("duration");
+                bitalinos.add(new Bitalino(b_id, b_date, ST, file_path, b_duration));
+	   
+	        }else {
+	            System.out.println("Bitalinos with ReportID " + report_id + " not found.");
+	        }
+
+	        rs.close();
+	        stmt.close();
+        }catch(SQLException e){
+        e.printStackTrace();
+        }
+        return bitalinos;
+    }
     
     }
     
@@ -120,5 +167,4 @@ public class JDBCBitalinoManager {
     
     
     
-    
-}
+   
