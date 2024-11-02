@@ -52,7 +52,7 @@ public class JDBCFeedbackManager implements FeedbackManager {
     @Override
     public void removeFeedbackById(Integer id) {
         try {
-            String sql = "DELETE FROM Feedbacks WHERE id=?";
+            String sql = "DELETE FROM Feedbacks WHERE id = ?";
             PreparedStatement prep = manager.getConnection().prepareStatement(sql);
             prep.setInt(1, id);
             prep.executeUpdate();			
