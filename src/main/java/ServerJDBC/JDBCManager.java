@@ -83,6 +83,8 @@ public class JDBCManager {
             String create_table_patients="CREATE TABLE IF NOT EXIST Patients ("
                 +"      id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "     name TEXT NOT NULL, "
+                + "     surname TEXT NOT NULL, "
+                + "     NIF TEXT NOT NULL, "
                 + "     dob DATE NOT NULL, "
                 + "     gender TEXT("+enumValuesGender.toString()+") NOT NULL, " //los enums se representarán como TEXT
                 + "     phone INTEGER NOT NULL, "
