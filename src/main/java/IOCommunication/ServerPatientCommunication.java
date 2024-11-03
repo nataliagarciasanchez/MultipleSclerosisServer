@@ -47,6 +47,12 @@ public class ServerPatientCommunication implements Runnable{
                 case "findPatient":
                     handleFindPatient(in, out);
                     break;
+                case "sendECGSignals":
+                    handleECGSignals(in,out);
+                    break;
+                case "sendEMGSignals":
+                    handleEMGSignals(in,out);
+                    break;
                 default:
                     out.writeObject("Not recognized action");
                     break;
@@ -105,6 +111,14 @@ public class ServerPatientCommunication implements Runnable{
         } else {
             out.writeObject("Patient not found or incorrect credentials");
         }
+    }
+     
+    private void handleECGSignals(ObjectInputStream in, ObjectOutputStream out){
+        //TODO recibe las señales del bitalino y en base a eso y a los symptoms debe crear un diagnóstico 
+    }
+    
+    private void handleEMGSignals(ObjectInputStream in, ObjectOutputStream out){
+        //TODO recibe las señales del bitalino y en base a eso y a los symptoms debe crear un diagnóstico  
     }
     
 }
