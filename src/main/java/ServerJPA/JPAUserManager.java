@@ -42,7 +42,7 @@ public class JPAUserManager implements UserManager {
     @Override
     public void connect() {
         //TODO TIENE QUE COINCIDIR EL NOMBRE CON EL DEL PERSISTENCE.XML FILE DE META-INF
-        em = Persistence.createEntityManagerFactory("multipleSclerosis-provider").createEntityManager();
+        em = Persistence.createEntityManagerFactory("MultipleSclerosis-provider").createEntityManager();
 
 	em.getTransaction().begin();
 	em.createNativeQuery("PRAGMA foreign_keys = ON").executeUpdate();
@@ -86,7 +86,7 @@ public class JPAUserManager implements UserManager {
     public List<Role> getRoles() {
         List<Role> roles = null;
 	    try {
-	    	Query query = em.createNativeQuery("SELECT * FROM roles", Role.class);
+	    	Query query = em.createNativeQuery("SELECT * FROM Roles", Role.class);
 	     roles = (List<Role>) query.getResultList();
 	    } catch (Exception e) {
 	        e.printStackTrace();

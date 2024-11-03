@@ -87,7 +87,7 @@ public class JDBCManager {
                 + "     NIF TEXT NOT NULL, "
                 + "     dob DATE NOT NULL, "
                 + "     gender TEXT("+enumValuesGender.toString()+") NOT NULL, " //los enums se representarán como TEXT
-                + "     phone INTEGER NOT NULL, "
+                + "     phone TEXT NOT NULL, "
                 + "     doctor_id INTEGER NOT NULL, "
                 + "     user_id INTEGER NOT NULL"
                 + "     FOREIGN KEY (doctor_id) REFERENCES Doctors(id)"

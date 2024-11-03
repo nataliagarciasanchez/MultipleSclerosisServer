@@ -4,7 +4,7 @@
  */
 package ServerJDBC;
 
-import POJOs.Administrator;
+
 import POJOs.Symptom;
 import ServerInterfaces.SymptomManager;
 import java.sql.PreparedStatement;

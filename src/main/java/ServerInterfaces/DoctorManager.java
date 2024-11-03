@@ -5,8 +5,6 @@
 package ServerInterfaces;
 
 import POJOs.Doctor;
-import POJOs.Specialty;
-import POJOs.User;
 import java.util.List;
 
 /**

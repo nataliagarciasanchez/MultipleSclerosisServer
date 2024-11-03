@@ -5,9 +5,7 @@
 package ServerInterfaces;
 
 
-import POJOs.Gender;
 import POJOs.Patient;
-import java.sql.Date;
 //import POJOs.User;
 import java.util.List;
 
