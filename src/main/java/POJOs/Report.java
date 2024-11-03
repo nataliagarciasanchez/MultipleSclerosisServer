@@ -29,7 +29,7 @@ public class Report implements Serializable{
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
     
-    @OneToMany(mappedBy = "reports", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
     private List<Bitalino> bitalinos;
     
     @ManyToMany

@@ -33,10 +33,10 @@ public class Doctor implements Serializable{
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
-    @OneToMany(mappedBy = "doctors", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
     private List<Patient> patients;
     
-    @OneToMany(mappedBy = "doctors", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
     private List<Feedback> feedback; 
     
     public Doctor(){

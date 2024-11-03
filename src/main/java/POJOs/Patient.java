@@ -38,10 +38,10 @@ public class Patient implements Serializable{
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
     
-    @OneToMany(mappedBy = "patients", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<Report> reports;
     
-    @OneToMany(mappedBy = "patients", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<Feedback> feedbacks; 
    
     
