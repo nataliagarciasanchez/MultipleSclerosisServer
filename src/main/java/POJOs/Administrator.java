@@ -27,6 +27,9 @@ public class Administrator implements Serializable{
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
+    public Administrator(){
+    super();
+    }
 
     public Administrator(Integer id,String name, User user) {
         this.id = id;
