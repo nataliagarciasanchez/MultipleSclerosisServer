@@ -23,7 +23,11 @@ public class JDBCManager {
 	try {
 			
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:./db/MultipleSclerosisServer.db");
+            // Asegurándote de que la base de datos se cree en la carpeta "db" dentro del proyecto
+            String dbPath = "db/MultipleSclerosisServer.db"; 
+            c = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+
+           // c = DriverManager.getConnection("jdbc:sqlite:./db/MultipleSclerosisServer.db");
             c.createStatement().execute("PRAGMA foreign_keys=ON");
 			
             System.out.print("Database Connection opened.");
