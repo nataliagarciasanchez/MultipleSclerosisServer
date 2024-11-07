@@ -9,5 +9,5 @@ package POJOs;
  * @author maipa
  */
 public enum Specialty {
-    NEUROLOGIST;
+    NEUROLOGY
 }

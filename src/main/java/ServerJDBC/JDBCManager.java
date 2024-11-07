@@ -23,7 +23,7 @@ public class JDBCManager {
 	try {
 			
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:./db/MultipleSclerosis.db");
+            c = DriverManager.getConnection("jdbc:sqlite:./db/MultipleSclerosisServer.db");
             c.createStatement().execute("PRAGMA foreign_keys=ON");
 			
             System.out.print("Database Connection opened.");
@@ -44,7 +44,7 @@ public class JDBCManager {
 			
             Statement stmt = c.createStatement();
             
-            String create_table_administrators = "CREATE TABLE IF NOT EXIST Administrators ("
+            String create_table_administrators = "CREATE TABLE IF NOT EXISTS Administrators ("
 		+ "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "    name TEXT NOT NULL, "
 		+ "    user_id INTEGER NOT NULL,"
@@ -52,6 +52,8 @@ public class JDBCManager {
 		+ ");";
 		
             stmt.executeUpdate(create_table_administrators);
+                        System.out.println("\nAdministrators created");
+
             
             StringBuilder enumValuesSpecialty=new StringBuilder();
             for (Specialty specialty : Specialty.values()) {
@@ -61,15 +63,17 @@ public class JDBCManager {
                 enumValuesSpecialty.append("'").append(specialty.name()).append("'");
             }
 			
-	    String create_table_doctors = "CREATE TABLE IF NOT EXIST Doctors ("
+	    String create_table_doctors = "CREATE TABLE IF NOT EXISTS Doctors ("
 		+ "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "    name TEXT NOT NULL, "
-		+ "    specialty TEXT("+enumValuesSpecialty.toString()+") NOT NULL,"
+		+ "    specialty TEXT CHECK(specialty IN ("+enumValuesSpecialty.toString()+")) NOT NULL,"
 		+ "    user_id INTEGER NOT NULL,"
 		+ "    FOREIGN KEY (user_id) REFERENCES Users(id)"
 		+ ");";
 		
             stmt.executeUpdate(create_table_doctors);
+                        System.out.println("\nDoctors created");
+
             
             //HAY QUE HACER ESTO PARA LOS ENUM 
             StringBuilder enumValuesGender=new StringBuilder();
@@ -80,23 +84,24 @@ public class JDBCManager {
                 enumValuesGender.append("'").append(gender.name()).append("'");
             }
 		
-            String create_table_patients="CREATE TABLE IF NOT EXIST Patients ("
+            String create_table_patients="CREATE TABLE IF NOT EXISTS Patients ("
                 +"      id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "     name TEXT NOT NULL, "
                 + "     surname TEXT NOT NULL, "
                 + "     NIF TEXT NOT NULL, "
                 + "     dob DATE NOT NULL, "
-                + "     gender TEXT("+enumValuesGender.toString()+") NOT NULL, " //los enums se representarán como TEXT
+                + "     gender TEXT CHECK(gender IN ("+enumValuesGender.toString()+")) NOT NULL, " //los enums se representarán como TEXT
                 + "     phone TEXT NOT NULL, "
                 + "     doctor_id INTEGER NOT NULL, "
-                + "     user_id INTEGER NOT NULL"
-                + "     FOREIGN KEY (doctor_id) REFERENCES Doctors(id)"
+                + "     user_id INTEGER NOT NULL,"
+                + "     FOREIGN KEY (doctor_id) REFERENCES Doctors(id),"
                 + "     FOREIGN KEY (user_id) REFERENCES Users(id)"
                 + ");";
        
             stmt.executeUpdate(create_table_patients);
+            System.out.println("\nPatients created");
             
-            String create_table_reports="CREATE TABLE IF NOT EXIST Reports ("
+            String create_table_reports="CREATE TABLE IF NOT EXISTS Reports ("
                 + "      id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "     date DATE NOT NULL, "
                 + "     patient_id INTEGER NOT NULL, "
@@ -104,23 +109,28 @@ public class JDBCManager {
                 + ");";
        
             stmt.executeUpdate(create_table_reports);
+            System.out.println("\nReports table created");
             
-            String create_table_symptoms="CREATE TABLE IF NOT EXIST Symptoms ("
+            String create_table_symptoms="CREATE TABLE IF NOT EXISTS Symptoms ("
                 + "      id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + "     name TEXT NOT NULL, "
+                + "     name TEXT NOT NULL "
                 + ");";
        
             stmt.executeUpdate(create_table_symptoms);
+                        System.out.println("\nSymptoms table created");
+
             
-            String create_table_report_symptoms="CREATE TABLE IF NOT EXIST Report_Symptoms ("
+            String create_table_report_symptoms="CREATE TABLE IF NOT EXISTS Report_Symptoms ("
                 + "      symptom_id INTEGER NOT NULL,"
                 + "      report_id INTEGER NOT NULL,"
-                + "      PRIMARY KEY(report_id, symptom_id)"
-                + "     FOREIGN KEY (patient_id) REFERENCES Patients(id)"
+                + "      PRIMARY KEY(report_id, symptom_id),"
+                + "     FOREIGN KEY (symptom_id) REFERENCES Symptoms(id),"
                 + "     FOREIGN KEY (report_id) REFERENCES Reports(id)"
                 + ");";
        
             stmt.executeUpdate(create_table_report_symptoms);
+                                    System.out.println("\nR_S table created");
+
             
             StringBuilder bitValues=new StringBuilder();
             for (SignalType signal : SignalType.values()) {
@@ -130,10 +140,10 @@ public class JDBCManager {
                 bitValues.append("'").append(signal.name()).append("'");
             }
             
-            String create_table_bitalinos="CREATE TABLE IF NOT EXIST Bitalinos ("
+            String create_table_bitalinos="CREATE TABLE IF NOT EXISTS Bitalinos ("
                 + "     id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "     date DATE NOT NULL, "
-                + "     signal_type ENUM("+bitValues.toString()+") NOT NULL, "
+                + "     signal_type TEXT CHECK (signal_type IN ("+bitValues.toString()+")) NOT NULL, "
                 + "     file_path TEXT NOT NULL, "
                 + "     duration FLOAT NOT NULL, "
                 + "     report_id INTEGER NOT NULL, "
@@ -141,19 +151,23 @@ public class JDBCManager {
                 + ");";
        
             stmt.executeUpdate(create_table_bitalinos);
+                                    System.out.println("\nBitalinos table created");
+
             
-            
-            String create_table_feedbacks = "CREATE TABLE IF NOT EXIST Feedbacks ("
+            String create_table_feedbacks = "CREATE TABLE IF NOT EXISTS Feedbacks ("
                 + "     id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "     date DATE NOT NULL, "
-                + "     message TEXT NOT NULL"
+                + "     message TEXT NOT NULL,"
                 + "     doctor_id INTEGER NOT NULL, "
                 + "     patient_id INTEGER NOT NULL, "
-                + "     FOREIGN KEY (doctor_id) REFERENCES Doctors(id)"
+                + "     FOREIGN KEY (doctor_id) REFERENCES Doctors(id),"
                 + "     FOREIGN KEY (patient_id) REFERENCES Patients(id)"
                 + ");";
             
             stmt.executeUpdate(create_table_feedbacks);
+                                    System.out.println("\nFeedbacks table created");
+
+            System.out.println("\nALL TABLES ARE NOW CREATED!!");
             
 			
 	}catch(SQLException e) {

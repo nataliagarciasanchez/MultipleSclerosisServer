@@ -11,10 +11,19 @@ import javax.swing.*;
  * @author nataliagarciasanchez
  */
 public class ServerMain extends JFrame{
-    private JDBCManager manager; 
     
-    
-    public ServerMain(){
+       // private static JDBCManager jdbcmanager; 
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		JDBCManager jdbcManager = new JDBCManager();
+                //jdbcManager.disconnect();
+               
+                
+		
+	
+	}
         
-    }
+        
 }
