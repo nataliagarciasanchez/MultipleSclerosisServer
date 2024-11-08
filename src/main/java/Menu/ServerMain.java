@@ -3,7 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Menu;
+import ServerInterfaces.UserManager;
 import ServerJDBC.JDBCManager;
+import ServerJPA.JPAUserManager;
 import javax.swing.*;
 
 /**
@@ -12,17 +14,17 @@ import javax.swing.*;
  */
 public class ServerMain extends JFrame{
     
-       // private static JDBCManager jdbcmanager; 
-
+        private static JDBCManager jdbcManager; 
+        private static UserManager userMan;
+        
+        
+        
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		JDBCManager jdbcManager = new JDBCManager();
+		jdbcManager = new JDBCManager();
+                userMan=new JPAUserManager();
                 //jdbcManager.disconnect();
-               
-                
-		
-	
 	}
         
         
