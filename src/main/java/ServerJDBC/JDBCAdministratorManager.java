@@ -20,7 +20,7 @@ import java.util.ArrayList;
  */
 public class JDBCAdministratorManager implements AdministratorManager {
     private JDBCManager manager;
-    //private JPAUserManager userMan;
+    private JDBCUserManager userMan;
 
    
 

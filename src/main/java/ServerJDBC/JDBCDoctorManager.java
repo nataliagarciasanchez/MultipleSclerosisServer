@@ -22,7 +22,7 @@ import java.util.List;
 public class JDBCDoctorManager implements DoctorManager {
     
     private JDBCManager manager;
-   // private JPAUserManager userMan;
+    private JDBCUserManager userMan;
     private JDBCPatientManager patientMan;
     private JDBCFeedbackManager feedbackMan;
    

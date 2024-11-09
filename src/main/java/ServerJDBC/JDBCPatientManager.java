@@ -25,7 +25,7 @@ public class JDBCPatientManager implements PatientManager{
     
     private JDBCManager manager;
     private JDBCDoctorManager doctorMan;
-   // private JPAUserManager userMan;
+    private JDBCUserManager userMan;
     private JDBCReportManager reportMan;
     private JDBCFeedbackManager feedbackMan;
 
