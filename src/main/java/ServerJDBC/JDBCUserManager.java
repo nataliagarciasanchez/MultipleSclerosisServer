@@ -22,6 +22,9 @@ import java.util.List;
 public class JDBCUserManager implements UserManager {
 
     private Connection connection;
+    private JDBCDoctorManager doctorMan;
+    private JDBCPatientManager patientMan;
+    private JDBCFeedbackManager feedbackMan;
 
     public JDBCUserManager() {
         this.connect();
@@ -236,11 +239,9 @@ public class JDBCUserManager implements UserManager {
                 patient.setGender(Gender.valueOf(rs.getString("gender")));  // Suponiendo que Gender es un Enum
                 patient.setPhone(rs.getString("phone"));
 
-                //Esto no se si nos interesaria????
-                /*Recuperar el Doctor asociado
-                int doctorId = rs.getInt("doctor_id");
-                Doctor doctor = getDoctorById(doctorId);  // Método auxiliar para obtener el doctor
-                patient.setDoctor(doctor);*/
+                Integer doctorId = rs.getInt("doctor_id");
+                Doctor doctor = doctorMan.getDoctorById(doctorId);  // Método auxiliar para obtener el doctor
+                patient.setDoctor(doctor);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -264,19 +265,19 @@ public class JDBCUserManager implements UserManager {
                 doctor.setName(rs.getString("name"));
                 doctor.setUser(user);  // Asigna el usuario ya conocido
 
-                /* ESTO NOS INTERESA?!?!?!
+               
             // Recuperar la especialidad
-            int specialtyId = rs.getInt("specialty_id");
-            Specialty specialty = getSpecialtyById(specialtyId);
-            doctor.setSpecialty(specialty);
+              String specialtyString = rs.getString("specialty");
+              Specialty specialty = Specialty.valueOf(specialtyString);
+              doctor.setSpecialty(specialty);
 
             // Recuperar la lista de pacientes asociados
-            List<Patient> patients = getPatientsByDoctorId(doctor.getId());
+            List<Patient> patients = patientMan.getPatientsFromDoctor(doctor.getId());
             doctor.setPatients(patients);
 
             // Recuperar la lista de feedback asociados
-            List<Feedback> feedbacks = getFeedbackByDoctorId(doctor.getId());
-            doctor.setFeedback(feedbacks);*/
+            List<Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfDoctor(doctor.getId());
+            doctor.setFeedback(feedbacks);
             }
         } catch (SQLException e) {
             e.printStackTrace();

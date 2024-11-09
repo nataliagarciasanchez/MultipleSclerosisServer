@@ -88,6 +88,22 @@ public class Doctor implements Serializable{
         this.specialty = specialty;
     }
 
+    public void setPatients(List<Patient> patients) {
+        this.patients = patients;
+    }
+
+    public void setFeedback(List<Feedback> feedback) {
+        this.feedback = feedback;
+    }
+
+    public List<Patient> getPatients() {
+        return patients;
+    }
+
+    public List<Feedback> getFeedback() {
+        return feedback;
+    }
+
     public void setUser(User user) {
         this.user = user;
     }

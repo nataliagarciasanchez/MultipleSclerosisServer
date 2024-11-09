@@ -128,6 +128,14 @@ public class Patient implements Serializable{
         this.doctor = doctor;
     }
     
+    public void setSurname(String surname){
+        this.surname = surname;
+    }
+    
+    public void setNIF(String nif){
+        this.NIF = nif;
+    }
+    
     public void setUser(User user) {
         this.user = user;
     }
