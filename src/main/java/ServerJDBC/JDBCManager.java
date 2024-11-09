@@ -50,7 +50,7 @@ public class JDBCManager {
             
             String create_table_roles = "CREATE TABLE IF NOT EXISTS Roles ("
 		+ "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + "    name TEXT NOT NULL, "
+                + "    name TEXT NOT NULL "
 		+ ");";
 		
             stmt.executeUpdate(create_table_roles);
