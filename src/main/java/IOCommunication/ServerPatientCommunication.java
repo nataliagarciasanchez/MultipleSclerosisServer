@@ -7,7 +7,7 @@ package IOCommunication;
 import POJOs.Patient;
 import POJOs.Role;
 import POJOs.User;
-import ServerJPA.JPAUserManager;
+import ServerJDBC.JDBCUserManager;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -20,11 +20,11 @@ import java.net.Socket;
 public class ServerPatientCommunication implements Runnable{
 
     private Socket patientSocket;
-    private JPAUserManager userManager;
+    private JDBCUserManager userManager;
 
     public ServerPatientCommunication(Socket clientSocket) {
         this.patientSocket = clientSocket;
-        this.userManager = new JPAUserManager(); // Iniciar el gestor de usuarios
+        this.userManager = new JDBCUserManager(); // Iniciar el gestor de usuarios
     }
 
     @Override
@@ -73,14 +73,14 @@ public class ServerPatientCommunication implements Runnable{
     private void handleRegister(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
         User user = (User) in.readObject();
         userManager.register(user);
-        userManager.assignRole(user, userManager.getRoleFromType("patient"));
+        userManager.assignRole(user, userManager.getRoleByName("patient"));
         out.writeObject("Registered with success");
     }
 
     private void handleLogin(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
         String username = (String) in.readObject();
         String password = (String) in.readObject();
-        User user = userManager.login(username, password);
+        User user = userManager.login(username,password);
         out.writeObject((user != null) ? "Successful login" : "Incorrect introduced data");
     }
 

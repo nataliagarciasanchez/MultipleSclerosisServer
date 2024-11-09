@@ -18,14 +18,14 @@ public interface UserManager {
     public void connect();
     public void disconnect();
     public void register(User user);
-    public User login(String email, String password);
+    public User login(String username, String password);
     public List<Role> getRoles();
     public void newRole(Role role);
     public void assignRole(User user, Role role);
     public Role getRoleById(Integer id);
     public Role getRoleByName(String roleName);
     public User getUser(String email);
-    public User checkPassword(String email, String password);
+    public User checkPassword(User user);
     public void changePassword(User user, String new_password);   
     public Patient getPatientByUser(User user); 
     public Doctor getDoctorByUser(User user);

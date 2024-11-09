@@ -5,7 +5,6 @@
 package Menu;
 import ServerInterfaces.UserManager;
 import ServerJDBC.JDBCManager;
-import ServerJPA.JPAUserManager;
 import javax.swing.*;
 
 /**
@@ -15,7 +14,7 @@ import javax.swing.*;
 public class ServerMain extends JFrame{
     
         private static JDBCManager jdbcManager; 
-        private static UserManager userMan;
+        
         
         
         
@@ -23,7 +22,7 @@ public class ServerMain extends JFrame{
 		// TODO Auto-generated method stub
 		
 		jdbcManager = new JDBCManager();
-                userMan=new JPAUserManager();
+                
                 //jdbcManager.disconnect();
 	}
         

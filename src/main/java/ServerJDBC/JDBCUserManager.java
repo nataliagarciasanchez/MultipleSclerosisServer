@@ -76,10 +76,10 @@ public class JDBCUserManager implements UserManager {
     }
 
     @Override
-    public User login(String email, String password) {
+    public User login(String username, String password) {
         String sql = "SELECT * FROM Users WHERE email = ? AND password = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, email);
+            stmt.setString(1, username);
             stmt.setString(2, password);  // Encriptar la contraseña para la comparación
             ResultSet rs = stmt.executeQuery();
 
@@ -193,11 +193,11 @@ public class JDBCUserManager implements UserManager {
     }
 
     @Override
-    public User checkPassword(String email, String password) {
+    public User checkPassword(User user) {
         String sql = "SELECT * FROM Users WHERE email = ? AND password = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, email);
-            stmt.setString(2, password);
+            stmt.setString(1, user.getEmail());
+            stmt.setString(2, user.getPassword());
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 Role role = getRoleById(rs.getInt("role_id"));
