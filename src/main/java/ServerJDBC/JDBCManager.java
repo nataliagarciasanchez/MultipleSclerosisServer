@@ -48,6 +48,25 @@ public class JDBCManager {
 			
             Statement stmt = c.createStatement();
             
+            String create_table_roles = "CREATE TABLE IF NOT EXISTS Roles ("
+		+ "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "    name TEXT NOT NULL, "
+		+ ");";
+		
+            stmt.executeUpdate(create_table_roles);
+            System.out.println("\nRoles created");
+            
+            String create_table_users = "CREATE TABLE IF NOT EXISTS Users ("
+		+ "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "    email TEXT NOT NULL, "
+                + "    password TEXT NOT NULL, "
+		+ "    role_id INTEGER NOT NULL,"
+		+ "    FOREIGN KEY (role_id) REFERENCES Roles(id)"
+		+ ");";
+		
+            stmt.executeUpdate(create_table_users);
+                        System.out.println("\nUsers created");
+                        
             String create_table_administrators = "CREATE TABLE IF NOT EXISTS Administrators ("
 		+ "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "    name TEXT NOT NULL, "

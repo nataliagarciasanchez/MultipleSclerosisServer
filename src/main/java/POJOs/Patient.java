@@ -39,6 +39,8 @@ public class Patient implements Serializable{
     public Patient(Integer id, String name, String surname, String NIF, Date dob, Gender gender, String phone, Doctor doctor, List<Report> reports, List <Feedback> feedbacks, User user) {
         this.id = id;
         this.name = name;
+        this.surname = surname;
+        this.NIF = NIF;
         this.dob = dob;
         this.gender = gender;
         this.phone = phone;

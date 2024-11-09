@@ -33,6 +33,11 @@ public class Role implements Serializable{
         this.id = id;
         this.name = name;
     }
+    public Role(Integer id, String name, List <User> users) {
+        this.id = id;
+        this.name = name;
+        this.users = users;
+    }
 
     public Integer getId() {
         return id;

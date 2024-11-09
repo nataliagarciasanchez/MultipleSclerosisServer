@@ -15,20 +15,22 @@ import java.util.List;
  * @author maipa
  */
 public interface UserManager {
-    public void connect();
-    public void disconnect();
-    public void register(User user);
-    public User login(String username, String password);
-    public List<Role> getRoles();
-    public void newRole(Role role);
-    public void assignRole(User user, Role role);
-    public Role getRoleById(Integer id);
-    public Role getRoleByName(String roleName);
-    public User getUser(String email);
-    public User checkPassword(User user);
-    public void changePassword(User user, String new_password);   
-    public Patient getPatientByUser(User user); 
-    public Doctor getDoctorByUser(User user);
+    
+    public void register(User u);
+    public User login(String email, String password);
+    public void removeUserById(Integer id);
+    public void updateUser(User u);
+    public List <User> getListOfUsers();
     public User getUserById(Integer id);
+    public User getUserByEmail(String email); // not a list because it must be unique
+         
+    public List <User> getUsersByRole(Integer role_id);
+    //public Patient getPatientByUser(User u); 
+    //public Doctor getDoctorByUser(User u);
+    
+    public void assignRoleToUser(User user, Role role); // se hace en la tabla User
+    public User checkPassword(User u);
+    public void changePassword(User u, String new_password);  
+    
     
 }
