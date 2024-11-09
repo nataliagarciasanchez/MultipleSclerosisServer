@@ -85,7 +85,7 @@ public class JDBCUserManager implements UserManager {
 
             if (rs.next()) {
                 // Obtenemos el rol del usuario
-                Role role = getRole(rs.getInt("role_id"));
+                Role role = getRoleById(rs.getInt("role_id"));
                 // Creamos y retornamos el objeto User
                 return new User(rs.getString("email"), rs.getString("password"), role);
             }
@@ -138,37 +138,42 @@ public class JDBCUserManager implements UserManager {
     }
 
     @Override
-    public Role getRole(Integer id) {
+    public Role getRoleById(Integer id) {
+        Role role = null;
         String sql = "SELECT * FROM Roles WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try{
+            PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                Role role = new Role(rs.getString("name"));
-                role.setId(rs.getInt("id"));
-                return role;
+                String name = rs.getString("name");        
+                role = new Role(id, name);         
+             
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return role;
     }
 
+    
     @Override
-    public Role getRoleFromType(String roleName) {
-        String sql = "SELECT * FROM Roles WHERE name = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+    public Role getRoleByName(String roleName) {
+        Role role = null;
+        try {
+            String sql = "SELECT * FROM Roles WHERE name LIKE ?";
+            PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, roleName);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                Role role = new Role(rs.getString("name"));
-                role.setId(rs.getInt("id"));
-                return role;
+                Integer id = rs.getInt("id");
+                String name = rs.getString("name");              
+                
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return role;
     }
 
     @Override
@@ -178,7 +183,7 @@ public class JDBCUserManager implements UserManager {
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                Role role = getRole(rs.getInt("role_id"));
+                Role role = getRoleById(rs.getInt("role_id"));
                 return new User(rs.getString("email"), rs.getString("password"), role);
             }
         } catch (SQLException e) {
@@ -195,7 +200,7 @@ public class JDBCUserManager implements UserManager {
             stmt.setString(2, password);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                Role role = getRole(rs.getInt("role_id"));
+                Role role = getRoleById(rs.getInt("role_id"));
                 return new User(rs.getString("email"), rs.getString("password"), role);
             }
         } catch (SQLException e) {
@@ -300,7 +305,7 @@ public class JDBCUserManager implements UserManager {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                Role role = getRole(rs.getInt("role_id"));
+                Role role = getRoleById(rs.getInt("role_id"));
                 return new User(rs.getString("email"), rs.getString("password"), role);
             }
         } catch (SQLException e) {
