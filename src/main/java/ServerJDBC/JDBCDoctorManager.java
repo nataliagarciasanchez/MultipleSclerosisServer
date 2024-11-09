@@ -9,7 +9,6 @@ import POJOs.Patient;
 import POJOs.Specialty;
 import POJOs.User;
 import ServerInterfaces.DoctorManager;
-import ServerJPA.JPAUserManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,7 +22,7 @@ import java.util.List;
 public class JDBCDoctorManager implements DoctorManager {
     
     private JDBCManager manager;
-    private JPAUserManager userMan;
+   // private JPAUserManager userMan;
     private JDBCPatientManager patientMan;
     private JDBCFeedbackManager feedbackMan;
    

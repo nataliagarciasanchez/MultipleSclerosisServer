@@ -13,22 +13,15 @@ import javax.persistence.*;
  *
  * @author noeli
  */
-@Entity
-@Table (name= "bitalinos")
+
 public class Bitalino implements Serializable{
      private static final long serialVersionUID = 123456789L;
      
-    @Id
-    @GeneratedValue (generator = "bitalinos")
-    @TableGenerator(name = "bitalinos", table = "sqlite_sequence",  pkColumnName = "name", valueColumnName = "seq", pkColumnValue = "bitalinos")
     private Integer id;
     private Date date;
     private SignalType signal_type;
     private String file_path;
     private Float duration;
-    
-    @ManyToOne
-    @JoinColumn(name = "report_id", nullable = false)
     private Report report;
      
     public Bitalino(){

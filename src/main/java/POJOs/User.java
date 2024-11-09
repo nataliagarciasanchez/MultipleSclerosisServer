@@ -11,21 +11,13 @@ import javax.persistence.*;
  *
  * @author nataliagarciasanchez
  */
-@Entity
-@Table (name= "Users")
 public class User implements Serializable{
     
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue (generator = "Users")
-    @TableGenerator(name = "Users", table = "sqlite_sequence",  pkColumnName = "name", valueColumnName = "seq", pkColumnValue = "Users")
     private Integer id;
     private String email;//username
-    @Lob
     private String password;
-    @ManyToOne
-    @JoinColumn (name="role_id")
     private Role role;
 	
     public User() {

@@ -14,30 +14,14 @@ import javax.persistence.*;
  *
  * @author laura
  */
-@Entity
-@Table (name= "reports")
 public class Report implements Serializable{
     
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue (generator = "reports")
-    @TableGenerator(name = "reports", table = "sqlite_sequence",  pkColumnName = "name", valueColumnName = "seq", pkColumnValue = "reports")
     private Integer id;
     private Date date;
-    
-    @ManyToOne
-    @JoinColumn(name = "patient_id", nullable = false)
+
     private Patient patient;
-    
-    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
     private List<Bitalino> bitalinos;
-    
-    @ManyToMany
-    @JoinTable(
-        name = "report_symptoms",  // Nombre de la tabla intermedia
-        joinColumns = @JoinColumn(name = "report_id"),  // FK de Report
-        inverseJoinColumns = @JoinColumn(name = "symptom_id")  // FK de Symptom
-    )
     private List<Symptom> symptoms;
     
     public Report(){

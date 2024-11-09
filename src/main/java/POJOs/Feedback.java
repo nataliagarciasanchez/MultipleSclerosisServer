@@ -12,24 +12,18 @@ import javax.persistence.*;
  *
  * @author Andreoti
  */
-@Entity
-@Table(name = "Feedback")
+
 public class Feedback {
     
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Integer id;
     
     private String message;
     private Date date;
     
-    @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
     
-    @ManyToOne
-    @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
      
      public Feedback(){

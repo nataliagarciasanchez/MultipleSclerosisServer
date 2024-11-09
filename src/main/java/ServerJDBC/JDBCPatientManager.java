@@ -10,7 +10,6 @@ import POJOs.Patient;
 import POJOs.Report;
 import POJOs.User;
 import ServerInterfaces.PatientManager;
-import ServerJPA.JPAUserManager;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,7 +25,7 @@ public class JDBCPatientManager implements PatientManager{
     
     private JDBCManager manager;
     private JDBCDoctorManager doctorMan;
-    private JPAUserManager userMan;
+   // private JPAUserManager userMan;
     private JDBCReportManager reportMan;
     private JDBCFeedbackManager feedbackMan;
 

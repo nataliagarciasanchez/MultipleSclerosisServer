@@ -12,19 +12,15 @@ import javax.persistence.*;
  *
  * @author Andreoti
  */
-@Entity
-@Table (name= "administrators")
+
 public class Administrator implements Serializable{
     
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue (generator = "administrators")
-    @TableGenerator(name = "administrators", table = "sqlite_sequence",  pkColumnName = "name", valueColumnName = "seq", pkColumnValue = "administrators")
+    
     private String name;
     private Integer id;
     
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+
     private User user;
     
     public Administrator(){

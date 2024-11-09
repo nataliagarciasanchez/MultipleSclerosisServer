@@ -7,7 +7,6 @@ package ServerJDBC;
 import POJOs.Administrator;
 import POJOs.User;
 import ServerInterfaces.AdministratorManager;
-import ServerJPA.JPAUserManager;
 import java.util.List;
 
 import java.sql.PreparedStatement;
@@ -21,7 +20,7 @@ import java.util.ArrayList;
  */
 public class JDBCAdministratorManager implements AdministratorManager {
     private JDBCManager manager;
-    private JPAUserManager userMan;
+    //private JPAUserManager userMan;
 
    
 
