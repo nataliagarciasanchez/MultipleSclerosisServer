@@ -6,8 +6,6 @@ package ServerJDBC;
 
 import POJOs.*;
 import ServerInterfaces.UserManager;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -71,17 +69,6 @@ public class JDBCUserManager implements UserManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    private String hashPassword(String password) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("MD5"); // o cualquier otro algoritmo de hash
-        md.update(password.getBytes());
-        byte[] hashedPassword = md.digest();
-        StringBuilder sb = new StringBuilder();
-        for (byte b : hashedPassword) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
     }
 
     @Override
