@@ -28,19 +28,19 @@ public class Doctor implements Serializable{
     
     private List<Patient> patients;
     
-    private List<Feedback> feedback; 
+    private List<Feedback> feedbacks; 
     
     public Doctor(){
     super();
     }
 
-    public Doctor(Integer id, String name, Specialty specialty, User user, List<Patient> patients, List<Feedback> feedback) {
+    public Doctor(Integer id, String name, Specialty specialty, User user, List<Patient> patients, List<Feedback> feedbacks) {
         this.id = id;
         this.name = name;
         this.specialty = specialty;
         this.user = user;
         this.patients = patients;
-        this.feedback = feedback;
+        this.feedbacks = feedbacks;
     }
 
     public Doctor(String name, Integer id, Specialty specialty, User user) {
@@ -55,6 +55,8 @@ public class Doctor implements Serializable{
         this.id = id;
         this.specialty = specialty;
     }
+    
+    
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -92,16 +94,16 @@ public class Doctor implements Serializable{
         this.patients = patients;
     }
 
-    public void setFeedback(List<Feedback> feedback) {
-        this.feedback = feedback;
+    public void setFeedback(List<Feedback> feedbacks) {
+        this.feedbacks = feedbacks;
     }
 
     public List<Patient> getPatients() {
         return patients;
     }
 
-    public List<Feedback> getFeedback() {
-        return feedback;
+    public List<Feedback> getFeedbacks() {
+        return feedbacks;
     }
 
     public void setUser(User user) {
@@ -110,9 +112,10 @@ public class Doctor implements Serializable{
 
     @Override
     public String toString() {
-        return "Doctor{" + "name=" + name + ", id=" + id + ", specialty=" + specialty + ", user=" + user + '}';
+        return "Doctor{" + "id=" + id + ", name=" + name + ", specialty=" + specialty + ", user=" + user + ", patients=" + patients + ", feedbacks=" + feedbacks + '}';
     }
 
+    
     @Override
     public int hashCode() {
         int hash = 7;

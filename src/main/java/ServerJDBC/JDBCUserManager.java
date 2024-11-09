@@ -25,6 +25,7 @@ public class JDBCUserManager implements UserManager {
     private JDBCDoctorManager doctorMan;
     private JDBCPatientManager patientMan;
     private JDBCFeedbackManager feedbackMan;
+    private JDBCReportManager reportMan;
 
     public JDBCUserManager() {
         this.connect();
@@ -242,6 +243,13 @@ public class JDBCUserManager implements UserManager {
                 Integer doctorId = rs.getInt("doctor_id");
                 Doctor doctor = doctorMan.getDoctorById(doctorId);  // Método auxiliar para obtener el doctor
                 patient.setDoctor(doctor);
+                
+                List <Report> reports = reportMan.getReportsFromPatient(patient.getId());
+                patient.setReports(reports);
+                
+                List <Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfPatient(patient.getId());
+                patient.setFeedbacks(feedbacks);
+                
             }
         } catch (SQLException e) {
             e.printStackTrace();

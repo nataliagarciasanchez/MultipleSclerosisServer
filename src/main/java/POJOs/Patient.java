@@ -94,6 +94,14 @@ public class Patient implements Serializable{
     public String getNIF() {
         return NIF;
     }
+
+    public List<Feedback> getFeedbacks() {
+        return feedbacks;
+    }
+
+    public void setFeedbacks(List<Feedback> feedbacks) {
+        this.feedbacks = feedbacks;
+    }
     
     
     public User getUser(){
