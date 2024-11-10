@@ -182,7 +182,7 @@ public class JDBCUserManager implements UserManager {
     }
     
     @Override
-    public void assignRoleToUser(User user, Role role) {
+    public void assignRole2User(User user, Role role) {
         String sql = "UPDATE Users SET role_id = ? WHERE id = ?";
         try {
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
@@ -271,7 +271,7 @@ public class JDBCUserManager implements UserManager {
         return users;
     
     }
-    /*@Override
+    @Override
     public Patient getPatientByUser(User user) {
         Patient patient = null;
         String sql = "SELECT * FROM Patients WHERE user_id = ?";

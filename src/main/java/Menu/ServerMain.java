@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Menu;
+import IOCommunication.ServerPatientCommunication;
 import ServerInterfaces.UserManager;
 import ServerJDBC.JDBCManager;
 import javax.swing.*;
@@ -13,18 +14,15 @@ import javax.swing.*;
  */
 public class ServerMain extends JFrame{
     
-        private static JDBCManager jdbcManager; 
-        
-        
-        
-        
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
-		jdbcManager = new JDBCManager();
-                
-                //jdbcManager.disconnect();
-	}
+    private static JDBCManager jdbcManager;
+
+    public static void main(String[] args) {
+
+        jdbcManager = new JDBCManager();
+        ServerPatientCommunication serverPatientCom = new ServerPatientCommunication(9000);
+        serverPatientCom.startServer();
+        //jdbcManager.disconnect();
+    }
         
         
 }

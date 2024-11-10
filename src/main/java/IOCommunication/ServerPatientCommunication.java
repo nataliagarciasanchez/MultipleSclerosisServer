@@ -7,118 +7,208 @@ package IOCommunication;
 import POJOs.Patient;
 import POJOs.Role;
 import POJOs.User;
+import ServerJDBC.JDBCRoleManager;
 import ServerJDBC.JDBCUserManager;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author maipa
  */
-public class ServerPatientCommunication implements Runnable{
-
-    private Socket patientSocket;
+public class ServerPatientCommunication {
+    
+    private ServerSocket serverSocket;
+    private int port;
     private JDBCUserManager userManager;
+    private JDBCRoleManager roleManager;
 
-    public ServerPatientCommunication(Socket clientSocket) {
-        this.patientSocket = clientSocket;
-        this.userManager = new JDBCUserManager(); // Iniciar el gestor de usuarios
+    public ServerPatientCommunication(int port) {
+        this.userManager = new JDBCUserManager();
+        this.port=port;   
     }
+    
+    
+    /**
+     * startServer is called from the menu when the Server is executed
+     */
+    public void startServer(){
+         try {
+            
+            this.serverSocket = new ServerSocket(port);
+            System.out.println("Server started. ");
 
-    @Override
-    public void run() {
-        try (ObjectInputStream in = new ObjectInputStream(patientSocket.getInputStream());
-             ObjectOutputStream out = new ObjectOutputStream(patientSocket.getOutputStream())) {
-             
-            String action = (String) in.readObject(); // Leer acción del cliente
+            while (true) {
+                Socket patientSocket = serverSocket.accept();
+                System.out.println("New client connected.");
 
-            switch (action) {
-                case "register":
-                    handleRegister(in, out);
-                    break;
-                case "login":
-                    handleLogin(in, out);
-                    break;
-                case "changePassword":
-                    handleChangePassword(in, out);
-                    break;  
-                case "findPatient":
-                    handleFindPatient(in, out);
-                    break;
-                case "sendECGSignals":
-                    handleECGSignals(in,out);
-                    break;
-                case "sendEMGSignals":
-                    handleEMGSignals(in,out);
-                    break;
-                default:
-                    out.writeObject("Not recognized action");
-                    break;
+                //we start a new thread for each connection made
+                new Thread(new ServerPatientThread(patientSocket)).start();
             }
-
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            try {
-                patientSocket.close();
-            } catch (IOException e) {
+            releaseResourcesServer(serverSocket);
+        }
+    }
+    
+    
+    class ServerPatientThread implements Runnable {
+        
+        
+        private Socket patientSocket;
+        private ObjectInputStream in;
+        private ObjectOutputStream out;
+
+        public ServerPatientThread(Socket patientSocket) {
+            this.patientSocket = patientSocket;
+            
+        }
+        
+        @Override
+        public void run() {
+            try{
+                
+                in = new ObjectInputStream(patientSocket.getInputStream());
+                out = new ObjectOutputStream(patientSocket.getOutputStream());
+                
+                String action = (String) in.readObject(); // Leer acción del cliente
+
+                switch (action) {
+                    case "register":
+                        handleRegister();
+                        break;
+                    case "login":
+                        handleLogin();
+                        break;
+                    case "changePassword":
+                        handleChangePassword();
+                        break;
+                    case "findPatient":
+                        handleFindPatient();
+                        break;
+                    case "sendECGSignals":
+                        handleECGSignals();
+                        break;
+                    case "sendEMGSignals":
+                        handleEMGSignals();
+                        break;
+                    default:
+                        out.writeObject("Not recognized action");
+                        break;
+                }
+
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
+            } finally {
+                releaseResourcesPatient(in,patientSocket);
+
             }
-            userManager.disconnect(); // Desconectar del EntityManager
         }
-    }
 
-    private void handleRegister(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
-        User user = (User) in.readObject();
-        userManager.register(user);
-        userManager.assignRole(user, userManager.getRoleByName("patient"));
-        out.writeObject("Registered with success");
-    }
+        private void handleRegister(){
+            try {
+                User user = (User) in.readObject();
+                userManager.register(user);
+                userManager.assignRole2User(user, roleManager.getRoleByName("patient"));
+                out.writeObject("Registered with success");
+            } catch (IOException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 
-    private void handleLogin(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
-        String username = (String) in.readObject();
-        String password = (String) in.readObject();
-        User user = userManager.login(username,password);
-        out.writeObject((user != null) ? "Successful login" : "Incorrect introduced data");
-    }
+        private void handleLogin() {
+            try {
+                String username = (String) in.readObject();
+                String password = (String) in.readObject();
+                User user = userManager.login(username, password);
+                out.writeObject((user != null) ? "Successful login" : "Incorrect introduced data");
+                
+            } catch (IOException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 
-    private void handleChangePassword(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
-        String username = (String) in.readObject();
-        String oldPassword = (String) in.readObject();
-        String newPassword = (String) in.readObject();
+        private void handleChangePassword() {
+            try {
+                String username = (String) in.readObject();
+                String oldPassword = (String) in.readObject();
+                String newPassword = (String) in.readObject();
+                
+                User user = userManager.login(username, oldPassword);
+                if (user != null) {
+                    userManager.changePassword(user, newPassword);
+                    out.writeObject("Password changed correclty");
+                } else {
+                    out.writeObject("Incorrect username or password");
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 
-        User user = userManager.login(username, oldPassword);
-        if (user != null) {
-            userManager.changePassword(user, newPassword);
-            out.writeObject("Password changed correclty");
-        } else {
-            out.writeObject("Incorrect username or password");
+        private void handleFindPatient() {
+            try {
+                String username = (String) in.readObject();
+                String password = (String) in.readObject();
+                
+                User user = new User(username, password, new Role("patient"));
+                Patient patient = userManager.getPatientByUser(user);
+                
+                if (patient != null) {
+                    out.writeObject("Patient found: " + patient);
+                } else {
+                    out.writeObject("Patient not found or incorrect credentials");
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        private void handleECGSignals() {
+            //TODO recibe las señales del bitalino y en base a eso y a los symptoms debe crear un diagnóstico 
+        }
+
+        private void handleEMGSignals() {
+            //TODO recibe las señales del bitalino y en base a eso y a los symptoms debe crear un diagnóstico  
+        }
+
+        private static void releaseResourcesPatient(InputStream inputStream, Socket socket) {
+
+            try {
+                inputStream.close();
+            } catch (IOException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            try {
+                socket.close();
+            } catch (IOException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
-    
-     private void handleFindPatient(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
-        String username = (String) in.readObject();
-        String password = (String) in.readObject();
-        
-        User user=new User(username, password, new Role("patient"));
-        Patient patient = userManager.getPatientByUser(user);
-        
-        if (patient != null) {
-            out.writeObject("Patient found: " + patient);
-        } else {
-            out.writeObject("Patient not found or incorrect credentials");
+    private static void releaseResourcesServer(ServerSocket serverSocket) {
+        try {
+            serverSocket.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-     
-    private void handleECGSignals(ObjectInputStream in, ObjectOutputStream out){
-        //TODO recibe las señales del bitalino y en base a eso y a los symptoms debe crear un diagnóstico 
-    }
-    
-    private void handleEMGSignals(ObjectInputStream in, ObjectOutputStream out){
-        //TODO recibe las señales del bitalino y en base a eso y a los symptoms debe crear un diagnóstico  
     }
     
 }

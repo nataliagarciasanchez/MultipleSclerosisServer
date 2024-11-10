@@ -21,7 +21,11 @@ public class JDBCRoleManager implements RoleManager{
     
      private JDBCManager manager;
      private JDBCUserManager userMan;
-    
+
+    public JDBCRoleManager() {
+        
+    }
+
     
     @Override
     public void createRole(Role role) {
