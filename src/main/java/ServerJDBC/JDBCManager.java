@@ -190,7 +190,7 @@ public class JDBCManager {
             stmt.executeUpdate(create_table_feedbacks);
             //System.out.println("\nFeedbacks table created");
 
-            System.out.println("\nTables creataed!");
+            System.out.println("\nTables created!");
             
 			
 	}catch(SQLException e) {
