@@ -29,7 +29,7 @@ public class JDBCManager {
 
            // c = DriverManager.getConnection("jdbc:sqlite:./db/MultipleSclerosisServer.db");
             c.createStatement().execute("PRAGMA foreign_keys=ON");
-			
+            //c.setAutoCommit(true);// activamos autocommit
             System.out.print("Database Connection opened.");
             this.createTables();
 			
@@ -54,7 +54,7 @@ public class JDBCManager {
 		+ ");";
 		
             stmt.executeUpdate(create_table_roles);
-            System.out.println("\nRoles created");
+            //System.out.println("\nRoles created");
             
             String create_table_users = "CREATE TABLE IF NOT EXISTS Users ("
 		+ "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -65,7 +65,7 @@ public class JDBCManager {
 		+ ");";
 		
             stmt.executeUpdate(create_table_users);
-                        System.out.println("\nUsers created");
+            //System.out.println("\nUsers created");
                         
             String create_table_administrators = "CREATE TABLE IF NOT EXISTS Administrators ("
 		+ "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -75,7 +75,7 @@ public class JDBCManager {
 		+ ");";
 		
             stmt.executeUpdate(create_table_administrators);
-                        System.out.println("\nAdministrators created");
+            //System.out.println("\nAdministrators created");
 
             
             StringBuilder enumValuesSpecialty=new StringBuilder();
@@ -95,7 +95,7 @@ public class JDBCManager {
 		+ ");";
 		
             stmt.executeUpdate(create_table_doctors);
-                        System.out.println("\nDoctors created");
+            //System.out.println("\nDoctors created");
 
             
             //HAY QUE HACER ESTO PARA LOS ENUM 
@@ -122,7 +122,7 @@ public class JDBCManager {
                 + ");";
        
             stmt.executeUpdate(create_table_patients);
-            System.out.println("\nPatients created");
+            //System.out.println("\nPatients created");
             
             String create_table_reports="CREATE TABLE IF NOT EXISTS Reports ("
                 + "      id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -132,7 +132,7 @@ public class JDBCManager {
                 + ");";
        
             stmt.executeUpdate(create_table_reports);
-            System.out.println("\nReports table created");
+            //System.out.println("\nReports table created");
             
             String create_table_symptoms="CREATE TABLE IF NOT EXISTS Symptoms ("
                 + "      id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -140,7 +140,7 @@ public class JDBCManager {
                 + ");";
        
             stmt.executeUpdate(create_table_symptoms);
-                        System.out.println("\nSymptoms table created");
+            //System.out.println("\nSymptoms table created");
 
             
             String create_table_report_symptoms="CREATE TABLE IF NOT EXISTS Report_Symptoms ("
@@ -152,7 +152,7 @@ public class JDBCManager {
                 + ");";
        
             stmt.executeUpdate(create_table_report_symptoms);
-                                    System.out.println("\nR_S table created");
+            //System.out.println("\nR_S table created");
 
             
             StringBuilder bitValues=new StringBuilder();
@@ -174,7 +174,7 @@ public class JDBCManager {
                 + ");";
        
             stmt.executeUpdate(create_table_bitalinos);
-                                    System.out.println("\nBitalinos table created");
+            //System.out.println("\nBitalinos table created");
 
             
             String create_table_feedbacks = "CREATE TABLE IF NOT EXISTS Feedbacks ("
@@ -188,9 +188,9 @@ public class JDBCManager {
                 + ");";
             
             stmt.executeUpdate(create_table_feedbacks);
-                                    System.out.println("\nFeedbacks table created");
+            //System.out.println("\nFeedbacks table created");
 
-            System.out.println("\nALL TABLES ARE NOW CREATED!!");
+            System.out.println("\nTables creataed!");
             
 			
 	}catch(SQLException e) {
