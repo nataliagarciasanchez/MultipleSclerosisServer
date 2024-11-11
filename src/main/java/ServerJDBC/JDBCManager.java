@@ -141,6 +141,87 @@ public class JDBCManager {
        
             stmt.executeUpdate(create_table_symptoms);
             //System.out.println("\nSymptoms table created");
+             
+            String insert_symptom1 = "INSERT INTO Symptoms (id, name) VALUES (1,'Loss of balance')";
+		stmt.executeUpdate(insert_symptom1);
+            String insert_symptom2 = "INSERT INTO Symptoms (id, name) VALUES (2,'Muscle spasm')";
+		stmt.executeUpdate(insert_symptom2);
+            String insert_symptom3 = "INSERT INTO Symptoms (id, name) VALUES (3,'Numbness or abnormal sensation in any area')";
+		stmt.executeUpdate(insert_symptom3);
+            String insert_symptom4 = "INSERT INTO Symptoms (id, name) VALUES (4,'Trouble moving arms and legs')";
+		stmt.executeUpdate(insert_symptom4);
+            String insert_symptom5 = "INSERT INTO Symptoms (id, name) VALUES (5,'Difficulty walking')";
+		stmt.executeUpdate(insert_symptom5);
+            String insert_symptom6 = "INSERT INTO Symptoms (id, name) VALUES (6,'Problems with coordination and making small movements')";
+		stmt.executeUpdate(insert_symptom6);
+            String insert_symptom7 = "INSERT INTO Symptoms (id, name) VALUES (7,'Tremor in one or both arms or legs')";
+		stmt.executeUpdate(insert_symptom7);
+            String insert_symptom8 = "INSERT INTO Symptoms (id, name) VALUES (8,'Weakness in one or both arms or legs')";
+		stmt.executeUpdate(insert_symptom8);
+            String insert_symptom9 = "INSERT INTO Symptoms (id, name) VALUES (9,'Constipation and stool leakage')";
+		stmt.executeUpdate(insert_symptom9);
+            String insert_symptom10 = "INSERT INTO Symptoms (id, name) VALUES (10,'Weakness in one or both arms or legs')";
+		stmt.executeUpdate(insert_symptom10);
+            String insert_symptom11 = "INSERT INTO Symptoms (id, name) VALUES (11,'Weakness in one or both arms or legs')";
+		stmt.executeUpdate(insert_symptom11);
+            String insert_symptom12 = "INSERT INTO Symptoms (id, name) VALUES (12,'Weakness in one or both arms or legs')";
+		stmt.executeUpdate(insert_symptom12);
+            String insert_symptom13 = "INSERT INTO Symptoms (id, name) VALUES (13,'Weakness in one or both arms or legs')";
+		stmt.executeUpdate(insert_symptom13);
+            String insert_symptom14 = "INSERT INTO Symptoms (id, name) VALUES (14,'Weakness in one or both arms or legs')";
+		stmt.executeUpdate(insert_symptom14);
+            String insert_symptom15 = "INSERT INTO Symptoms (id, name) VALUES (15,'Weakness in one or both arms or legs')";
+		stmt.executeUpdate(insert_symptom15);
+                
+           
+     
+    /*    System.out.println("1. Loss of balance");
+        System.out.println("2. Muscle spasms");
+        System.out.println("3. Numbness or abnormal sensation in any area");
+        System.out.println("4. Trouble moving arms and legs");
+        System.out.println("5. Difficulty walking");
+        System.out.println("6. Problems with coordination and making small movements");
+        System.out.println("7. Tremor in one or both arms or legs");
+        System.out.println("8. Weakness in one or both arms or legs");
+        
+        
+        System.out.println("BLADDER AND BOWEL SYMPTOMS: ");
+        System.out.println("1. Constipation and stool leakage");
+        System.out.println("2. Difficulty starting to urinate");
+        System.out.println("3. Frequent need to urinate");
+        System.out.println("4. Intense urgency to urinate");
+        System.out.println("5. Urine leakage (incontinence)");
+        
+        System.out.println("EYE SYMPTOMS: ");
+        System.out.println("1. Double vision");
+        System.out.println("2. Eye discomfort");
+        System.out.println("3. Uncontrolled eye movements");
+        System.out.println("4. Vision loss (usually affects one eye at a time)");
+        
+        
+        System.out.println("NUMBNESS, TINGLING, OR PAIN: ");
+        System.out.println("1. Facial pain");
+        System.out.println("2. Painful muscle spasms");
+        System.out.println("3. Tingling, itching, or burning sensation in arms and legs");
+        
+        
+        System.out.println("OTHER BRAIN AND NEUROLOGICAL SYMPTOMS: ");
+        System.out.println("1. Reduced attention span, ability to discern, and memory loss");
+        System.out.println("2. Difficulty with reasoning and problem-solving");
+        System.out.println("3. Depression or feelings of sadness");
+        System.out.println("4. Dizziness or loss of balance");
+        System.out.println("5. Hearing loss");
+        
+        
+        System.out.println("SEXUAL SYMPTOMS: ");
+        System.out.println("1. Erectile problems");
+        System.out.println("2. Problems with vaginal lubrication");
+        
+        System.out.println("SPEECH AND SWALLOWING SYMPTOMS: ");
+        System.out.println("1. Poorly articulated or difficult-to-understand speech");
+        System.out.println("2. Trouble chewing and swallowing");
+
+    */
 
             
             String create_table_report_symptoms="CREATE TABLE IF NOT EXISTS Report_Symptoms ("
