@@ -74,42 +74,55 @@ public class ServerPatientCommunication {
         @Override
         public void run() {
             try{
-                
                 in = new ObjectInputStream(patientSocket.getInputStream());
                 out = new ObjectOutputStream(patientSocket.getOutputStream());
-                
-                String action = (String) in.readObject(); // Leer acción del cliente
-
-                switch (action) {
-                    case "register":
-                        handleRegister();
-                        break;
-                    case "login":
-                        handleLogin();
-                        break;
-                    case "changePassword":
-                        handleChangePassword();
-                        break;
-                    case "findPatient":
-                        handleFindPatient();
-                        break;
-                    case "sendECGSignals":
-                        handleECGSignals();
-                        break;
-                    case "sendEMGSignals":
-                        handleEMGSignals();
-                        break;
-                    default:
-                        out.writeObject("Not recognized action");
-                        break;
-                }
-
-            } catch (IOException | ClassNotFoundException e) {
+                handlePatientsRequest();
+            } catch (IOException e) {
                 e.printStackTrace();
             } finally {
                 releaseResourcesPatient(in,patientSocket);
 
             }
+        }
+        
+        private void handlePatientsRequest(){
+            
+            while(true){
+                try {
+                    String action = (String) in.readObject(); // Leer acción del cliente
+                    
+                    switch (action) {
+                        case "register":
+                            handleRegister();
+                            break;
+                        case "login":
+                            handleLogin();
+                            break;
+                        case "logout":
+                            handleLogout();
+                        case "changePassword":
+                            handleChangePassword();
+                            break;
+                        case "findPatient":
+                            handleFindPatient();
+                            break;
+                        case "sendECGSignals":
+                            handleECGSignals();
+                            break;
+                        case "sendEMGSignals":
+                            handleEMGSignals();
+                            break;
+                        default:
+                            out.writeObject("Not recognized action");
+                            break; 
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
         }
 
         private void handleRegister(){
@@ -135,6 +148,15 @@ public class ServerPatientCommunication {
             } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ClassNotFoundException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        private void handleLogout(){
+            try {
+                releaseResourcesPatient(in,patientSocket);
+                out.writeObject("Connection closed. ");
+            } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
