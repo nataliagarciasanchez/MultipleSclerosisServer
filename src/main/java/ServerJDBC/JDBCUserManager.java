@@ -30,6 +30,10 @@ public class JDBCUserManager implements UserManager {
         
     }
 
+    public JDBCUserManager(JDBCManager manager) {
+        this.manager = manager;
+    }
+
 
 
     @Override

@@ -5,6 +5,7 @@
 package ServerJDBC;
 
 import POJOs.Role;
+import java.sql.SQLException;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -19,23 +20,41 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class JDBCRoleManagerTest {
     
+    private static JDBCRoleManager roleManager;
+    private static JDBCManager jdbcManager;
+    
     public JDBCRoleManagerTest() {
     }
     
     @BeforeAll
     public static void setUpClass() {
+        // Inicializar JDBCManager y JDBCRoleManager antes de ejecutar las pruebas
+        jdbcManager = new JDBCManager();
+        jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
+        roleManager = new JDBCRoleManager(jdbcManager);
+        assertNotNull(roleManager);
+        
     }
     
     @AfterAll
     public static void tearDownClass() {
+        // Cerrar la conexión y limpiar los recursos después de cada prueba
+        if (jdbcManager != null) {
+            jdbcManager.disconnect();
+        }
+        
     }
     
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws SQLException {
+        // Limpiar la base de datos antes de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Roles");
     }
     
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws SQLException {
+        // Limpiar la base de datos después de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Roles");
     }
 
     /**
@@ -44,11 +63,18 @@ public class JDBCRoleManagerTest {
     @Test
     public void testCreateRole() {
         System.out.println("createRole");
-        Role role = null;
-        JDBCRoleManager instance = new JDBCRoleManager();
-        instance.createRole(role);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Role role = new Role("Admin");
+        System.out.println(role.toString());
+        
+        // Crear el rol
+        roleManager.createRole(role);
+
+        // Verificar si el rol fue creado correctamente
+        Role fetchedRole = roleManager.getRoleById(role.getId());
+        System.out.println(fetchedRole.toString());
+        assertNotNull(fetchedRole);
+        assertEquals("Admin", fetchedRole.getName());
+        
     }
 
     /**
@@ -56,12 +82,17 @@ public class JDBCRoleManagerTest {
      */
     @Test
     public void testRemoveRoleById() {
-        System.out.println("removeRoleById");
-        Integer id = null;
-        JDBCRoleManager instance = new JDBCRoleManager();
-        instance.removeRoleById(id);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("deleteRole");
+        Role role = new Role("TempRole");
+        roleManager.createRole(role);
+
+        List<Role> rolesBefore = roleManager.getListOfRoles();
+        assertEquals(1, rolesBefore.size());
+
+        roleManager.removeRoleById(role.getId());
+
+        List<Role> rolesAfter = roleManager.getListOfRoles();
+        assertEquals(0, rolesAfter.size());
     }
 
     /**
@@ -70,11 +101,18 @@ public class JDBCRoleManagerTest {
     @Test
     public void testUpdateRole() {
         System.out.println("updateRole");
-        Role r = null;
-        JDBCRoleManager instance = new JDBCRoleManager();
-        instance.updateRole(r);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        // Crear un rol para actualizar
+        Role role = new Role("User");
+        roleManager.createRole(role);
+
+        // Actualizar el nombre del rol
+        role.setName("UpdatedUser");
+        roleManager.updateRole(role);
+
+        // Verificar que el rol fue actualizado
+        Role updatedRole = roleManager.getRoleById(role.getId());
+        assertNotNull(updatedRole);
+        assertEquals("UpdatedUser", updatedRole.getName());
     }
 
     /**
@@ -83,12 +121,13 @@ public class JDBCRoleManagerTest {
     @Test
     public void testGetListOfRoles() {
         System.out.println("getListOfRoles");
-        JDBCRoleManager instance = new JDBCRoleManager();
-        List<Role> expResult = null;
-        List<Role> result = instance.getListOfRoles();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        roleManager.createRole(new Role("User"));
+        roleManager.createRole(new Role("Moderator"));
+
+        List<Role> roles = roleManager.getListOfRoles();
+        assertEquals(2, roles.size());
+        assertTrue(roles.stream().anyMatch(role -> role.getName().equals("User")));
+        assertTrue(roles.stream().anyMatch(role -> role.getName().equals("Moderator")));
     }
 
     /**
@@ -97,13 +136,17 @@ public class JDBCRoleManagerTest {
     @Test
     public void testGetRoleById() {
         System.out.println("getRoleById");
-        Integer id = null;
-        JDBCRoleManager instance = new JDBCRoleManager();
-        Role expResult = null;
-        Role result = instance.getRoleById(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        // Crear un rol
+        Role role = new Role("Admin");
+        roleManager.createRole(role);
+
+        // Obtener el rol por su ID
+        Role fetchedRole = roleManager.getRoleById(role.getId());
+
+        // Verificar que el rol obtenido sea el mismo
+        assertNotNull(fetchedRole);
+        assertEquals("Admin", fetchedRole.getName());
+        assertEquals(role.getId(), fetchedRole.getId());
     }
 
     /**
@@ -112,13 +155,16 @@ public class JDBCRoleManagerTest {
     @Test
     public void testGetRoleByName() {
         System.out.println("getRoleByName");
-        String roleName = "";
-        JDBCRoleManager instance = new JDBCRoleManager();
-        Role expResult = null;
-        Role result = instance.getRoleByName(roleName);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        // Crear un rol
+        Role role = new Role("Moderator");
+        roleManager.createRole(role);
+        System.out.println(role.toString());
+        // Obtener el rol por su nombre
+        Role fetchedRole = roleManager.getRoleByName("Moderator");
+        System.out.println(fetchedRole.toString());
+        // Verificar que el rol obtenido sea el correcto
+        assertNotNull(fetchedRole);
+        assertEquals("Moderator", fetchedRole.getName());
     }
     
 }

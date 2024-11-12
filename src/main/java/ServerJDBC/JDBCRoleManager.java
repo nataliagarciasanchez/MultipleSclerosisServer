@@ -26,6 +26,19 @@ public class JDBCRoleManager implements RoleManager{
         
     }
 
+    public JDBCRoleManager(JDBCManager manager) {
+        this.manager = manager;
+        this.userMan = new JDBCUserManager(manager);
+    }
+
+    public void setManager(JDBCManager manager) {
+        this.manager = manager;
+    }
+
+    public void setUserMan(JDBCUserManager userMan) {
+        this.userMan = userMan;
+    }
+
     
     @Override
     public void createRole(Role role) {
@@ -34,7 +47,12 @@ public class JDBCRoleManager implements RoleManager{
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1, role.getName());
             p.executeUpdate();
-            
+            // Obtener el ID generado por la base de datos
+            ResultSet generatedKeys = p.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int generatedId = generatedKeys.getInt(1);
+                role.setId(generatedId);  // Asigna el ID generado al objeto Role
+            }
             p.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -62,6 +80,7 @@ public class JDBCRoleManager implements RoleManager{
         try {
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1, r.getName());
+            p.setInt(2, r.getId());
             p.executeUpdate();
             p.close();
         } catch (SQLException e) {
@@ -75,7 +94,7 @@ public class JDBCRoleManager implements RoleManager{
         String sql = "SELECT * FROM Roles";
         try {
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
-            ResultSet rs = p.executeQuery(sql);
+            ResultSet rs = p.executeQuery();
             while (rs.next()) {
                 Integer id = rs.getInt("id");
                 String name = rs.getString("name");

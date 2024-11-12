@@ -20,28 +20,22 @@ public class JDBCManager {
 	
     public JDBCManager() {
 		
-	try {
-			
-            Class.forName("org.sqlite.JDBC");
-            // Asegurándote de que la base de datos se cree en la carpeta "db" dentro del proyecto
-            String dbPath = "db/MultipleSclerosisServer.db"; 
-            c = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
-
-           // c = DriverManager.getConnection("jdbc:sqlite:./db/MultipleSclerosisServer.db");
-            c.createStatement().execute("PRAGMA foreign_keys=ON");
-            //c.setAutoCommit(true);// activamos autocommit
-            System.out.print("Database Connection opened.");
-            this.createTables();
-			
-        }
-	catch(SQLException e) {
-            e.printStackTrace();
-	}
-            catch(ClassNotFoundException e) {
-		System.out.print("Libraries not loaded");
-	}
     }
-	
+    
+    public void connect(){
+        try {
+            if (c == null || c.isClosed()) {
+                Class.forName("org.sqlite.JDBC");
+                String dbPath = "db/MultipleSclerosisServer.db"; 
+                c = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+                c.createStatement().execute("PRAGMA foreign_keys=ON");
+                System.out.println("Database connection opened.");
+                this.createTables();
+            }			
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 	
     private void createTables() {
 	try {
@@ -142,57 +136,39 @@ public class JDBCManager {
             stmt.executeUpdate(create_table_symptoms);
             //System.out.println("\nSymptoms table created");
              
-            String insert_symptom1 = "INSERT INTO Symptoms (id, name) VALUES (1,'Loss of balance')";
-		stmt.executeUpdate(insert_symptom1);
-            String insert_symptom2 = "INSERT INTO Symptoms (id, name) VALUES (2,'Muscle spasm')";
-		stmt.executeUpdate(insert_symptom2);
-            String insert_symptom3 = "INSERT INTO Symptoms (id, name) VALUES (3,'Numbness or abnormal sensation in any area')";
-		stmt.executeUpdate(insert_symptom3);
-            String insert_symptom4 = "INSERT INTO Symptoms (id, name) VALUES (4,'Trouble moving arms and legs')";
-		stmt.executeUpdate(insert_symptom4);
-            String insert_symptom5 = "INSERT INTO Symptoms (id, name) VALUES (5,'Difficulty walking')";
-		stmt.executeUpdate(insert_symptom5);
-            String insert_symptom6 = "INSERT INTO Symptoms (id, name) VALUES (6,'Problems with coordination and making small movements')";
-		stmt.executeUpdate(insert_symptom6);
-            String insert_symptom7 = "INSERT INTO Symptoms (id, name) VALUES (7,'Tremor in one or both arms or legs')";
-		stmt.executeUpdate(insert_symptom7);
-            String insert_symptom8 = "INSERT INTO Symptoms (id, name) VALUES (8,'Weakness in one or both arms or legs')";
-		stmt.executeUpdate(insert_symptom8);
-            String insert_symptom9 = "INSERT INTO Symptoms (id, name) VALUES (9,'Constipation and stool leakage')";
-		stmt.executeUpdate(insert_symptom9);
-            String insert_symptom10 = "INSERT INTO Symptoms (id, name) VALUES (10,'Difficulty starting to urinate')";
-		stmt.executeUpdate(insert_symptom10);
-            String insert_symptom11 = "INSERT INTO Symptoms (id, name) VALUES (11,'Frequent need to urinate')";
-		stmt.executeUpdate(insert_symptom11);
-            String insert_symptom12 = "INSERT INTO Symptoms (id, name) VALUES (12,'Intense urgency to urinate')";
-		stmt.executeUpdate(insert_symptom12);
-            String insert_symptom13 = "INSERT INTO Symptoms (id, name) VALUES (13,'Urine leakage (incontinence)')";
-		stmt.executeUpdate(insert_symptom13);
-            String insert_symptom14 = "INSERT INTO Symptoms (id, name) VALUES (14,'Facial pain')";
-		stmt.executeUpdate(insert_symptom14);
-            String insert_symptom15 = "INSERT INTO Symptoms (id, name) VALUES (15,'Painful muscle spasms')";
-		stmt.executeUpdate(insert_symptom15);
-            String insert_symptom16 = "INSERT INTO Symptoms (id, name) VALUES (16,'Tingling, itching, or burning sensation in arms and legs')";
-		stmt.executeUpdate(insert_symptom16);
-            String insert_symptom17 = "INSERT INTO Symptoms (id, name) VALUES (17,'Reduced attention span, ability to discern, and memory loss')";
-		stmt.executeUpdate(insert_symptom17);
-            String insert_symptom18 = "INSERT INTO Symptoms (id, name) VALUES (18,'Difficulty with reasoning and problem-solving')";
-		stmt.executeUpdate(insert_symptom18);
-            String insert_symptom19 = "INSERT INTO Symptoms (id, name) VALUES (19,'Depression or feelings of sadness')";
-		stmt.executeUpdate(insert_symptom19);
-            String insert_symptom20 = "INSERT INTO Symptoms (id, name) VALUES (20,'Dizziness or loss of balance')";
-		stmt.executeUpdate(insert_symptom20);
-            String insert_symptom21 = "INSERT INTO Symptoms (id, name) VALUES (21,'Hearing loss')";
-		stmt.executeUpdate(insert_symptom21);
-            String insert_symptom22 = "INSERT INTO Symptoms (id, name) VALUES (22,'Erectile problems')";
-		stmt.executeUpdate(insert_symptom22);
-            String insert_symptom23 = "INSERT INTO Symptoms (id, name) VALUES (23,'Problems with vaginal lubrication')";
-		stmt.executeUpdate(insert_symptom23);
-            String insert_symptom24 = "INSERT INTO Symptoms (id, name) VALUES (24,'Poorly articulated or difficult-to-understand speech')";
-		stmt.executeUpdate(insert_symptom24);
-            String insert_symptom25 = "INSERT INTO Symptoms (id, name) VALUES (25,'Trouble chewing and swallowing')";
-		stmt.executeUpdate(insert_symptom25);
-            
+            String[] symptoms = {
+                "Loss of balance",
+                "Muscle spasm",
+                "Numbness or abnormal sensation in any area",
+                "Trouble moving arms and legs",
+                "Difficulty walking",
+                "Problems with coordination and making small movements",
+                "Tremor in one or both arms or legs",
+                "Weakness in one or both arms or legs",
+                "Constipation and stool leakage",
+                "Difficulty starting to urinate",
+                "Frequent need to urinate",
+                "Intense urgency to urinate",
+                "Urine leakage (incontinence)",
+                "Facial pain",
+                "Painful muscle spasms",
+                "Tingling, itching, or burning sensation in arms and legs",
+                "Reduced attention span, ability to discern, and memory loss",
+                "Difficulty with reasoning and problem-solving",
+                "Depression or feelings of sadness",
+                "Dizziness or loss of balance",
+                "Hearing loss",
+                "Erectile problems",
+                "Problems with vaginal lubrication",
+                "Poorly articulated or difficult-to-understand speech",
+                "Trouble chewing and swallowing"
+            };
+
+            for (String symptom : symptoms) {
+                String insertQuery = "INSERT INTO Symptoms (name) VALUES ('" + symptom + "')";
+                stmt.executeUpdate(insertQuery);
+            }
+
                 
 
             
@@ -255,14 +231,20 @@ public class JDBCManager {
 	
 	
     public Connection getConnection(){
-	return c; 
+        if (c == null) {
+            connect();
+        }
+        return c;
     }
 	
     public void disconnect() {
-	try {
-            c.close();
-	}catch(SQLException e) {
-            e.printStackTrace();
-	}	
+	if (c != null) {
+            try {
+                c.close();
+                System.out.println("Database connection closed.");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }	
+        }
     }
 }
