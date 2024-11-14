@@ -39,10 +39,7 @@ public class Report implements Serializable{
     public Report(Integer id, Date date) {
         this.id = id;
         this.date = date;
-        this.patient = patient;
-        this.bitalinos = bitalinos;
-        this.symptoms = symptoms;
-    }
+     }
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
