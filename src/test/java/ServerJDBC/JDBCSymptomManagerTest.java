@@ -5,6 +5,7 @@
 package ServerJDBC;
 
 import POJOs.Symptom;
+import java.sql.SQLException;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -19,23 +20,39 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class JDBCSymptomManagerTest {
     
+    private static JDBCSymptomManager symptomManager;
+    private static JDBCManager jdbcManager;
+    
     public JDBCSymptomManagerTest() {
+        
     }
     
     @BeforeAll
     public static void setUpClass() {
+        jdbcManager = new JDBCManager();
+        jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
+        symptomManager = new JDBCSymptomManager(jdbcManager);
+        assertNotNull(symptomManager);
     }
+    
     
     @AfterAll
     public static void tearDownClass() {
+         if (jdbcManager != null) {
+            jdbcManager.disconnect();
+         }
     }
     
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws SQLException {
+        // Limpiar la base de datos antes de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Symptom");
     }
     
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws SQLException {
+        // Limpiar la base de datos después de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Symptom");
     }
 
     /**
@@ -44,11 +61,13 @@ public class JDBCSymptomManagerTest {
     @Test
     public void testCreateSymptom() {
         System.out.println("createSymptom");
-        Symptom symptom = null;
-        JDBCSymptomManager instance = null;
-        instance.createSymptom(symptom);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Symptom sys = new Symptom ("TempSymptom");
+        System.out.println(sys.toString());
+        symptomManager.createSymptom(sys);
+        Symptom fetchedSymptom = symptomManager.getSymptomById(sys.getId());
+        System.out.println(fetchedSymptom.toString());
+        assertNotNull(fetchedSymptom);
+        assertEquals("TempSymptom", fetchedSymptom.getName());
     }
 
     /**
@@ -56,12 +75,13 @@ public class JDBCSymptomManagerTest {
      */
     @Test
     public void testRemoveSymptom() {
-        System.out.println("removeSymptom");
-        Integer id = null;
-        JDBCSymptomManager instance = null;
-        instance.removeSymptom(id);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("RemoveSymptomById");
+        Symptom sys = new Symptom ("TempSymptom");
+        symptomManager.createSymptom(sys);
+      //TENGO QUE VERLO  d.removeDoctorById(d.getId());
+        List<Symptom> SymptomAfter = symptomManager.getListOfSymptoms();
+        assertEquals(0, SymptomAfter.size());
+       
     }
 
     /**
