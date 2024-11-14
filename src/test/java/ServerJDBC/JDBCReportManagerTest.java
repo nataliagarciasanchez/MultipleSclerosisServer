@@ -6,6 +6,7 @@ package ServerJDBC;
 
 import POJOs.Report;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -20,23 +21,37 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class JDBCReportManagerTest {
     
+    private static JDBCReportManager reportManager;
+    private static JDBCManager jdbcManager;
+    
     public JDBCReportManagerTest() {
     }
     
     @BeforeAll
     public static void setUpClass() {
+        jdbcManager = new JDBCManager();
+        jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
+        reportManager = new JDBCReportManager(jdbcManager);
+        assertNotNull(reportManager);
     }
     
     @AfterAll
     public static void tearDownClass() {
+         if (jdbcManager != null) {
+            jdbcManager.disconnect();
+         }
     }
     
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws SQLException {
+        // Limpiar la base de datos antes de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Report");
     }
     
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws SQLException {
+        // Limpiar la base de datos después de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Report");
     }
 
     /**

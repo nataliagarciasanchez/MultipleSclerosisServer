@@ -62,6 +62,13 @@ public class Doctor implements Serializable{
         return serialVersionUID;
     }
 
+    //For the test
+    public Doctor(String name) {
+        this.name = name;
+    }
+
+   
+
     public String getName() {
         return name;
     }

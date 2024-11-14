@@ -7,6 +7,7 @@ package ServerJDBC;
 import POJOs.Patient;
 import POJOs.Role;
 import POJOs.User;
+import java.sql.SQLException;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -20,24 +21,37 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Andreoti
  */
 public class JDBCUserManagerTest {
+    private static JDBCUserManager userManager;
+    private static JDBCManager jdbcManager;
     
     public JDBCUserManagerTest() {
     }
     
     @BeforeAll
     public static void setUpClass() {
+        jdbcManager = new JDBCManager();
+        jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
+        userManager = new JDBCUserManager(jdbcManager);
+        assertNotNull(userManager);
     }
     
     @AfterAll
     public static void tearDownClass() {
+         if (jdbcManager != null) {
+            jdbcManager.disconnect();
+         }
     }
     
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws SQLException {
+        // Limpiar la base de datos antes de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM User");
     }
     
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws SQLException {
+        // Limpiar la base de datos después de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM User");
     }
 
     /**

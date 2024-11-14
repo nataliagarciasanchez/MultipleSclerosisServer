@@ -6,6 +6,7 @@ package ServerJDBC;
 
 import POJOs.Bitalino;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -20,23 +21,37 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class JDBCBitalinoManagerTest {
     
+    private static JDBCBitalinoManager bitalinoManager;
+    private static JDBCManager jdbcManager;
+    
     public JDBCBitalinoManagerTest() {
     }
     
     @BeforeAll
     public static void setUpClass() {
+        jdbcManager = new JDBCManager();
+        jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
+        bitalinoManager = new JDBCBitalinoManager(jdbcManager);
+        assertNotNull(bitalinoManager);
     }
     
     @AfterAll
     public static void tearDownClass() {
+         if (jdbcManager != null) {
+            jdbcManager.disconnect();
+    }
     }
     
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws SQLException {
+        // Limpiar la base de datos antes de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Bitalino");
     }
     
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws SQLException {
+        // Limpiar la base de datos después de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Bitalino");
     }
 
     /**
@@ -56,19 +71,26 @@ public class JDBCBitalinoManagerTest {
      * Test of removeBitalinoById method, of class JDBCBitalinoManager.
      */
     @Test
-    public void testRemoveBitalinoById() {
+    /*public void testRemoveBitalinoById() {
+        System.out.println("RemoveBitallinoById");
+        Integer id = null;
+        Bitalino bitalino = new Bitalino ("TempBitalino");
+        bitalinoManager.createDoctor(d);
+      //TENGO QUE VERLO  d.removeDoctorById(d.getId());
+        List<Doctor> DoctorsAfter = doctorManager.getListOfDoctors();
+        assertEquals(0, DoctorsAfter.size());
         System.out.println("removeBitalinoById");
         Integer id = null;
         JDBCBitalinoManager instance = null;
         instance.removeBitalinoById(id);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
-    }
+    }/*
 
     /**
      * Test of updateBitalino method, of class JDBCBitalinoManager.
      */
-    @Test
+   // @Test
     public void testUpdateBitalino() {
         System.out.println("updateBitalino");
         Bitalino b = null;

@@ -25,6 +25,9 @@ public class Symptom {
         this.id = id;
         this.name = name;
     }
+     public Symptom(String name) {
+       this.name = name;
+    }
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
