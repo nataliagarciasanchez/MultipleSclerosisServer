@@ -38,6 +38,12 @@ public class JDBCReportManager implements ReportManager{
             p.setDate(1,r.getDate());
             p.setInt(2,r.getPatient().getId());
             p.executeUpdate();
+            // Obtener el ID generado por la base de datos
+            ResultSet generatedKeys = p.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int generatedId = generatedKeys.getInt(1);
+                r.setId(generatedId);  // Asigna el ID generado al objeto Role
+            }
             p.close();
             
         }catch(SQLException e) {
