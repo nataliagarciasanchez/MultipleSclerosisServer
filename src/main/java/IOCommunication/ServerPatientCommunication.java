@@ -7,6 +7,7 @@ package IOCommunication;
 import POJOs.Patient;
 import POJOs.Role;
 import POJOs.User;
+import ServerJDBC.JDBCManager;
 import ServerJDBC.JDBCRoleManager;
 import ServerJDBC.JDBCUserManager;
 import java.io.IOException;
@@ -29,8 +30,9 @@ public class ServerPatientCommunication {
     private JDBCUserManager userManager;
     private JDBCRoleManager roleManager;
 
-    public ServerPatientCommunication(int port) {
-        this.userManager = new JDBCUserManager();
+    public ServerPatientCommunication(int port, JDBCManager jdbcManager) {
+        this.userManager = new JDBCUserManager(jdbcManager);
+        this.roleManager=new JDBCRoleManager(jdbcManager);
         this.port=port;   
     }
     

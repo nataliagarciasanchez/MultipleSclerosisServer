@@ -4,7 +4,6 @@
  */
 package POJOs;
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,7 +24,7 @@ public class Role implements Serializable{
     }
 
     public Role(String name) {
-        
+        super(); 
         this.name = name;
     }
     

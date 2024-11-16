@@ -20,7 +20,7 @@ public class ServerMain extends JFrame{
 
         jdbcManager = new JDBCManager();
         jdbcManager.connect();
-        ServerPatientCommunication serverPatientCom = new ServerPatientCommunication(9000);
+        ServerPatientCommunication serverPatientCom = new ServerPatientCommunication(9000, jdbcManager);
         serverPatientCom.startServer();
         jdbcManager.disconnect();
     }

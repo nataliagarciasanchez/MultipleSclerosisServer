@@ -27,7 +27,7 @@ public class JDBCUserManager implements UserManager {
     private JDBCRoleManager roleMan;
 
     public JDBCUserManager() {
-        
+       
     }
 
     public JDBCUserManager(JDBCManager manager) {

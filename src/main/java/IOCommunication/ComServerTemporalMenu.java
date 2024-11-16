@@ -4,13 +4,18 @@
  */
 package IOCommunication;
 
+import ServerJDBC.JDBCManager;
+
+
 /**
  *
  * @author maipa
  */
 public class ComServerTemporalMenu {
     public static void main(String[] args) {
-        ServerPatientCommunication com=new ServerPatientCommunication(9000);
+        JDBCManager jdbcManager = new JDBCManager();
+        jdbcManager.connect();
+        ServerPatientCommunication com=new ServerPatientCommunication(9000,jdbcManager);
         com.startServer();
     }
 }

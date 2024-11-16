@@ -8,6 +8,7 @@ import POJOs.Specialty;
 import POJOs.SignalType;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -31,6 +32,7 @@ public class JDBCManager {
                 c.createStatement().execute("PRAGMA foreign_keys=ON");
                 System.out.println("Database connection opened.");
                 this.createTables();
+                
             }			
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -49,6 +51,12 @@ public class JDBCManager {
 		
             stmt.executeUpdate(create_table_roles);
             //System.out.println("\nRoles created");
+            
+           
+            String insertRole1 = "INSERT INTO Roles (name) VALUES ('patient')";
+            String insertRole2 = "INSERT INTO Roles (name) VALUES ('doctor')";
+            stmt.executeUpdate(insertRole1);
+            stmt.executeUpdate(insertRole2);
             
             String create_table_users = "CREATE TABLE IF NOT EXISTS Users ("
 		+ "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -126,7 +134,7 @@ public class JDBCManager {
                 + ");";
        
             stmt.executeUpdate(create_table_reports);
-            //System.out.println("\nReports table created");
+            
             
             String create_table_symptoms="CREATE TABLE IF NOT EXISTS Symptoms ("
                 + "      id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -228,7 +236,6 @@ public class JDBCManager {
             }			
 	}
     }
-	
 	
     public Connection getConnection(){
         if (c == null) {
