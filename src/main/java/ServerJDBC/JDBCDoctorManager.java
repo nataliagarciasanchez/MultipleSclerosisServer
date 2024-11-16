@@ -41,6 +41,12 @@ public class JDBCDoctorManager implements DoctorManager {
             p.setString(2,d.getSpecialty().toString());
             p.setInt(1,d.getUser().getId());
             p.executeUpdate();
+            // Obtener el ID generado por la base de datos
+            ResultSet generatedKeys = p.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int generatedId = generatedKeys.getInt(1);
+                d.setId(generatedId);  // Asigna el ID generado al objeto Role
+            }
             p.close();
 
                 }catch(SQLException e) {

@@ -5,6 +5,7 @@
 package ServerJDBC;
 
 import POJOs.Doctor;
+import java.sql.SQLException;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -19,23 +20,37 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class JDBCDoctorManagerTest {
     
+    private static JDBCDoctorManager doctorManager;
+    private static JDBCManager jdbcManager;
+    
     public JDBCDoctorManagerTest() {
     }
     
     @BeforeAll
     public static void setUpClass() {
+        jdbcManager = new JDBCManager();
+        jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
+        doctorManager = new JDBCDoctorManager(jdbcManager);
+        assertNotNull(doctorManager);
     }
     
     @AfterAll
     public static void tearDownClass() {
+         if (jdbcManager != null) {
+            jdbcManager.disconnect();
+         }
     }
     
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws SQLException {
+        // Limpiar la base de datos antes de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Doctor");
     }
     
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws SQLException {
+        // Limpiar la base de datos después de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Doctor");
     }
 
     /**
@@ -44,11 +59,15 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testCreateDoctor() {
         System.out.println("createDoctor");
-        Doctor d = null;
-        JDBCDoctorManager instance = null;
-        instance.createDoctor(d);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Doctor d = new Doctor ("TempDoctor");
+        System.out.println(d.toString());
+        
+        doctorManager.createDoctor(d);
+        Doctor fetchedDoctor = doctorManager.getDoctorById(d.getId());
+        System.out.println(fetchedDoctor.toString());
+        assertNotNull(fetchedDoctor);
+        assertEquals("TempDoctor", fetchedDoctor.getName());
+        
     }
 
     /**
@@ -56,18 +75,31 @@ public class JDBCDoctorManagerTest {
      */
     @Test
     public void testRemoveDoctorById() {
-        System.out.println("removeDoctorById");
+        System.out.println("RemoveDoctorById");
         Integer id = null;
-        JDBCDoctorManager instance = null;
-        instance.removeDoctorById(id);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Doctor d = new Doctor ("TempDoctor");
+        doctorManager.createDoctor(d);
+      //TENGO QUE VERLO  d.removeDoctorById(d.getId());
+        List<Doctor> DoctorsAfter = doctorManager.getListOfDoctors();
+        assertEquals(0, DoctorsAfter.size());
+       
     }
+   /*  System.out.println("deleteRole");
+        Role role = new Role("TempRole");
+        roleManager.createRole(role);
 
+        List<Role> rolesBefore = roleManager.getListOfRoles();
+        assertEquals(1, rolesBefore.size());
+
+        roleManager.removeRoleById(role.getId());
+
+        List<Role> rolesAfter = roleManager.getListOfRoles();
+        assertEquals(0, rolesAfter.size());*/
+/*
     /**
      * Test of updateDoctor method, of class JDBCDoctorManager.
      */
-    @Test
+    
     public void testUpdateDoctor() {
         System.out.println("updateDoctor");
         Doctor d = null;

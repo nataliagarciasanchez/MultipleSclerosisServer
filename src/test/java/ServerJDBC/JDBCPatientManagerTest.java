@@ -5,6 +5,7 @@
 package ServerJDBC;
 
 import POJOs.Patient;
+import java.sql.SQLException;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -19,23 +20,37 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class JDBCPatientManagerTest {
     
+    private static JDBCPatientManager patientManager;
+    private static JDBCManager jdbcManager;
+    
     public JDBCPatientManagerTest() {
     }
     
     @BeforeAll
     public static void setUpClass() {
+        jdbcManager = new JDBCManager();
+        jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
+        patientManager = new JDBCPatientManager(jdbcManager);
+        assertNotNull(patientManager);
     }
     
     @AfterAll
     public static void tearDownClass() {
+         if (jdbcManager != null) {
+            jdbcManager.disconnect();
+         }
     }
     
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws SQLException {
+        // Limpiar la base de datos antes de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Patient");
     }
     
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws SQLException {
+        // Limpiar la base de datos después de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Patient");
     }
 
     /**
@@ -44,12 +59,14 @@ public class JDBCPatientManagerTest {
     @Test
     public void testCreatePatient() {
         System.out.println("createPatient");
-        Patient p = null;
-        JDBCPatientManager instance = null;
-        instance.createPatient(p);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+        Patient p = new Patient ("TempPatient");
+        System.out.println(p.toString());
+        patientManager.createPatient(p);
+        Patient fetchedPatient = patientManager.getPatientById(p.getId());
+        System.out.println(fetchedPatient.toString());
+        assertNotNull(fetchedPatient);
+        assertEquals("TempPatient", fetchedPatient.getName());
+        }
 
     /**
      * Test of removePatientById method, of class JDBCPatientManager.

@@ -41,6 +41,12 @@ public class JDBCBitalinoManager implements BitalinoManager{
             p.setInt(5,b.getReport().getId());
       
             p.executeUpdate();
+            // Obtener el ID generado por la base de datos
+            ResultSet generatedKeys = p.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int generatedId = generatedKeys.getInt(1);
+                b.setId(generatedId);  // Asigna el ID generado al objeto Role
+            }
             p.close();
 
                 }catch(SQLException e) {

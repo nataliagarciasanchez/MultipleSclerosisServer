@@ -6,6 +6,7 @@ package ServerJDBC;
 
 import POJOs.Feedback;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -20,19 +21,34 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class JDBCFeedbackManagerTest {
     
+    private static JDBCFeedbackManager feedbackManager;
+    private static JDBCManager jdbcManager;
+    
+    
     public JDBCFeedbackManagerTest() {
+        jdbcManager = new JDBCManager();
+        jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
+        feedbackManager = new JDBCFeedbackManager(jdbcManager);
+        assertNotNull(feedbackManager);
     }
     
     @BeforeAll
     public static void setUpClass() {
+         if (jdbcManager != null) {
+            jdbcManager.disconnect();
+         }
     }
     
     @AfterAll
-    public static void tearDownClass() {
+    public static void tearDownClass() throws SQLException {
+        // Limpiar la base de datos antes de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Feedback");
     }
     
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws SQLException {
+        // Limpiar la base de datos después de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Feedback");
     }
     
     @AfterEach

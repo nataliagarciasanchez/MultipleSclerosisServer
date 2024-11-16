@@ -42,6 +42,12 @@ public class JDBCFeedbackManager implements FeedbackManager {
             p.setInt(3,f.getDoctor().getId());
             p.setInt(4,f.getPatient().getId());
             p.executeUpdate();
+            // Obtener el ID generado por la base de datos
+            ResultSet generatedKeys = p.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int generatedId = generatedKeys.getInt(1);
+                f.setId(generatedId);  // Asigna el ID generado al objeto Role
+            }
             p.close();
             
         }catch(SQLException e) {

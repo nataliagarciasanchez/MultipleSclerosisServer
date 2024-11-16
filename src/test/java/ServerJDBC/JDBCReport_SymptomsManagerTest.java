@@ -5,6 +5,7 @@
 package ServerJDBC;
 
 import POJOs.Symptom;
+import java.sql.SQLException;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -19,23 +20,38 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class JDBCReport_SymptomsManagerTest {
     
+    private static JDBCReport_SymptomsManager Report_SymptomsManager;
+    private static JDBCManager jdbcManager;
+    
+    
     public JDBCReport_SymptomsManagerTest() {
     }
     
     @BeforeAll
     public static void setUpClass() {
+        jdbcManager = new JDBCManager();
+        jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
+        Report_SymptomsManager = new JDBCReport_SymptomsManager(jdbcManager);
+        assertNotNull(Report_SymptomsManager);
     }
     
     @AfterAll
     public static void tearDownClass() {
+         if (jdbcManager != null) {
+            jdbcManager.disconnect();
+         }
     }
     
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws SQLException {
+        // Limpiar la base de datos antes de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Repoert_Symptom");
     }
     
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws SQLException {
+        // Limpiar la base de datos después de cada prueba
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Report_Symptom");
     }
 
     /**

@@ -50,6 +50,12 @@ public class JDBCPatientManager implements PatientManager{
             ps.setInt(7,p.getDoctor().getId());
             ps.setInt(8,p.getUser().getId());
             ps.executeUpdate();
+            // Obtener el ID generado por la base de datos
+            ResultSet generatedKeys = ps.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int generatedId = generatedKeys.getInt(1);
+                p.setId(generatedId);  // Asigna el ID generado al objeto Role
+            }
             ps.close();
 
         }catch(SQLException e) {

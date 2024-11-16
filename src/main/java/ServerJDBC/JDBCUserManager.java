@@ -45,6 +45,12 @@ public class JDBCUserManager implements UserManager {
         p.setString(2, user.getPassword()); //  aplicar el hash aquí si es necesario
         p.setInt(3, user.getRole().getId());
         p.executeUpdate();
+        // Obtener el ID generado por la base de datos
+            ResultSet generatedKeys = p.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int generatedId = generatedKeys.getInt(1);
+                user.setId(generatedId);  // Asigna el ID generado al objeto Role
+            }
         p.close();
         
     } catch (SQLException e) {

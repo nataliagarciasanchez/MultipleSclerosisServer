@@ -37,7 +37,14 @@ public class JDBCAdministratorManager implements AdministratorManager {
             p.setString(1,a.getName());
             p.setInt(2,a.getUser().getId());
             p.executeUpdate();
+            // Obtener el ID generado por la base de datos
+            ResultSet generatedKeys = p.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int generatedId = generatedKeys.getInt(1);
+                a.setId(generatedId);  // Asigna el ID generado al objeto Role
+            }
             p.close();
+            
             
         }catch(SQLException e) {
             e.printStackTrace();

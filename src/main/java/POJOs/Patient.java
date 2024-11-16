@@ -49,6 +49,9 @@ public class Patient implements Serializable{
         this.feedbacks = feedbacks;
         this.user = user;
     }
+    public Patient (String name){
+    this.name=name;
+    }
     
     public Patient(Integer id, String name,String surname,String NIF, Date dob, Gender gender, String phone) {
         this.id = id;
