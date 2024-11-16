@@ -4,7 +4,7 @@
  */
 package POJOs;
 import java.io.Serializable;
-import javax.persistence.*;
+
 
 
 /**
@@ -13,7 +13,7 @@ import javax.persistence.*;
  */
 public class User implements Serializable{
     
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID =-7022171013544748813L;
 
     private Integer id;
     private String email;//username
