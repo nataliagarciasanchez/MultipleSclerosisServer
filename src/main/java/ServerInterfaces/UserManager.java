@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface UserManager {
     
-    public void register(User u);
+    public void registerUser(User user);
     public User login(String email, String password);
     public void removeUserById(Integer id);
     public void updateUser(User u);

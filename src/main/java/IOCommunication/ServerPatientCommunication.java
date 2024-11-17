@@ -8,6 +8,7 @@ import POJOs.Patient;
 import POJOs.Role;
 import POJOs.User;
 import ServerJDBC.JDBCManager;
+import ServerJDBC.JDBCPatientManager;
 import ServerJDBC.JDBCRoleManager;
 import ServerJDBC.JDBCUserManager;
 import java.io.IOException;
@@ -29,10 +30,12 @@ public class ServerPatientCommunication {
     private int port;
     private JDBCUserManager userManager;
     private JDBCRoleManager roleManager;
+    private JDBCPatientManager patientManager;
 
     public ServerPatientCommunication(int port, JDBCManager jdbcManager) {
-        this.userManager = new JDBCUserManager(jdbcManager);
         this.roleManager=new JDBCRoleManager(jdbcManager);
+        this.userManager = new JDBCUserManager(jdbcManager, roleManager);
+        this.patientManager=new JDBCPatientManager(jdbcManager);
         this.port=port;   
     }
     
@@ -130,9 +133,13 @@ public class ServerPatientCommunication {
         private void handleRegister(){
             try {
                 User user = (User) in.readObject();
-                userManager.register(user);
-                userManager.assignRole2User(user, roleManager.getRoleByName("patient"));
+                userManager.registerUser(user);
+                Role role=new Role(1,"patient");
+                userManager.assignRole2User(user, role);
+                Patient patient=(Patient) in.readObject();
+                patientManager.registerPatient(patient);
                 out.writeObject("Registered with success");
+                out.flush();
             } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ClassNotFoundException ex) {

@@ -102,7 +102,7 @@ public class JDBCDoctorManager implements DoctorManager {
                 
                 List <Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfDoctor(id);
                 
-                Doctor doctor = new Doctor(id, name, specialty, u, patients, feedbacks);
+                Doctor doctor = new Doctor(id, name, specialtyString, u, patients, feedbacks);
 	        doctors.add(doctor);
 	        }
 
@@ -139,7 +139,7 @@ public class JDBCDoctorManager implements DoctorManager {
                 
                 List <Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfDoctor(id);
                 
-                doctor = new Doctor(id, name, specialty, u, patients, feedbacks);
+                doctor = new Doctor(id, name, specialtyString, u, patients, feedbacks);
 	        }else {
 	            System.out.println("Doctor with ID " + id + " not found.");
 	        }
@@ -173,7 +173,7 @@ public class JDBCDoctorManager implements DoctorManager {
                 
                 List <Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfDoctor(d_id);
                 
-                doctors.add(new Doctor(d_id, name, specialty, u, patients, feedbacks));
+                doctors.add(new Doctor(d_id, name, specialtyString, u, patients, feedbacks));
 
             }
             if(doctors.isEmpty()){

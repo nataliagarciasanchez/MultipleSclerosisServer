@@ -9,5 +9,20 @@ package POJOs;
  * @author maipa
  */
 public enum Specialty {
-    NEUROLOGY
+    NEUROLOGY;
+    
+    public static String getEnumFromSQL(){
+        StringBuilder enumValuesSpecialty = new StringBuilder();
+        for (Specialty specialty : Specialty.values()) {
+            
+            enumValuesSpecialty.append("'").append(specialty.name()).append("'");
+   
+        }
+        if (enumValuesSpecialty.length() > 0) {
+            enumValuesSpecialty.setLength(enumValuesSpecialty.length() - 1); 
+        }
+
+        return enumValuesSpecialty.substring(0,enumValuesSpecialty.length()-1);
+    }
+    
 }

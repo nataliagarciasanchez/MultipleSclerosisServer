@@ -141,9 +141,9 @@ public class JDBCRoleManager implements RoleManager{
     public Role getRoleByName(String roleName) {
         Role role = null;
         try {
-            String sql = "SELECT * FROM Roles WHERE name LIKE ?";
+            String sql = "SELECT * FROM Roles WHERE name = ?";
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
-            p.setString(1, roleName);
+            p.setString(1, roleName.trim());
             ResultSet rs = p.executeQuery();
             if (rs.next()) {
                 Integer id = rs.getInt("id");

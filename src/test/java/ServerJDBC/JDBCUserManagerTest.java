@@ -62,7 +62,7 @@ public class JDBCUserManagerTest {
         System.out.println("register");
         User user = null;
         JDBCUserManager instance = new JDBCUserManager();
-        instance.register(user);
+        instance.registerUser(user);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

@@ -36,10 +36,10 @@ public class JDBCPatientManager implements PatientManager{
         }
 
     @Override
-    public void createPatient(Patient p) {
+    public void registerPatient(Patient p) {
         try{
             String sql = "INSERT INTO Patients (name, surname, NIF, dob, gender, phone, doctor_id, user_id)"
-                          +"values (?,?,?,?,?,?)";
+                          +"values (?,?,?,?,?,?,?,?)";
             PreparedStatement ps = manager.getConnection().prepareStatement(sql);
             ps.setString(1,p.getName());
             ps.setString(2,p.getSurname());

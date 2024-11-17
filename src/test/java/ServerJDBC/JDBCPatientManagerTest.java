@@ -61,7 +61,7 @@ public class JDBCPatientManagerTest {
         System.out.println("createPatient");
         Patient p = new Patient ("TempPatient");
         System.out.println(p.toString());
-        patientManager.createPatient(p);
+        patientManager.registerPatient(p);
         Patient fetchedPatient = patientManager.getPatientById(p.getId());
         System.out.println(fetchedPatient.toString());
         assertNotNull(fetchedPatient);

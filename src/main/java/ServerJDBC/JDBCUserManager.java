@@ -33,30 +33,35 @@ public class JDBCUserManager implements UserManager {
     public JDBCUserManager(JDBCManager manager) {
         this.manager = manager;
     }
-
+    
+    public JDBCUserManager(JDBCManager manager, JDBCRoleManager roleManager) {
+        this.manager = manager;
+        this.roleMan=roleManager;
+    }
 
 
     @Override
-    public void register(User user) {
+    public void registerUser(User user) {
         try {
-        String sql = "INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
-        PreparedStatement p = manager.getConnection().prepareStatement(sql);
-        p.setString(1, user.getEmail());
-        p.setString(2, user.getPassword()); //  aplicar el hash aquí si es necesario
-        p.setInt(3, user.getRole().getId());
-        p.executeUpdate();
-        // Obtener el ID generado por la base de datos
+            String sql = "INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
+            PreparedStatement p = manager.getConnection().prepareStatement(sql);
+            p.setString(1, user.getEmail());
+            p.setString(2, user.getPassword()); //  aplicar el hash aquí si es necesario
+            p.setInt(3, user.getRole().getId());
+            p.executeUpdate();
+            // Obtener el ID generado por la base de datos
             ResultSet generatedKeys = p.getGeneratedKeys();
             if (generatedKeys.next()) {
                 int generatedId = generatedKeys.getInt(1);
                 user.setId(generatedId);  // Asigna el ID generado al objeto Role
             }
-        p.close();
-        
-    } catch (SQLException e) {
-        e.printStackTrace();
+            p.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
-    }
+    
 
     @Override
     public User login(String email, String password) {
@@ -234,7 +239,6 @@ public class JDBCUserManager implements UserManager {
         return user;
     }
 
-
     @Override
     public void changePassword(User user, String new_password) {
         String sql = "UPDATE Users SET password = ? WHERE id = ?";
@@ -263,17 +267,20 @@ public class JDBCUserManager implements UserManager {
             p.setInt(1, role_id);
             ResultSet rs = p.executeQuery();
 
-            if (rs.next()) {
+            while (rs.next()) {
                 // Extracting the data from the ResultSet into variables
                 Integer id = rs.getInt("id");
-                String email = rs.getString("name");
+                String email = rs.getString("email");
                 String password = rs.getString("password");
                 Role r =  roleMan.getRoleById(role_id);
+                
                 User user = new User (id, email, password, r);
                 users.add(user);
-                p.close();
-                rs.close();
+                
             }
+            rs.close();
+            p.close();
+               
 
         } catch (SQLException e) {
             e.printStackTrace();

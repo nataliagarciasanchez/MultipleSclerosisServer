@@ -14,7 +14,7 @@ import java.util.List;
  * @author maipa
  */
 public interface PatientManager {
-    public void createPatient(Patient p);
+    public void registerPatient(Patient p);
     public void removePatientById(Integer id);
     public void updatePatient(Patient p);
     public List<Patient> getListOfPatients();

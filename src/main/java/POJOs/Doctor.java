@@ -4,13 +4,10 @@
  */
 package POJOs;
 
-import POJOs.Feedback;
 import POJOs.Patient;
-import POJOs.User;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.*;
 
 /**
  *
@@ -19,11 +16,11 @@ import javax.persistence.*;
 
 public class Doctor implements Serializable{
     
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID=1234567891011121314L;
     
     private Integer id;
     private String name;
-    private Specialty specialty;
+    private String specialty;
     private User user;
     
     private List<Patient> patients;
@@ -34,7 +31,7 @@ public class Doctor implements Serializable{
     super();
     }
 
-    public Doctor(Integer id, String name, Specialty specialty, User user, List<Patient> patients, List<Feedback> feedbacks) {
+    public Doctor(Integer id, String name, String specialty, User user, List<Patient> patients, List<Feedback> feedbacks) {
         this.id = id;
         this.name = name;
         this.specialty = specialty;
@@ -43,14 +40,14 @@ public class Doctor implements Serializable{
         this.feedbacks = feedbacks;
     }
 
-    public Doctor(String name, Integer id, Specialty specialty, User user) {
+    public Doctor(Integer id,String name, String specialty, User user) {
         this.name = name;
         this.id = id;
         this.specialty = specialty;
         this.user = user;
     }
     
-    public Doctor(String name, Integer id, Specialty specialty) {
+    public Doctor(String name, Integer id, String specialty) {
         this.name = name;
         this.id = id;
         this.specialty = specialty;
@@ -77,7 +74,7 @@ public class Doctor implements Serializable{
         return id;
     }
 
-    public Specialty getSpecialty() {
+    public String getSpecialty() {
         return specialty;
     }
 
@@ -93,7 +90,7 @@ public class Doctor implements Serializable{
         this.id = id;
     }
 
-    public void setSpecialty(Specialty specialty) {
+    public void setSpecialty(String specialty) {
         this.specialty = specialty;
     }
 
