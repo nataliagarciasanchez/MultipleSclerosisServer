@@ -28,7 +28,7 @@ public class JDBCRoleManager implements RoleManager{
 
     public JDBCRoleManager(JDBCManager manager) {
         this.manager = manager;
-        this.userMan = new JDBCUserManager(manager);
+        //this.userMan = new JDBCUserManager(manager);
     }
 
     public void setManager(JDBCManager manager) {
