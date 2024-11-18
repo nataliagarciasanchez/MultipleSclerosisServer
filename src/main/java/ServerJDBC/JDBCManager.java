@@ -62,7 +62,7 @@ public class JDBCManager {
                 + "    email TEXT NOT NULL, "
                 + "    password TEXT NOT NULL, "
 		+ "    role_id INTEGER NOT NULL,"
-		+ "    FOREIGN KEY (role_id) REFERENCES Roles(id)"
+		+ "    FOREIGN KEY (role_id) REFERENCES Roles(id) ON DELETE CASCADE"
 		+ ");";
 		
             stmt.executeUpdate(create_table_users);
@@ -72,7 +72,7 @@ public class JDBCManager {
 		+ "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "    name TEXT NOT NULL, "
 		+ "    user_id INTEGER NOT NULL,"
-		+ "    FOREIGN KEY (user_id) REFERENCES Users(id)"
+		+ "    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE"
 		+ ");";
 		
             stmt.executeUpdate(create_table_administrators);
@@ -87,7 +87,7 @@ public class JDBCManager {
                 + "    name TEXT NOT NULL, "
 		+ "    specialty TEXT NOT NULL,"
 		+ "    user_id INTEGER,"//TODO PONER NOT NULL-cambiado para la prueba de communication
-		+ "    FOREIGN KEY (user_id) REFERENCES Users(id)"
+		+ "    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE"
 		+ ");";
 		
             stmt.executeUpdate(create_table_doctors);
@@ -113,8 +113,8 @@ public class JDBCManager {
                 + "     phone TEXT NOT NULL, "
                 + "     doctor_id INTEGER NOT NULL, "
                 + "     user_id INTEGER NOT NULL,"
-                + "     FOREIGN KEY (doctor_id) REFERENCES Doctors(id),"
-                + "     FOREIGN KEY (user_id) REFERENCES Users(id)"
+                + "     FOREIGN KEY (doctor_id) REFERENCES Doctors(id) ON DELETE CASCADE,"
+                + "     FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE"
                 + ");";
        
             stmt.executeUpdate(create_table_patients);
@@ -124,7 +124,7 @@ public class JDBCManager {
                 + "      id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "     date DATE NOT NULL, "
                 + "     patient_id INTEGER NOT NULL, "
-                + "     FOREIGN KEY (patient_id) REFERENCES Patients(id)"
+                + "     FOREIGN KEY (patient_id) REFERENCES Patients(id) ON DELETE CASCADE"
                 + ");";
        
             stmt.executeUpdate(create_table_reports);
@@ -142,8 +142,8 @@ public class JDBCManager {
                 + "      symptom_id INTEGER NOT NULL,"
                 + "      report_id INTEGER NOT NULL,"
                 + "      PRIMARY KEY(report_id, symptom_id),"
-                + "     FOREIGN KEY (symptom_id) REFERENCES Symptoms(id),"
-                + "     FOREIGN KEY (report_id) REFERENCES Reports(id)"
+                + "     FOREIGN KEY (symptom_id) REFERENCES Symptoms(id) ON DELETE CASCADE,"
+                + "     FOREIGN KEY (report_id) REFERENCES Reports(id) ON DELETE CASCADE"
                 + ");";
        
             stmt.executeUpdate(create_table_report_symptoms);
@@ -165,7 +165,7 @@ public class JDBCManager {
                 + "     file_path TEXT NOT NULL, "
                 + "     duration FLOAT NOT NULL, "
                 + "     report_id INTEGER NOT NULL, "
-                + "     FOREIGN KEY (report_id) REFERENCES Reports(id)"
+                + "     FOREIGN KEY (report_id) REFERENCES Reports(id) ON DELETE CASCADE"
                 + ");";
        
             stmt.executeUpdate(create_table_bitalinos);
@@ -178,8 +178,8 @@ public class JDBCManager {
                 + "     message TEXT NOT NULL,"
                 + "     doctor_id INTEGER NOT NULL, "
                 + "     patient_id INTEGER NOT NULL, "
-                + "     FOREIGN KEY (doctor_id) REFERENCES Doctors(id),"
-                + "     FOREIGN KEY (patient_id) REFERENCES Patients(id)"
+                + "     FOREIGN KEY (doctor_id) REFERENCES Doctors(id) ON DELETE CASCADE,"
+                + "     FOREIGN KEY (patient_id) REFERENCES Patients(id) ON DELETE CASCADE"
                 + ");";
             
             stmt.executeUpdate(create_table_feedbacks);
@@ -322,12 +322,21 @@ public class JDBCManager {
         }
             
     }
-    public Connection getConnection(){
-        if (c == null) {
-            connect();
+    
+    
+    public Connection getConnection() {
+        try {
+            if (c == null || c.isClosed()) {
+                connect();
+            }
+            // Habilita las restricciones de claves foráneas
+            c.createStatement().execute("PRAGMA foreign_keys = ON;");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return c;
     }
+
 	
     public void disconnect() {
 	if (c != null) {

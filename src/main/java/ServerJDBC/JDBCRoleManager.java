@@ -139,6 +139,7 @@ public class JDBCRoleManager implements RoleManager{
     
     @Override
     public Role getRoleByName(String roleName) {
+        System.out.println("Fetching role by name: " + roleName);
         Role role = null;
         try {
             String sql = "SELECT * FROM Roles WHERE name = ?";
@@ -155,6 +156,7 @@ public class JDBCRoleManager implements RoleManager{
             p.close();
             rs.close();
         } catch (SQLException e) {
+            System.err.println("Error in getRoleByName: " + e.getMessage());
             e.printStackTrace();
         }
         return role;
