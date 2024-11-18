@@ -274,6 +274,12 @@ public class JDBCUserManager implements UserManager {
         }
     }
 
+    /**
+     * Checks a user's password for validation purposes.
+     * 
+     * @param u the {@link User} object containing email and password to validate.
+     * @return the {@link User} object if the password is valid, or null otherwise.
+     */
     @Override
     public User checkPassword(User u) {
         User user = null;
