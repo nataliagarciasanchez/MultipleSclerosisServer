@@ -306,6 +306,12 @@ public class JDBCUserManager implements UserManager {
         return user;
     }
 
+    /**
+     * Changes a user's password in the database.
+     * 
+     * @param user the {@link User} object.
+     * @param new_password the new password to set.
+     */
     @Override
     public void changePassword(User user, String new_password) {
         String sql = "UPDATE Users SET password = ? WHERE id = ?";
@@ -324,6 +330,12 @@ public class JDBCUserManager implements UserManager {
         }
     }
 
+    /**
+     * Retrieves a list of users by their role.
+     * 
+     * @param role_id the ID of the role.
+     * @return a {@link List} of {@link User} objects with the specified role.
+     */
     @Override
     public List<User> getUsersByRole(Integer role_id) {
         List<User> users = new ArrayList();
@@ -355,6 +367,12 @@ public class JDBCUserManager implements UserManager {
 
     }
 
+    /**
+     * Retrieves a patient associated with a specific user.
+     * 
+     * @param user the {@link User} object.
+     * @return the {@link Patient} object if found, or null otherwise.
+     */
     @Override
     public Patient getPatientByUser(User user) {
         Patient patient = null;
