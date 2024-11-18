@@ -21,5 +21,5 @@ public interface PatientManager {
     public Patient getPatientById(Integer id);
     public List<Patient> getPatientByName(String name);
     public List<Patient> getPatientsFromDoctor(Integer doctorId);
-       
+    public int assignDoctor2Patient();   
 }

@@ -29,7 +29,8 @@ public class JDBCDoctorManager implements DoctorManager {
 
     public JDBCDoctorManager(JDBCManager manager) {
         this.manager = manager;
-        }
+        this.userMan=new JDBCUserManager(manager);
+    }
 
     @Override
     public void createDoctor(Doctor d) {
@@ -114,8 +115,6 @@ public class JDBCDoctorManager implements DoctorManager {
 	    }
 	return doctors;
     }
-
-    
 
     @Override
     public Doctor getDoctorById(Integer id) {

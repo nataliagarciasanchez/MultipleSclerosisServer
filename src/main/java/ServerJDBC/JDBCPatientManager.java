@@ -14,8 +14,10 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
@@ -33,10 +35,15 @@ public class JDBCPatientManager implements PatientManager{
    
     public JDBCPatientManager(JDBCManager manager) {
         this.manager = manager;
-        }
+        this.doctorMan=new JDBCDoctorManager(manager);
+    }
 
     @Override
     public void registerPatient(Patient p) {
+        //before registering the patient, the server assigns a random doc
+        int doc_id=assignDoctor2Patient();
+        Doctor chosen_doc=doctorMan.getDoctorById(doc_id);
+        p.setDoctor(chosen_doc);
         try{
             String sql = "INSERT INTO Patients (name, surname, NIF, dob, gender, phone, doctor_id, user_id)"
                           +"values (?,?,?,?,?,?,?,?)";
@@ -47,7 +54,7 @@ public class JDBCPatientManager implements PatientManager{
             ps.setDate(4,p.getDob());
             ps.setString(5,p.getGender().toString());
             ps.setString(6,p.getPhone());
-            ps.setInt(7,p.getDoctor().getId());
+            ps.setInt(7,doc_id);
             ps.setInt(8,p.getUser().getId());
             ps.executeUpdate();
             // Obtener el ID generado por la base de datos
@@ -61,6 +68,15 @@ public class JDBCPatientManager implements PatientManager{
         }catch(SQLException e) {
             e.printStackTrace();
         }   
+    }
+    
+    @Override
+    
+    public int assignDoctor2Patient(){
+        int num_doctors=manager.countDoctors();
+        Random random = new Random();
+        int doctor_id=random.nextInt(num_doctors) + 1;
+        return doctor_id;
     }
     
     @Override

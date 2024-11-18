@@ -38,6 +38,7 @@ public class JDBCUserManager implements UserManager {
      *
      * @param manager the {@link JDBCManager} instance for database connection
      * management.
+     *
      */
     public JDBCUserManager(JDBCManager manager) {
         this.manager = manager;

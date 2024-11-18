@@ -323,6 +323,25 @@ public class JDBCManager {
             
     }
     
+    /**
+     * Method used to count the number of doctors that are currently registered in 
+     * the database to assign them to the patient
+     * @return number of doctors registered
+     */
+    public int countDoctors(){
+        int count = 0;
+        try {
+            Statement s1 = c.createStatement();
+            ResultSet rs = s1.executeQuery("SELECT COUNT(*) FROM Doctors");
+            rs.next();
+            count = rs.getInt(1);
+            rs.close();
+            s1.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(JDBCManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return count;
+    }
     
     public Connection getConnection() {
         try {

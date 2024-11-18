@@ -15,6 +15,7 @@ public class ComServerTemporalMenu {
     public static void main(String[] args) {
         JDBCManager jdbcManager = new JDBCManager();
         jdbcManager.connect();
+        
         ServerPatientCommunication com=new ServerPatientCommunication(9000,jdbcManager);
         com.startServer();
     }
