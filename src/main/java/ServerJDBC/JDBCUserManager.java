@@ -159,6 +159,11 @@ public class JDBCUserManager implements UserManager {
         }
     }
 
+    /**
+     * Retrieves a list of all users in the database.
+     * 
+     * @return a {@link List} of {@link User} objects.
+     */
     @Override
     public List<User> getListOfUsers() {
         List<User> users = new ArrayList<>();
@@ -189,6 +194,12 @@ public class JDBCUserManager implements UserManager {
         return users;
     }
 
+    /**
+     * Retrieves a user from the database by their ID.
+     * 
+     * @param id the ID of the user.
+     * @return the {@link User} object if found, or null otherwise.
+     */
     @Override
     public User getUserById(Integer id) {
         User user = null;
@@ -215,6 +226,12 @@ public class JDBCUserManager implements UserManager {
         return user;
     }
 
+    /**
+     * Retrieves a user from the database by their email.
+     * 
+     * @param email the email of the user.
+     * @return the {@link User} object if found, or null otherwise.
+     */
     @Override
     public User getUserByEmail(String email) {
         String sql = "SELECT * FROM Users WHERE email = ?";
@@ -234,6 +251,12 @@ public class JDBCUserManager implements UserManager {
         return null;
     }
 
+    /**
+     * Assigns a role to a user.
+     * 
+     * @param user the {@link User} object.
+     * @param role the {@link Role} object to assign.
+     */
     @Override
     public void assignRole2User(User user, Role role) {
         String sql = "UPDATE Users SET role_id = ? WHERE id = ?";
