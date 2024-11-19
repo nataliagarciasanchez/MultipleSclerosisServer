@@ -31,7 +31,15 @@ public class JDBCPatientManagerTest {
         jdbcManager = new JDBCManager();
         jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
         patientManager = new JDBCPatientManager(jdbcManager);
+        try {
+            // Desactiva auto-commit para manejar transacciones manualmente
+            jdbcManager.getConnection().setAutoCommit(false);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            fail("No se pudo configurar la conexión para transacciones.");
+        }
         assertNotNull(patientManager);
+        
     }
     
     @AfterAll
@@ -43,14 +51,16 @@ public class JDBCPatientManagerTest {
     
     @BeforeEach
     public void setUp() throws SQLException {
-        // Limpiar la base de datos antes de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Patient");
+         // Limpiar la base de datos antes de cada prueba
+        jdbcManager.clearAllTables();
     }
     
     @AfterEach
     public void tearDown() throws SQLException {
-        // Limpiar la base de datos después de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Patient");
+        if (jdbcManager != null) {
+        // Deshace todos los cambios realizados durante la prueba
+        jdbcManager.getConnection().rollback();
+    }
     }
 
     /**
