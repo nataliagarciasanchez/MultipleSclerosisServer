@@ -25,7 +25,7 @@ public interface UserManager {
     public User getUserByEmail(String email); // not a list because it must be unique
          
     public List <User> getUsersByRole(Integer role_id);
-    public Patient getPatientByUser(User u); 
+    //public Patient getPatientByUser(User u); 
     //public Doctor getDoctorByUser(User u);
     
     public void assignRole2User(User user, Role role); // se hace en la tabla User

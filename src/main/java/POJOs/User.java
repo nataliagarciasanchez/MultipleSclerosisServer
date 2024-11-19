@@ -23,11 +23,18 @@ public class User implements Serializable{
     public User() {
 	super();
     }
+    
     public User(Integer id, String email, String password, Role role) {
 	this.id = id;
 	this.email = email;
 	this.password = password;
 	this.role = role;
+    }
+    public User(Integer id, String email, String password) {
+	this.id = id;
+	this.email = email;
+	this.password = password;
+	this.role = null;
     }
     public User(String email) {
 	this.email = email;

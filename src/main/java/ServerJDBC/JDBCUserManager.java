@@ -96,7 +96,7 @@ public class JDBCUserManager implements UserManager {
     @Override
     public User login(String email, String password) {
         User user = null;  // Inicializamos user antes del bloque try
-        String sql = "SELECT * FROM Users WHERE email LIKE ? AND password LIKE ?";
+        String sql = "SELECT * FROM Users WHERE email = ? AND password = ?"; // mejor = en vez de LIKE, para buscar solo coincidencias exactas
         try {
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1, email);
@@ -105,11 +105,11 @@ public class JDBCUserManager implements UserManager {
 
             if (rs.next()) {
                 Integer id = rs.getInt("id");
-                Integer role_id = rs.getInt("role_id");
-                Role role = roleMan.getRoleById(role_id);
+                //Integer role_id = rs.getInt("role_id");
+                //Role role = roleMan.getRoleById(role_id);
 
                 // Creamos el objeto User
-                user = new User(id, email, password, role);
+                user = new User(id, email, password);
             }
             rs.close();
             p.close();
@@ -180,10 +180,10 @@ public class JDBCUserManager implements UserManager {
                 int id = rs.getInt("id");
                 String email = rs.getString("email");
                 String password = rs.getString("password");
-                Role role = roleMan.getRoleById(rs.getInt("role_id"));
+                //Role role = roleMan.getRoleById(rs.getInt("role_id"));
 
                 // Creamos el objeto User usando las variables leídas
-                User user = new User(id, email, password, role);
+                User user = new User(id, email, password);
 
                 users.add(user);
             }
@@ -215,9 +215,9 @@ public class JDBCUserManager implements UserManager {
             if (rs.next()) {
                 String email = rs.getString("email");
                 String password = rs.getString("password");
-                Role role = roleMan.getRoleById(rs.getInt("role_id"));
+                //Role role = roleMan.getRoleById(rs.getInt("role_id"));
 
-                user = new User(id, email, password, role);
+                user = new User(id, email, password);
             }
             rs.close();
             p.close();
@@ -236,21 +236,24 @@ public class JDBCUserManager implements UserManager {
      */
     @Override
     public User getUserByEmail(String email) {
+        User user = null;
         String sql = "SELECT * FROM Users WHERE email = ?";
         try {
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1, email);
             ResultSet rs = p.executeQuery();
             if (rs.next()) {
-                Role role = roleMan.getRoleById(rs.getInt("role_id"));
-                return new User(rs.getString("email"), rs.getString("password"), role);
+                Integer id = rs.getInt("id");
+                String password = rs.getString("password");
+                //Role role = roleMan.getRoleById(rs.getInt("role_id"));
+                user = new User(id, email, password);
             }
             rs.close();
             p.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return user;
     }
 
     /**
@@ -296,8 +299,8 @@ public class JDBCUserManager implements UserManager {
                 Integer id = rs.getInt("id");
                 String email = rs.getString("email");
                 String password = rs.getString("password");
-                Role role = roleMan.getRoleById(rs.getInt("role_id"));
-                user = new User(id, email, password, role);
+                //Role role = roleMan.getRoleById(rs.getInt("role_id"));
+                user = new User(id, email, password);
             }
 
             rs.close();
@@ -353,9 +356,9 @@ public class JDBCUserManager implements UserManager {
                 Integer id = rs.getInt("id");
                 String email = rs.getString("email");
                 String password = rs.getString("password");
-                Role r = roleMan.getRoleById(role_id);
+                //Role r = roleMan.getRoleById(role_id);
 
-                User user = new User(id, email, password, r);
+                User user = new User(id, email, password);
                 users.add(user);
 
             }
@@ -375,8 +378,8 @@ public class JDBCUserManager implements UserManager {
      * @param user the {@link User} object.
      * @return the {@link Patient} object if found, or null otherwise.
      */
-    @Override
-    public Patient getPatientByUser(User user) {
+    /*@Override
+    public Patient getPatientByUser(User user) { // ESTE MÉTODO NO VA AQUÏ, ACCEDE A TABLA PATIENT POR TANTO TIENE QUE IR EN JDBCPatientManager
         Patient patient = null;
         String sql = "SELECT * FROM Patients WHERE user_id = ?";
 
@@ -413,12 +416,12 @@ public class JDBCUserManager implements UserManager {
             e.printStackTrace();
         }
         return patient;
-    }
+    }*/
 
 
-    /* private Doctor getDoctorById(int doctorId) {}*/
+    
  /*@Override
-    public Doctor getDoctorByUser(User user) {
+    public Doctor getDoctorByUser(User user) { // ESTE MÉTODO NO VA AQUÏ, ACCEDE A TABLA DOCTOR POR TANTO TIENE QUE IR EN JDBCDoctorManager
         Doctor doctor = null;
         String sql = "SELECT * FROM Doctors WHERE user_id = ?";
 
