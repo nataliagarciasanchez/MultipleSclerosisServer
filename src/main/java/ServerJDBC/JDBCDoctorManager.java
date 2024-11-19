@@ -30,6 +30,7 @@ public class JDBCDoctorManager implements DoctorManager {
     public JDBCDoctorManager(JDBCManager manager) {
         this.manager = manager;
         this.userMan=new JDBCUserManager(manager);
+        
     }
 
     @Override
@@ -185,6 +186,70 @@ public class JDBCDoctorManager implements DoctorManager {
 	}
 	return doctors;
     }
-
     
+    /**
+     * Retrieves a doctor associated to the specified user
+     * @param user
+     * @return 
+     */
+    @Override
+    public Doctor getDoctorByUser(User user) { // ESTE MÉTODO NO VA AQUÏ, ACCEDE A TABLA DOCTOR POR TANTO TIENE QUE IR EN JDBCDoctorManager
+        Doctor doctor = null;
+        String sql = "SELECT * FROM Doctors WHERE user_id = ?";
+
+        try {
+            PreparedStatement p = manager.getConnection().prepareStatement(sql);
+            p.setInt(1, user.getId());
+            ResultSet rs = p.executeQuery();
+
+            if (rs.next()) {
+                // Extracting the data from the ResultSet into variables
+                Integer id = rs.getInt("id");
+                String name = rs.getString("name");
+                String specialtyString = rs.getString("specialty");
+                Specialty specialty = Specialty.valueOf(specialtyString);
+
+                // Retrieve the list of patients associated with the doctor
+                List<Patient> patients = patientMan.getPatientsFromDoctor(id);
+
+                // Retrieve the list of feedback associated with the doctor
+                List<Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfDoctor(id);
+
+                // Using the constructor to create the Doctor object
+                doctor = new Doctor(id, name, specialtyString, user, patients, feedbacks);
+
+                p.close();
+                rs.close();
+            }else{
+            System.out.println("Doctor with user_id " + user.getId() + " not found.");
+        }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return doctor;
+    }
+    
+    
+    /**
+     * Method that returns a list of all the ids of the doctors registered to assign a random doc to a patient
+     * @return list of ids of doctors
+     */
+    @Override
+    public List<Integer> getDoctorIds() {
+        List<Integer> doctorIds = new ArrayList<>();
+        String query = "SELECT id FROM Doctors";
+
+        try (PreparedStatement pstmt = manager.getConnection().prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                doctorIds.add(rs.getInt("id"));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error while fetching doctor IDs: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return doctorIds;
+    }
 }

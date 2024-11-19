@@ -44,6 +44,8 @@ public class JDBCPatientManager implements PatientManager{
         int doc_id=assignDoctor2Patient();
         Doctor chosen_doc=doctorMan.getDoctorById(doc_id);
         p.setDoctor(chosen_doc);
+        
+        p.setDoctor(chosen_doc);
         try{
             String sql = "INSERT INTO Patients (name, surname, NIF, dob, gender, phone, doctor_id, user_id)"
                           +"values (?,?,?,?,?,?,?,?)";
@@ -73,10 +75,13 @@ public class JDBCPatientManager implements PatientManager{
     @Override
     
     public int assignDoctor2Patient(){
-        int num_doctors=manager.countDoctors();
+        List<Integer> docs_ids=doctorMan.getDoctorIds();
+        if (docs_ids == null || docs_ids.isEmpty()) {
+            throw new IllegalArgumentException("The list must not be null or empty.");
+        }
         Random random = new Random();
-        int doctor_id=random.nextInt(num_doctors) + 1;
-        return doctor_id;
+        int randomIndex = random.nextInt(docs_ids.size());
+        return docs_ids.get(randomIndex);
     }
     
     @Override
@@ -285,6 +290,51 @@ public class JDBCPatientManager implements PatientManager{
         return patients;
     }
 
+    /**
+     * Retrieves a patient associated with a specific user.
+     * 
+     * @param user 
+     * @return patient
+     */
+    @Override
+    public Patient getPatientByUser(User user) { 
+        Patient patient = null;
+        String sql = "SELECT * FROM Patients WHERE user_id = ?";
+
+        try {
+            PreparedStatement p = manager.getConnection().prepareStatement(sql);
+            p.setInt(1, user.getId());
+            ResultSet rs = p.executeQuery();
+
+            if (rs.next()) {
+                // Extracting the data from the ResultSet into variables
+                Integer id = rs.getInt("id");
+                String name = rs.getString("name");
+                String surname = rs.getString("surname");
+                String nif = rs.getString("NIF");
+                java.sql.Date dob = rs.getDate("dob");
+                Gender gender = Gender.valueOf(rs.getString("gender"));
+                String phone = rs.getString("phone");
+                Integer doctorId = rs.getInt("doctor_id");
+
+                // Using the constructor to create the Patient object
+                Doctor doctor = doctorMan.getDoctorById(doctorId);
+                List<Report> reports = reportMan.getReportsFromPatient(id);
+                List<Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfPatient(id);
+
+                patient = new Patient(id, name, surname, nif, dob, gender, phone, doctor, reports, feedbacks, user);
+
+                p.close();
+                rs.close();
+            } else {
+                System.out.println("Patient with user_id " + user.getId() + " not found.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return patient;
+    }
 
     
     

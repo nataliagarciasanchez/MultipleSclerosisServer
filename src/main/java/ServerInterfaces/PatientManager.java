@@ -6,6 +6,7 @@ package ServerInterfaces;
 
 
 import POJOs.Patient;
+import POJOs.User;
 //import POJOs.User;
 import java.util.List;
 
@@ -19,6 +20,7 @@ public interface PatientManager {
     public void updatePatient(Patient p);
     public List<Patient> getListOfPatients();
     public Patient getPatientById(Integer id);
+    public Patient getPatientByUser(User user);
     public List<Patient> getPatientByName(String name);
     public List<Patient> getPatientsFromDoctor(Integer doctorId);
     public int assignDoctor2Patient();   

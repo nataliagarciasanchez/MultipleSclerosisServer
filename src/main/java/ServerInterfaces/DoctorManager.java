@@ -5,6 +5,7 @@
 package ServerInterfaces;
 
 import POJOs.Doctor;
+import POJOs.User;
 import java.util.List;
 
 /**
@@ -18,5 +19,7 @@ public interface DoctorManager {
     public void updateDoctor(Doctor d);
     public List<Doctor> getListOfDoctors();
     public Doctor getDoctorById(Integer id);
-    public List<Doctor> getDoctorByName(String name);//es una lista porque puede haber doctores con el mismo nombre 
+    public Doctor getDoctorByUser(User user);
+    public List<Doctor> getDoctorByName(String name);//es una lista porque puede haber doctores con el mismo nombre
+    public List<Integer> getDoctorIds();
 }

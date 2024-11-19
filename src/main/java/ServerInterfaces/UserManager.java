@@ -29,7 +29,7 @@ public interface UserManager {
     //public Doctor getDoctorByUser(User u);
     
     public void assignRole2User(User user, Role role); // se hace en la tabla User
-    public User checkPassword(User u);
+    public User checkPassword(User username);
     public void changePassword(User u, String new_password);  
     
     

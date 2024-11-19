@@ -273,55 +273,71 @@ public class JDBCManager {
         
     }
     
-    public void insertDoctor(){
-        try {
-            Statement s1 = c.createStatement();
-            ResultSet rs = s1.executeQuery("SELECT COUNT(*) FROM Doctors");
-            rs.next();
-            int rowCount = rs.getInt(1);
-            rs.close();
-            s1.close();
-            
-            if (rowCount == 0) {
-                
-                String insertUserDoc1="INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
-                PreparedStatement p1 = c.prepareStatement(insertUserDoc1);
-                p1.setString(1, "doctor.garcia@multipleSclerosis.com");
-                p1.setString(2, "Password456");
-                p1.setInt(3, 2);
-                p1.executeUpdate();
-                p1.close();
-                
-                String insertUserDoc2="INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
-                PreparedStatement p2 = c.prepareStatement(insertUserDoc2);
-                p2.setString(1, "doctor.perales@multipleSclerosis.com");
-                p2.setString(2, "Password678");
-                p2.setInt(3, 2);
-                p2.executeUpdate();
-                p2.close();
+    public void insertDoctor() {
+    try {
+        Statement s1 = c.createStatement();
+        ResultSet rs = s1.executeQuery("SELECT COUNT(*) FROM Doctors");
+        rs.next();
+        int rowCount = rs.getInt(1);
+        rs.close();
+        s1.close();
 
-                Specialty specialty = Specialty.NEUROLOGY;
-                String insertDoc1 = "INSERT INTO Doctors (name, specialty, user_id) VALUES (?, ?, ?)";
-                PreparedStatement pstmt = c.prepareStatement(insertDoc1);
-                pstmt.setString(1, "DR.Garcia");
-                pstmt.setString(2, "NEUROLOGY");
-                pstmt.setInt(3, 1);
-                pstmt.executeUpdate();
-                pstmt.close();
+        if (rowCount == 0) {
+            // Inserción del primer usuario
+            String insertUserDoc1 = "INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
+            PreparedStatement p1 = c.prepareStatement(insertUserDoc1, Statement.RETURN_GENERATED_KEYS);
+            p1.setString(1, "doctor.garcia@multipleSclerosis.com");
+            p1.setString(2, "Password456");
+            p1.setInt(3, 2);
+            p1.executeUpdate();
 
-                String insertDoc2 = "INSERT INTO Doctors (name, specialty, user_id) VALUES (?, ?, ?)";
-                PreparedStatement pstmt2 = c.prepareStatement(insertDoc2);
-                pstmt2.setString(1, "DR.Perales");
-                pstmt2.setString(2, "NEUROLOGY");
-                pstmt2.setInt(3, 2);
-                pstmt2.executeUpdate();
-                pstmt2.close();
+            // Obtener el ID generado para el primer usuario
+            ResultSet generatedKeys1 = p1.getGeneratedKeys();
+            int userId1 = -1;
+            if (generatedKeys1.next()) {
+                userId1 = generatedKeys1.getInt(1);
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(JDBCManager.class.getName()).log(Level.SEVERE, null, ex);
+            p1.close();
+
+            // Inserción del segundo usuario
+            String insertUserDoc2 = "INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
+            PreparedStatement p2 = c.prepareStatement(insertUserDoc2, Statement.RETURN_GENERATED_KEYS);
+            p2.setString(1, "doctor.perales@multipleSclerosis.com");
+            p2.setString(2, "Password678");
+            p2.setInt(3, 2);
+            p2.executeUpdate();
+
+            // Obtener el ID generado para el segundo usuario
+            ResultSet generatedKeys2 = p2.getGeneratedKeys();
+            int userId2 = -1;
+            if (generatedKeys2.next()) {
+                userId2 = generatedKeys2.getInt(1);
+            }
+            p2.close();
+
+            // Inserción del primer doctor
+            String insertDoc1 = "INSERT INTO Doctors (name, specialty, user_id) VALUES (?, ?, ?)";
+            PreparedStatement pstmt = c.prepareStatement(insertDoc1);
+            pstmt.setString(1, "DR.Garcia");
+            pstmt.setString(2, "NEUROLOGY");
+            pstmt.setInt(3, userId1); // Usar el ID generado
+            pstmt.executeUpdate();
+            pstmt.close();
+
+            // Inserción del segundo doctor
+            String insertDoc2 = "INSERT INTO Doctors (name, specialty, user_id) VALUES (?, ?, ?)";
+            PreparedStatement pstmt2 = c.prepareStatement(insertDoc2);
+            pstmt2.setString(1, "DR.Perales");
+            pstmt2.setString(2, "NEUROLOGY");
+            pstmt2.setInt(3, userId2); // Usar el ID generado
+            pstmt2.executeUpdate();
+            pstmt2.close();
         }
-            
+    } catch (SQLException ex) {
+        Logger.getLogger(JDBCManager.class.getName()).log(Level.SEVERE, null, ex);
     }
+}
+
     
     /**
      * Method used to count the number of doctors that are currently registered in 

@@ -196,7 +196,7 @@ public class ServerPatientCommunication {
                 String password = (String) in.readObject();
                 
                 User user = new User(username, password, new Role("patient"));
-                Patient patient = userManager.getPatientByUser(user);
+                Patient patient = patientManager.getPatientByUser(user);
                 
                 if (patient != null) {
                     out.writeObject("Patient found: " + patient);
