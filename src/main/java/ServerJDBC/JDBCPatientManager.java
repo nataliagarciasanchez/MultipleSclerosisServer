@@ -29,15 +29,14 @@ public class JDBCPatientManager implements PatientManager{
    
     public JDBCPatientManager(JDBCManager manager) {
         this.manager = manager;
-        this.doctorMan=new JDBCDoctorManager(manager);
+        this.doctorMan = new JDBCDoctorManager(manager);
     }
 
     @Override
     public void registerPatient(Patient p, User user) {
         //before registering the patient, the server assigns a random doc
         int doc_id=assignDoctor2Patient();
-        //Doctor chosen_doc=doctorMan.getDoctorById(doc_id);
-        
+                
         try{
             String sql = "INSERT INTO Patients (name, surname, NIF, dob, gender, phone, doctor_id, user_id)"
                           +"values (?,?,?,?,?,?,?,?)";
@@ -65,7 +64,7 @@ public class JDBCPatientManager implements PatientManager{
     }
     
     @Override
-    public int assignDoctor2Patient(){
+    public int assignDoctor2Patient(){ // gets the list of ids from all doctors and randomly selects one id that will be assigned to teh patient
         List<Integer> docs_ids=doctorMan.getDoctorIds();
         if (docs_ids == null || docs_ids.isEmpty()) {
             throw new IllegalArgumentException("The list must not be null or empty.");
@@ -298,7 +297,6 @@ public class JDBCPatientManager implements PatientManager{
 
             if (rs.next()) {
                 // Extracting the data from the ResultSet into variables
-                
                 doctorId = rs.getInt("doctor_id");
                 
                 pre.close();
