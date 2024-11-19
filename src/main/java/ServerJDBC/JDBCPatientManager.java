@@ -3,18 +3,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package ServerJDBC;
-import POJOs.Doctor;
-import POJOs.Feedback;
 import POJOs.Gender;
 import POJOs.Patient;
-import POJOs.Report;
 import POJOs.User;
 import ServerInterfaces.PatientManager;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -27,9 +23,7 @@ public class JDBCPatientManager implements PatientManager{
     
     private JDBCManager manager;
     private JDBCDoctorManager doctorMan;
-    private JDBCUserManager userMan;
-    private JDBCReportManager reportMan;
-    private JDBCFeedbackManager feedbackMan;
+    
 
     
    
@@ -71,7 +65,6 @@ public class JDBCPatientManager implements PatientManager{
     }
     
     @Override
-    
     public int assignDoctor2Patient(){
         List<Integer> docs_ids=doctorMan.getDoctorIds();
         if (docs_ids == null || docs_ids.isEmpty()) {
