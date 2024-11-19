@@ -40,8 +40,9 @@ public class JDBCDoctorManager implements DoctorManager {
                           +"values (?,?,?)";
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1,d.getName());
-            p.setString(2,d.getSpecialty().toString());
-            p.setInt(1,d.getUser().getId());
+            //p.setString(2,d.getSpecialty().toString());
+            p.setString(2,d.getSpecialty());
+            p.setInt(3,d.getUser().getId());
             p.executeUpdate();
             // Obtener el ID generado por la base de datos
             ResultSet generatedKeys = p.getGeneratedKeys();
@@ -74,7 +75,8 @@ public class JDBCDoctorManager implements DoctorManager {
 	try {
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	        stmt.setString(1, d.getName());
-                stmt.setString(2,d.getSpecialty().toString());
+                //stmt.setString(2,d.getSpecialty().toString());
+                stmt.setString(2,d.getSpecialty());
 	        stmt.setInt(3, d.getId());
 
 	        stmt.executeUpdate();
@@ -95,16 +97,10 @@ public class JDBCDoctorManager implements DoctorManager {
 	        Integer id = rs.getInt("id");
 	        String name = rs.getString("name");
                 String specialtyString = rs.getString("specialty");
-                Specialty specialty = Specialty.valueOf(specialtyString);
+                Specialty specialty = Specialty.valueOf(specialtyString); // no borrar aunque no se use
+                               
                 
-                Integer user_id = rs.getInt("user_id");
-	        User u = userMan.getUserById(user_id);
-                
-                List <Patient> patients = patientMan.getPatientsFromDoctor(id);
-                
-                List <Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfDoctor(id);
-                
-                Doctor doctor = new Doctor(id, name, specialtyString, u, patients, feedbacks);
+                Doctor doctor = new Doctor(id, name, specialtyString);
 	        doctors.add(doctor);
 	        }
 
@@ -127,10 +123,10 @@ public class JDBCDoctorManager implements DoctorManager {
 	    ResultSet rs = stmt.executeQuery();
             
             if (rs.next()) {
-	        Integer d_id = rs.getInt("id");
+	        
 	        String name = rs.getString("name");
                 String specialtyString = rs.getString("specialty");
-                //Specialty specialty = Specialty.valueOf(specialtyString);
+                Specialty specialty = Specialty.valueOf(specialtyString); //no borrar aunque no se use
                   
                 doctor = new Doctor(id, name, specialtyString);
                 
@@ -158,16 +154,11 @@ public class JDBCDoctorManager implements DoctorManager {
                 Integer d_id = rs.getInt("id");
                 String n = rs.getString("name");
                 String specialtyString = rs.getString("specialty");
-                Specialty specialty = Specialty.valueOf(specialtyString);
+                Specialty specialty = Specialty.valueOf(specialtyString); // no borrar aunque no se use
                 
-                Integer user_id = rs.getInt("user_id");
-	        User u = userMan.getUserById(user_id);
                 
-                List <Patient> patients = patientMan.getPatientsFromDoctor(d_id);
-                
-                List <Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfDoctor(d_id);
-                
-                doctors.add(new Doctor(d_id, name, specialtyString, u, patients, feedbacks));
+                Doctor d = new Doctor(d_id, name, specialtyString);
+                doctors.add(d);
 
             }
             if(doctors.isEmpty()){
@@ -187,7 +178,7 @@ public class JDBCDoctorManager implements DoctorManager {
      * @return 
      */
     @Override
-    public Doctor getDoctorByUser(User user) { // ESTE MÉTODO NO VA AQUÏ, ACCEDE A TABLA DOCTOR POR TANTO TIENE QUE IR EN JDBCDoctorManager
+    public Doctor getDoctorByUser(User user) { 
         Doctor doctor = null;
         String sql = "SELECT * FROM Doctors WHERE user_id = ?";
 
@@ -201,16 +192,12 @@ public class JDBCDoctorManager implements DoctorManager {
                 Integer id = rs.getInt("id");
                 String name = rs.getString("name");
                 String specialtyString = rs.getString("specialty");
-                Specialty specialty = Specialty.valueOf(specialtyString);
+                Specialty specialty = Specialty.valueOf(specialtyString); // no borrar aunque no se use
 
-                // Retrieve the list of patients associated with the doctor
-                List<Patient> patients = patientMan.getPatientsFromDoctor(id);
-
-                // Retrieve the list of feedback associated with the doctor
-                List<Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfDoctor(id);
+                
 
                 // Using the constructor to create the Doctor object
-                doctor = new Doctor(id, name, specialtyString, user, patients, feedbacks);
+                doctor = new Doctor(id, name, specialtyString);
 
                 p.close();
                 rs.close();
