@@ -211,19 +211,6 @@ public class JDBCUserManagerTest {
         fail("The test case is a prototype.");
     }
 
-    /**
-     * Test of getPatientByUser method, of class JDBCUserManager.
-     */
-    @Test
-    public void testGetPatientByUser() {
-        System.out.println("getPatientByUser");
-        User user = null;
-        JDBCUserManager instance = new JDBCUserManager();
-        Patient expResult = null;
-        Patient result = instance.getPatientByUser(user);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+    
     
 }
