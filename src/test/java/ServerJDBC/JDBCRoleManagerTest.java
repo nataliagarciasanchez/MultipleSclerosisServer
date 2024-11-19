@@ -32,29 +32,45 @@ public class JDBCRoleManagerTest {
         jdbcManager = new JDBCManager();
         jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
         roleManager = new JDBCRoleManager(jdbcManager);
+        
+        try {
+            // Desactiva auto-commit para manejar transacciones manualmente
+            jdbcManager.getConnection().setAutoCommit(false);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            fail("No se pudo configurar la conexión para transacciones.");
+        }
+        
         assertNotNull(roleManager);
         
     }
     
     @AfterAll
     public static void tearDownClass() {
-        // Cerrar la conexión y limpiar los recursos después de cada prueba
         if (jdbcManager != null) {
+        try {
+            // Asegúrate de que la conexión esté cerrada correctamente
+            jdbcManager.getConnection().setAutoCommit(true); // Restaura auto-commit
             jdbcManager.disconnect();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+    }
         
     }
     
     @BeforeEach
     public void setUp() throws SQLException {
         // Limpiar la base de datos antes de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Roles");
+        jdbcManager.clearAllTables();
     }
     
     @AfterEach
     public void tearDown() throws SQLException {
-        // Limpiar la base de datos después de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Roles");
+        if (jdbcManager != null) {
+        // Deshace todos los cambios realizados durante la prueba
+        jdbcManager.getConnection().rollback();
+    }
     }
 
     /**
