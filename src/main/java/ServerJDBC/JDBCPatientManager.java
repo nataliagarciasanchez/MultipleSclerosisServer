@@ -136,17 +136,8 @@ public class JDBCPatientManager implements PatientManager{
                 Gender gender = Gender.valueOf(genderString);
                 String phone = rs.getString("phone");
                 
-                Integer doctor_id = rs.getInt("doctor_id");
-                Doctor d = doctorMan.getDoctorById(doctor_id);
-                
-                List <Report> reports = reportMan.getReportsFromPatient(p_id);
-                
-                List <Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfPatient(p_id);
-                
-                Integer user_id = rs.getInt("user_id");
-                User u = userMan.getUserById(user_id); 
-                                             
-                Patient patient = new Patient(p_id, name, surname, NIF, dob, gender, phone, d, reports, feedbacks, u);
+                                                            
+                Patient patient = new Patient(p_id, name, surname, NIF, dob, gender, phone);
 	        patients.add(patient);
 	        }
 
@@ -179,17 +170,8 @@ public class JDBCPatientManager implements PatientManager{
                 Gender gender = Gender.valueOf(genderString);
                 String phone = rs.getString("phone");
                                 	        
-                Integer doctor_id = rs.getInt("doctor_id");
-                Doctor d = doctorMan.getDoctorById(doctor_id);
-                
-                List <Report> reports = reportMan.getReportsFromPatient(id);
-                
-                List <Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfPatient(id);
-                
-                Integer user_id = rs.getInt("user_id");
-                User u = userMan.getUserById(user_id); 
-                                             
-                patient = new Patient(id, name, surname, NIF, dob, gender, phone, d, reports, feedbacks, u);
+                                                             
+                patient = new Patient(id, name, surname, NIF, dob, gender, phone);
             }else {
 	            System.out.println("Patient with ID " + id + " not found.");
 	        }
@@ -221,17 +203,8 @@ public class JDBCPatientManager implements PatientManager{
                 Gender gender = Gender.valueOf(genderString);
                 String phone = rs.getString("phone");
                 
-	        Integer doctor_id = rs.getInt("doctor_id");
-                Doctor d = doctorMan.getDoctorById(doctor_id);
-                
-                List <Report> reports = reportMan.getReportsFromPatient(p_id);
-                
-                List <Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfPatient(p_id);
-                
-                Integer user_id = rs.getInt("user_id");
-                User u = userMan.getUserById(user_id); 
-                                            
-                patients.add(new Patient(p_id, name, surname, NIF, dob, gender, phone, d, reports, feedbacks, u));  
+                Patient pat = new Patient(p_id, name, surname, NIF, dob, gender, phone);                          
+                patients.add(pat);  
 	    }
             if(patients.isEmpty()) {
 	            System.out.println("Patient with name " + name + " not found.");
@@ -264,17 +237,8 @@ public class JDBCPatientManager implements PatientManager{
                 Gender gender = Gender.valueOf(genderString);
                 String phone = rs.getString("phone");
 	        
-                Integer doctor_id = rs.getInt("doctor_id");
-                Doctor d = doctorMan.getDoctorById(doctor_id);
-                
-                List <Report> reports = reportMan.getReportsFromPatient(id);
-                
-                List <Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfPatient(id);
-                
-                Integer user_id = rs.getInt("user_id");
-                User u = userMan.getUserById(user_id); 
-                                            
-                patients.add(new Patient(id, n, surname, NIF, dob, gender, phone, d, reports, feedbacks, u));
+                Patient pat = new Patient(id, n, surname, NIF, dob, gender, phone);                          
+                patients.add(pat);  
 	    }
             if(patients.isEmpty()) {
 	            System.out.println("Doctor with ID " + doctorId + " has no patients.");
@@ -312,15 +276,10 @@ public class JDBCPatientManager implements PatientManager{
                 String nif = rs.getString("NIF");
                 java.sql.Date dob = rs.getDate("dob");
                 Gender gender = Gender.valueOf(rs.getString("gender"));
-                String phone = rs.getString("phone");
-                Integer doctorId = rs.getInt("doctor_id");
+                String phone = rs.getString("phone");            
+               
 
-                // Using the constructor to create the Patient object
-                Doctor doctor = doctorMan.getDoctorById(doctorId);
-                List<Report> reports = reportMan.getReportsFromPatient(id);
-                List<Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfPatient(id);
-
-                patient = new Patient(id, name, surname, nif, dob, gender, phone, doctor, reports, feedbacks, user);
+                patient = new Patient(id, name, surname, nif, dob, gender, phone);
 
                 p.close();
                 rs.close();
