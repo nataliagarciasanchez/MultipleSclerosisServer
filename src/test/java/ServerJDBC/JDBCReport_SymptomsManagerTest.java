@@ -32,26 +32,41 @@ public class JDBCReport_SymptomsManagerTest {
         jdbcManager = new JDBCManager();
         jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
         Report_SymptomsManager = new JDBCReport_SymptomsManager(jdbcManager);
+        try {
+            // Desactiva auto-commit para manejar transacciones manualmente
+            jdbcManager.getConnection().setAutoCommit(false);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            fail("No se pudo configurar la conexión para transacciones.");
+        }
         assertNotNull(Report_SymptomsManager);
     }
     
     @AfterAll
     public static void tearDownClass() {
-         if (jdbcManager != null) {
+          if (jdbcManager != null) {
+        try {
+            // Asegúrate de que la conexión esté cerrada correctamente
+            jdbcManager.getConnection().setAutoCommit(true); // Restaura auto-commit
             jdbcManager.disconnect();
-         }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     }
     
     @BeforeEach
     public void setUp() throws SQLException {
         // Limpiar la base de datos antes de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Repoert_Symptom");
+        jdbcManager.clearAllTables();
     }
     
     @AfterEach
     public void tearDown() throws SQLException {
-        // Limpiar la base de datos después de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Report_Symptom");
+        if (jdbcManager != null) {
+        // Deshace todos los cambios realizados durante la prueba
+        jdbcManager.getConnection().rollback();
+    }
     }
 
     /**

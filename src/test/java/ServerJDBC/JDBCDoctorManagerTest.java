@@ -45,21 +45,30 @@ public class JDBCDoctorManagerTest {
     @AfterAll
     public static void tearDownClass() {
          if (jdbcManager != null) {
+        try {
+            // Asegúrate de que la conexión esté cerrada correctamente
+            jdbcManager.getConnection().setAutoCommit(true); // Restaura auto-commit
             jdbcManager.disconnect();
-         }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     }
     
     @BeforeEach
     public void setUp() throws SQLException {
-        // Limpiar la base de datos antes de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Doctor");
+         // Limpiar la base de datos antes de cada prueba
+        jdbcManager.clearAllTables();
     }
     
     @AfterEach
     public void tearDown() throws SQLException {
-        // Limpiar la base de datos después de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Doctor");
+        if (jdbcManager != null) {
+        // Deshace todos los cambios realizados durante la prueba
+        jdbcManager.getConnection().rollback();
     }
+    }
+    
 
     /**
      * Test of createDoctor method, of class JDBCDoctorManager.

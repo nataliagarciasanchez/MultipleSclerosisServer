@@ -5,6 +5,7 @@
 package ServerJDBC;
 
 import POJOs.Bitalino;
+import POJOs.SignalType;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
@@ -32,39 +33,58 @@ public class JDBCBitalinoManagerTest {
         jdbcManager = new JDBCManager();
         jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
         bitalinoManager = new JDBCBitalinoManager(jdbcManager);
+        try {
+            // Desactiva auto-commit para manejar transacciones manualmente
+            jdbcManager.getConnection().setAutoCommit(false);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            fail("No se pudo configurar la conexión para transacciones.");
+        }
         assertNotNull(bitalinoManager);
     }
     
     @AfterAll
     public static void tearDownClass() {
-         if (jdbcManager != null) {
+        if (jdbcManager != null) {
+        try {
+            // Asegúrate de que la conexión esté cerrada correctamente
+            jdbcManager.getConnection().setAutoCommit(true); // Restaura auto-commit
             jdbcManager.disconnect();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
     }
     }
     
     @BeforeEach
     public void setUp() throws SQLException {
         // Limpiar la base de datos antes de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Bitalino");
+        jdbcManager.clearAllTables();
     }
     
     @AfterEach
     public void tearDown() throws SQLException {
-        // Limpiar la base de datos después de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Bitalino");
+        if (jdbcManager != null) {
+        // Deshace todos los cambios realizados durante la prueba
+        jdbcManager.getConnection().rollback();
     }
-
+    }
+    
     /**
      * Test of createBitalino method, of class JDBCBitalinoManager.
      */
     @Test
     public void testCreateBitalino() {
         System.out.println("createBitalino");
-        Bitalino b = null;
-        JDBCBitalinoManager instance = null;
-        instance.createBitalino(b);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        //I dont know if i need one by default with establised parameters
+       Bitalino b = new Bitalino (SignalType.EMG);
+        System.out.println(b.toString());
+        bitalinoManager.createBitalino(b);
+        // Verificar si fue creado correctamente
+        Bitalino fetchedBitalino = bitalinoManager.getBitalinoById(b.getId());
+        assertNotNull(fetchedBitalino);
+        assertEquals("EMG", fetchedBitalino.getSignal_type());
     }
 
     /**

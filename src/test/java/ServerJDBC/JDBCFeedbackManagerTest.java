@@ -26,33 +26,48 @@ public class JDBCFeedbackManagerTest {
     
     
     public JDBCFeedbackManagerTest() {
-        jdbcManager = new JDBCManager();
-        jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
-        feedbackManager = new JDBCFeedbackManager(jdbcManager);
-        assertNotNull(feedbackManager);
     }
     
     @BeforeAll
     public static void setUpClass() {
-         if (jdbcManager != null) {
-            jdbcManager.disconnect();
-         }
+        jdbcManager = new JDBCManager();
+        jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
+        feedbackManager = new JDBCFeedbackManager(jdbcManager);
+        try {
+            // Desactiva auto-commit para manejar transacciones manualmente
+            jdbcManager.getConnection().setAutoCommit(false);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            fail("No se pudo configurar la conexión para transacciones.");
+        }
+        assertNotNull(feedbackManager);
     }
     
     @AfterAll
     public static void tearDownClass() throws SQLException {
-        // Limpiar la base de datos antes de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Feedback");
+         if (jdbcManager != null) {
+        try {
+            // Asegúrate de que la conexión esté cerrada correctamente
+            jdbcManager.getConnection().setAutoCommit(true); // Restaura auto-commit
+            jdbcManager.disconnect();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     }
     
     @BeforeEach
     public void setUp() throws SQLException {
-        // Limpiar la base de datos después de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Feedback");
+         // Limpiar la base de datos antes de cada prueba
+        jdbcManager.clearAllTables();
     }
     
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws SQLException{
+           if (jdbcManager != null) {
+        // Deshace todos los cambios realizados durante la prueba
+        jdbcManager.getConnection().rollback();
+    }
     }
 
     /**
@@ -61,11 +76,13 @@ public class JDBCFeedbackManagerTest {
     @Test
     public void testCreateFeedback() {
         System.out.println("createFeedback");
-        Feedback f = null;
-        JDBCFeedbackManager instance = null;
-        instance.createFeedback(f);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Feedback f = new Feedback ("Your diagnosis was correct");
+        System.out.println(f.toString());
+        feedbackManager.createFeedback(f);
+        Feedback fetchedFeedback = feedbackManager.getFeedBackById(f.getId());
+        System.out.println(fetchedFeedback.toString());
+        assertNotNull(fetchedFeedback);
+        assertEquals("Your diagnosis was correct", fetchedFeedback.getMessage());
     }
 
     /**

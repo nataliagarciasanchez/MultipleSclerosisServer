@@ -43,6 +43,10 @@ public class Feedback {
         this.doctor = doctor;
         this.patient = patient;
     }
+    //FOR THE TEST
+     public Feedback(String message){
+         this.message = message;
+     }
 
     public static long getSerialVersionUID() {
         return serialVersionUID;

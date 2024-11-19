@@ -32,28 +32,44 @@ public class JDBCReportManagerTest {
         jdbcManager = new JDBCManager();
         jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
         reportManager = new JDBCReportManager(jdbcManager);
+        try {
+            // Desactiva auto-commit para manejar transacciones manualmente
+            jdbcManager.getConnection().setAutoCommit(false);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            fail("No se pudo configurar la conexión para transacciones.");
+        }
         assertNotNull(reportManager);
     }
     
     @AfterAll
     public static void tearDownClass() {
          if (jdbcManager != null) {
+        try {
+            // Asegúrate de que la conexión esté cerrada correctamente
+            jdbcManager.getConnection().setAutoCommit(true); // Restaura auto-commit
             jdbcManager.disconnect();
-         }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     }
     
     @BeforeEach
     public void setUp() throws SQLException {
-        // Limpiar la base de datos antes de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Report");
+         // Limpiar la base de datos antes de cada prueba
+        jdbcManager.clearAllTables();
     }
     
     @AfterEach
     public void tearDown() throws SQLException {
-        // Limpiar la base de datos después de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Report");
+        if (jdbcManager != null) {
+        // Deshace todos los cambios realizados durante la prueba
+        jdbcManager.getConnection().rollback();
     }
-
+    }
+    
+//HAY QUE VER COMO CREARLO PARA REPORT CON QUE ATRIBUTO
     /**
      * Test of createReport method, of class JDBCReportManager.
      */
