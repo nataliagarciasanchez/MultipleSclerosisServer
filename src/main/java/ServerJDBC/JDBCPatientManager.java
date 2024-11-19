@@ -39,7 +39,7 @@ public class JDBCPatientManager implements PatientManager{
     }
 
     @Override
-    public void registerPatient(Patient p) {
+    public void registerPatient(Patient p, User user) {
         //before registering the patient, the server assigns a random doc
         int doc_id=assignDoctor2Patient();
         //Doctor chosen_doc=doctorMan.getDoctorById(doc_id);
@@ -55,7 +55,7 @@ public class JDBCPatientManager implements PatientManager{
             ps.setString(5,p.getGender().toString());
             ps.setString(6,p.getPhone());
             ps.setInt(7,doc_id);
-            ps.setInt(8,p.getUser().getId());
+            ps.setInt(8,user.getId());
             ps.executeUpdate();
             // Obtener el ID generado por la base de datos
             ResultSet generatedKeys = ps.getGeneratedKeys();

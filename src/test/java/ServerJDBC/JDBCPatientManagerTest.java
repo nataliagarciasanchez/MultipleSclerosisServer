@@ -5,6 +5,7 @@
 package ServerJDBC;
 
 import POJOs.Patient;
+import POJOs.User;
 import java.sql.SQLException;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -69,9 +70,10 @@ public class JDBCPatientManagerTest {
     @Test
     public void testCreatePatient() {
         System.out.println("createPatient");
+        User user=new User("TempUser");
         Patient p = new Patient ("TempPatient");
         System.out.println(p.toString());
-        patientManager.registerPatient(p);
+        patientManager.registerPatient(p, user);
         Patient fetchedPatient = patientManager.getPatientById(p.getId());
         System.out.println(fetchedPatient.toString());
         assertNotNull(fetchedPatient);

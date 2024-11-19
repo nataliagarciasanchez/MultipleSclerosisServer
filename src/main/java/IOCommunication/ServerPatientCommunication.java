@@ -137,7 +137,7 @@ public class ServerPatientCommunication {
                 Role role=new Role(1,"patient");
                 userManager.assignRole2User(user, role);
                 Patient patient=(Patient) in.readObject();
-                patientManager.registerPatient(patient);
+                patientManager.registerPatient(patient, user);
                 out.writeObject("Registered with success");
                 out.flush();
             } catch (IOException ex) {
