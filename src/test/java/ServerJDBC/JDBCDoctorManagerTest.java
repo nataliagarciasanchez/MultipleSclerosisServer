@@ -31,6 +31,14 @@ public class JDBCDoctorManagerTest {
         jdbcManager = new JDBCManager();
         jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
         doctorManager = new JDBCDoctorManager(jdbcManager);
+        try {
+            // Desactiva auto-commit para manejar transacciones manualmente
+            jdbcManager.getConnection().setAutoCommit(false);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            fail("No se pudo configurar la conexión para transacciones.");
+        }
+        
         assertNotNull(doctorManager);
     }
     
