@@ -130,16 +130,10 @@ public class JDBCDoctorManager implements DoctorManager {
 	        Integer d_id = rs.getInt("id");
 	        String name = rs.getString("name");
                 String specialtyString = rs.getString("specialty");
-                Specialty specialty = Specialty.valueOf(specialtyString);
+                //Specialty specialty = Specialty.valueOf(specialtyString);
+                  
+                doctor = new Doctor(id, name, specialtyString);
                 
-	        Integer user_id = rs.getInt("user_id");
-	        User u = userMan.getUserById(user_id);
-                
-                List <Patient> patients = patientMan.getPatientsFromDoctor(id);
-                
-                List <Feedback> feedbacks = feedbackMan.getListOfFeedbacksOfDoctor(id);
-                
-                doctor = new Doctor(id, name, specialtyString, u, patients, feedbacks);
 	        }else {
 	            System.out.println("Doctor with ID " + id + " not found.");
 	        }

@@ -42,10 +42,8 @@ public class JDBCPatientManager implements PatientManager{
     public void registerPatient(Patient p) {
         //before registering the patient, the server assigns a random doc
         int doc_id=assignDoctor2Patient();
-        Doctor chosen_doc=doctorMan.getDoctorById(doc_id);
-        p.setDoctor(chosen_doc);
+        //Doctor chosen_doc=doctorMan.getDoctorById(doc_id);
         
-        p.setDoctor(chosen_doc);
         try{
             String sql = "INSERT INTO Patients (name, surname, NIF, dob, gender, phone, doctor_id, user_id)"
                           +"values (?,?,?,?,?,?,?,?)";
@@ -334,6 +332,34 @@ public class JDBCPatientManager implements PatientManager{
             e.printStackTrace();
         }
         return patient;
+    }
+    
+    @Override
+    public int getDoctorIdFromPatient(Patient p){
+        Integer doctorId = null;
+        String sql = "SELECT * FROM Patients WHERE id = ?";
+
+        try {
+            PreparedStatement pre = manager.getConnection().prepareStatement(sql);
+            pre.setInt(1, p.getId());
+            ResultSet rs = pre.executeQuery();
+
+            if (rs.next()) {
+                // Extracting the data from the ResultSet into variables
+                
+                doctorId = rs.getInt("doctor_id");
+                
+                pre.close();
+                rs.close();
+            } else {
+                System.out.println("Patient with id " + p.getId() + " not found.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return doctorId;
+    
     }
 
     
