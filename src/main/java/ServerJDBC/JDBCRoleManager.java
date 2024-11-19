@@ -20,7 +20,7 @@ import java.util.List;
 public class JDBCRoleManager implements RoleManager{
     
      private JDBCManager manager;
-     private JDBCUserManager userMan;
+     
 
     public JDBCRoleManager() {
         
@@ -28,16 +28,14 @@ public class JDBCRoleManager implements RoleManager{
 
     public JDBCRoleManager(JDBCManager manager) {
         this.manager = manager;
-        //this.userMan = new JDBCUserManager(manager);
+        
     }
 
     public void setManager(JDBCManager manager) {
         this.manager = manager;
     }
 
-    public void setUserMan(JDBCUserManager userMan) {
-        this.userMan = userMan;
-    }
+    
 
     
     @Override
@@ -99,8 +97,8 @@ public class JDBCRoleManager implements RoleManager{
                 Integer id = rs.getInt("id");
                 String name = rs.getString("name");
                 
-                List <User> users = userMan.getUsersByRole(id);
-                Role role = new Role(id, name, users);
+                
+                Role role = new Role(id, name); // no le pasamos al lista de users
                 role.setId(rs.getInt("id"));
                 roles.add(role);
             }
@@ -123,8 +121,8 @@ public class JDBCRoleManager implements RoleManager{
             ResultSet rs = p.executeQuery();
             if (rs.next()) {
                 String name = rs.getString("name");  
-                List <User> users = userMan.getUsersByRole(id);
-                role = new Role(id, name, users);
+                
+                role = new Role(id, name); // no le pasamos la lista de users
              
             }
             
@@ -149,8 +147,8 @@ public class JDBCRoleManager implements RoleManager{
             if (rs.next()) {
                 Integer id = rs.getInt("id");
                 String name = rs.getString("name");
-                List <User> users = userMan.getUsersByRole(id);
-                role = new Role(id, name, users);
+               
+                role = new Role(id, name); // no le pasamos la lista de users
                 
             }
             p.close();

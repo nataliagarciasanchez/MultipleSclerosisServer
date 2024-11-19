@@ -367,4 +367,29 @@ public class JDBCManager {
             }	
         }
     }
+    
+    public void clearAllTables() {
+        try {
+            Statement statement = c.createStatement();
+            // Desactiva las restricciones de clave foránea temporalmente
+            statement.execute("PRAGMA foreign_keys = OFF");
+
+            // Obtiene una lista de todas las tablas en la base de datos
+            ResultSet rs = statement.executeQuery("SELECT name FROM sqlite_master WHERE type='table';");
+            while (rs.next()) {
+                String tableName = rs.getString("name");
+                if (!tableName.equals("sqlite_sequence")) { // Evitar la tabla interna que gestiona los IDs autoincrementales
+                    System.out.println("Clearing table: " + tableName);
+                    statement.executeUpdate("DELETE FROM " + tableName);
+                }
+            }
+
+            // Reactiva las restricciones de clave foránea
+            statement.execute("PRAGMA foreign_keys = ON");
+            statement.close();
+            System.out.println("All tables cleared!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
