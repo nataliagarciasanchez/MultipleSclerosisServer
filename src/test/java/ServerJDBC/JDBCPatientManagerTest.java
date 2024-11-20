@@ -85,25 +85,32 @@ public class JDBCPatientManagerTest {
      */
     @Test
     public void testRemovePatientById() {
-        System.out.println("removePatientById");
-        Integer id = null;
-        JDBCPatientManager instance = null;
-        instance.removePatientById(id);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("DeletePatient");
+        Patient p = new Patient ("TempPatient");
+        User u= new User ("TempUser");
+        patientManager.registerPatient(p,u);
+        List<Patient> PatientsBefore = patientManager.getListOfPatients();
+        assertEquals(1, PatientsBefore.size());
+        
+       patientManager.removePatientById(p.getId());
+        List<Patient> PatientsAfter = patientManager.getListOfPatients();
+        assertEquals(0, PatientsAfter.size());
     }
 
     /**
      * Test of updatePatient method, of class JDBCPatientManager.
      */
     @Test
-    public void testUpdatePatient() {
+    public void testUpdatePatient() {      
         System.out.println("updatePatient");
-        Patient p = null;
-        JDBCPatientManager instance = null;
-        instance.updatePatient(p);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Patient p = new Patient ("Patient");
+        User u= new User ("User");
+        patientManager.registerPatient(p,u);
+        p.setName("UpdatedPatient");
+        patientManager.updatePatient(p);
+        Patient updatedPatient = patientManager.getPatientById(p.getId());
+        assertNotNull(updatedPatient);
+        assertEquals("UpdatedPatient", updatedPatient.getName());
     }
 
     /**
@@ -112,12 +119,14 @@ public class JDBCPatientManagerTest {
     @Test
     public void testGetListOfPatients() {
         System.out.println("getListOfPatients");
-        JDBCPatientManager instance = null;
-        List<Patient> expResult = null;
-        List<Patient> result = instance.getListOfPatients();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        patientManager.registerPatient(new Patient("Patient1"), new User ("User1"));
+        patientManager.registerPatient(new Patient("Patient2"), new User ("User2"));
+
+        List<Patient> patients = patientManager.getListOfPatients();
+        assertEquals(2, patients.size());
+        assertTrue(patients.stream().anyMatch(patient -> patient.getName().equals("Patient1")));
+        assertTrue(patients.stream().anyMatch(patient -> patient.getName().equals("Patient2")));
+        
     }
 
     /**
@@ -126,13 +135,12 @@ public class JDBCPatientManagerTest {
     @Test
     public void testGetPatientById() {
         System.out.println("getPatientById");
-        Integer id = null;
-        JDBCPatientManager instance = null;
-        Patient expResult = null;
-        Patient result = instance.getPatientById(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Patient p = new Patient("TempPatient");
+        User u= new User ("TempUser");
+        patientManager.registerPatient(p,u);
+        Patient fetchedPatient = patientManager.getPatientById(p.getId());
+        assertNotNull(fetchedPatient);
+        assertEquals(p.getId(), fetchedPatient.getId());
     }
 
     /**
@@ -141,28 +149,30 @@ public class JDBCPatientManagerTest {
     @Test
     public void testGetPatientByName() {
         System.out.println("getPatientByName");
-        String name = "";
-        JDBCPatientManager instance = null;
-        List<Patient> expResult = null;
-        List<Patient> result = instance.getPatientByName(name);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Patient p = new Patient("TempPatient");
+        User u= new User ("TempUser");
+        patientManager.registerPatient(p,u);
+        List<Patient> patients= patientManager.getPatientByName("TempPatient");
+        assertNotNull(patients);
+        assertFalse(patients.isEmpty());
+        assertTrue(patients.stream().anyMatch(patient -> patient.getName().equals("TempPatient")));
+        System.out.println("getPatientByName");
+        
     }
 
     /**
      * Test of getPatientsFromDoctor method, of class JDBCPatientManager.
      */
     @Test
-    public void testGetPatientsFromDoctor() {
-        System.out.println("getPatientsFromDoctor");
-        Integer doctorId = null;
-        JDBCPatientManager instance = null;
-        List<Patient> expResult = null;
-        List<Patient> result = instance.getPatientsFromDoctor(doctorId);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void  testGetPatientByUser(){
+        System.out.println("testGetPatientByUser");
+        Patient p = new Patient("TempPatient");
+        User u= new User ("TempUser");
+        patientManager.registerPatient(p,u);
+        Patient fetchedPatient= patientManager.getPatientByUser(u);
+        assertNotNull(fetchedPatient);
+        assertEquals(p.getUser(), fetchedPatient.getUser());
+        
     }
     
 }

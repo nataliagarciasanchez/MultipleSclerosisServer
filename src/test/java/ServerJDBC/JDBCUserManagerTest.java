@@ -7,6 +7,8 @@ package ServerJDBC;
 import POJOs.Patient;
 import POJOs.Role;
 import POJOs.User;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -21,12 +23,13 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Andreoti
  */
 public class JDBCUserManagerTest {
+
     private static JDBCUserManager userManager;
     private static JDBCManager jdbcManager;
-    
+
     public JDBCUserManagerTest() {
     }
-    
+
     @BeforeAll
     public static void setUpClass() {
         jdbcManager = new JDBCManager();
@@ -34,24 +37,24 @@ public class JDBCUserManagerTest {
         userManager = new JDBCUserManager(jdbcManager);
         assertNotNull(userManager);
     }
-    
+
     @AfterAll
     public static void tearDownClass() {
-         if (jdbcManager != null) {
+        if (jdbcManager != null) {
             jdbcManager.disconnect();
-         }
+        }
     }
-    
+
     @BeforeEach
     public void setUp() throws SQLException {
         // Limpiar la base de datos antes de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM User");
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Users");
     }
-    
+
     @AfterEach
     public void tearDown() throws SQLException {
         // Limpiar la base de datos después de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM User");
+        jdbcManager.getConnection().createStatement().execute("DELETE FROM Users");
     }
 
     /**
@@ -59,12 +62,14 @@ public class JDBCUserManagerTest {
      */
     @Test
     public void testRegister() {
-        System.out.println("register");
-        User user = null;
-        JDBCUserManager instance = new JDBCUserManager();
-        instance.registerUser(user);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("registerUser");
+        Role role = new Role(1, "Doctor"); // Crear un rol ficticio
+        User user = new User("test@example.com", "password123", role);
+        userManager.registerUser(user);
+
+        User fetchedUser = userManager.getUserById(user.getId());
+        assertNotNull(fetchedUser, "El usuario debería haberse registrado correctamente.");
+        assertEquals("test@example.com", fetchedUser.getEmail());
     }
 
     /**
@@ -73,27 +78,28 @@ public class JDBCUserManagerTest {
     @Test
     public void testLogin() {
         System.out.println("login");
-        String email = "";
-        String password = "";
-        JDBCUserManager instance = new JDBCUserManager();
-        User expResult = null;
-        User result = instance.login(email, password);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Role role = new Role(1, "Doctor");
+        User user = new User("login@example.com", "password123", role);
+        userManager.registerUser(user);
+
+        User loggedInUser = userManager.login("login@example.com", "password123");
+        assertNotNull(loggedInUser, "El usuario debería haber iniciado sesión correctamente.");
+        assertEquals(user.getEmail(), loggedInUser.getEmail());
     }
 
     /**
-     * Test of removeUserById method, of class JDBCUserManager.
+     * Test of removeUserById method.
      */
     @Test
     public void testRemoveUserById() {
         System.out.println("removeUserById");
-        Integer id = null;
-        JDBCUserManager instance = new JDBCUserManager();
-        instance.removeUserById(id);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Role role = new Role(1, "Doctor");
+        User user = new User("delete@example.com", "password123", role);
+        userManager.registerUser(user);
+
+        userManager.removeUserById(user.getId());
+        User deletedUser = userManager.getUserById(user.getId());
+        assertNull(deletedUser, "El usuario debería haberse eliminado correctamente.");
     }
 
     /**
@@ -102,11 +108,17 @@ public class JDBCUserManagerTest {
     @Test
     public void testUpdateUser() {
         System.out.println("updateUser");
-        User user = null;
-        JDBCUserManager instance = new JDBCUserManager();
-        instance.updateUser(user);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Role role = new Role(1, "Doctor");
+        User user = new User("update@example.com", "password123", role);
+        userManager.registerUser(user);
+
+        user.setEmail("updated@example.com");
+        user.setPassword("newpassword");
+        userManager.updateUser(user);
+
+        User updatedUser = userManager.getUserById(user.getId());
+        assertEquals("updated@example.com", updatedUser.getEmail());
+        assertEquals("newpassword", updatedUser.getPassword());
     }
 
     /**
@@ -115,12 +127,12 @@ public class JDBCUserManagerTest {
     @Test
     public void testGetListOfUsers() {
         System.out.println("getListOfUsers");
-        JDBCUserManager instance = new JDBCUserManager();
-        List<User> expResult = null;
-        List<User> result = instance.getListOfUsers();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Role role = new Role(1, "Doctor");
+        userManager.registerUser(new User("user1@example.com", "password1", role));
+        userManager.registerUser(new User("user2@example.com", "password2", role));
+
+        List<User> users = userManager.getListOfUsers();
+        assertEquals(2, users.size(), "Debería haber exactamente 2 usuarios en la base de datos.");
     }
 
     /**
@@ -129,13 +141,13 @@ public class JDBCUserManagerTest {
     @Test
     public void testGetUserById() {
         System.out.println("getUserById");
-        Integer id = null;
-        JDBCUserManager instance = new JDBCUserManager();
-        User expResult = null;
-        User result = instance.getUserById(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Role role = new Role(1, "Doctor");
+        User user = new User("getbyid@example.com", "password123", role);
+        userManager.registerUser(user);
+
+        User fetchedUser = userManager.getUserById(user.getId());
+        assertNotNull(fetchedUser);
+        assertEquals(user.getEmail(), fetchedUser.getEmail());
     }
 
     /**
@@ -144,13 +156,13 @@ public class JDBCUserManagerTest {
     @Test
     public void testGetUserByEmail() {
         System.out.println("getUserByEmail");
-        String email = "";
-        JDBCUserManager instance = new JDBCUserManager();
-        User expResult = null;
-        User result = instance.getUserByEmail(email);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Role role = new Role(1, "Doctor");
+        User user = new User("getbyemail@example.com", "password123", role);
+        userManager.registerUser(user);
+
+        User fetchedUser = userManager.getUserByEmail("getbyemail@example.com");
+        assertNotNull(fetchedUser);
+        assertEquals(user.getEmail(), fetchedUser.getEmail());
     }
 
     /**
@@ -159,12 +171,37 @@ public class JDBCUserManagerTest {
     @Test
     public void testAssignRole2User() {
         System.out.println("assignRole2User");
-        User user = null;
-        Role role = null;
-        JDBCUserManager instance = new JDBCUserManager();
-        instance.assignRole2User(user, role);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        // Crear roles y usuario
+        Role oldRole = new Role(1, "Doctor");
+        Role newRole = new Role(2, "Patient");
+        User user = new User("assignrole@example.com", "password123", oldRole);
+
+        // Registrar el usuario
+        userManager.registerUser(user);
+
+        // Asignar el nuevo rol al usuario
+        userManager.assignRole2User(user, newRole);
+
+        // Validar directamente en la base de datos
+        try {
+            String sql = "SELECT role_id FROM Users WHERE id = ?";
+            PreparedStatement p = jdbcManager.getConnection().prepareStatement(sql);
+            p.setInt(1, user.getId());
+            ResultSet rs = p.executeQuery();
+
+            if (rs.next()) {
+                int assignedRoleId = rs.getInt("role_id");
+                assertEquals(newRole.getId(), assignedRoleId, "El role_id debería haber sido actualizado correctamente.");
+            } else {
+                fail("No se encontró el usuario en la base de datos.");
+            }
+
+            rs.close();
+            p.close();
+        } catch (SQLException e) {
+            fail("Error al validar el role_id en la base de datos: " + e.getMessage());
+        }
     }
 
     /**
@@ -173,13 +210,13 @@ public class JDBCUserManagerTest {
     @Test
     public void testCheckPassword() {
         System.out.println("checkPassword");
-        User u = null;
-        JDBCUserManager instance = new JDBCUserManager();
-        User expResult = null;
-        User result = instance.checkPassword(u);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Role role = new Role(1, "Doctor");
+        User user = new User("checkpassword@example.com", "password123", role);
+        userManager.registerUser(user);
+
+        User checkedUser = userManager.checkPassword(user);
+        assertNotNull(checkedUser, "La contraseña debería ser válida.");
+        assertEquals(user.getEmail(), checkedUser.getEmail());
     }
 
     /**
@@ -188,12 +225,13 @@ public class JDBCUserManagerTest {
     @Test
     public void testChangePassword() {
         System.out.println("changePassword");
-        User user = null;
-        String new_password = "";
-        JDBCUserManager instance = new JDBCUserManager();
-        instance.changePassword(user, new_password);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Role role = new Role(1, "Doctor");
+        User user = new User("changepassword@example.com", "password123", role);
+        userManager.registerUser(user);
+
+        userManager.changePassword(user, "newpassword");
+        User updatedUser = userManager.getUserById(user.getId());
+        assertEquals("newpassword", updatedUser.getPassword());
     }
 
     /**
@@ -202,15 +240,12 @@ public class JDBCUserManagerTest {
     @Test
     public void testGetUsersByRole() {
         System.out.println("getUsersByRole");
-        Integer role_id = null;
-        JDBCUserManager instance = new JDBCUserManager();
-        List<User> expResult = null;
-        List<User> result = instance.getUsersByRole(role_id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Role role = new Role(1, "Doctor");
+        userManager.registerUser(new User("user1@example.com", "password1", role));
+        userManager.registerUser(new User("user2@example.com", "password2", role));
+
+        List<User> users = userManager.getUsersByRole(1);
+        assertEquals(2, users.size());
     }
 
-    
-    
 }

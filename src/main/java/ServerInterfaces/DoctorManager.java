@@ -19,7 +19,7 @@ public interface DoctorManager {
     public void updateDoctor(Doctor d);
     public List<Doctor> getListOfDoctors();
     public Doctor getDoctorById(Integer id);
-    public Doctor getDoctorByUser(User user);
+    public Doctor getDoctorByUser(User user);   //FALTA
     public List<Doctor> getDoctorByName(String name);//es una lista porque puede haber doctores con el mismo nombre
-    public List<Integer> getDoctorIds();
+    public List<Integer> getDoctorIds();    //FALTA
 }

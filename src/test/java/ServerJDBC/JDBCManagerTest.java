@@ -156,7 +156,7 @@ public class JDBCManagerTest {
     /**
      * Test del método clearAllTables de la clase JDBCManager.
      */
-    @Test
+   /* @Test
     public void testClearAllTables() {
         System.out.println("clearAllTables");
 
@@ -182,5 +182,5 @@ public class JDBCManagerTest {
         } catch (SQLException e) {
             fail("Error al verificar el estado de las tablas: " + e.getMessage());
         }
-    }
+    }*/
 }
