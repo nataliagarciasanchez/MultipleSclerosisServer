@@ -91,39 +91,33 @@ public class JDBCDoctorManagerTest {
      * Test of removeDoctorById method, of class JDBCDoctorManager.
      */
     @Test
-    public void testRemoveDoctorById() {
-        System.out.println("RemoveDoctorById");
-        Integer id = null;
+    public void testRemoveDoctorById() {      
+        System.out.println("DeleteDoctor");
         Doctor d = new Doctor ("TempDoctor");
         doctorManager.createDoctor(d);
-      //TENGO QUE VERLO  d.removeDoctorById(d.getId());
+        List<Doctor> DoctorsBefore = doctorManager.getListOfDoctors();
+        assertEquals(1, DoctorsBefore.size());
+        
+       doctorManager.removeDoctorById(d.getId());
         List<Doctor> DoctorsAfter = doctorManager.getListOfDoctors();
         assertEquals(0, DoctorsAfter.size());
        
     }
-   /*  System.out.println("deleteRole");
-        Role role = new Role("TempRole");
-        roleManager.createRole(role);
-
-        List<Role> rolesBefore = roleManager.getListOfRoles();
-        assertEquals(1, rolesBefore.size());
-
-        roleManager.removeRoleById(role.getId());
-
-        List<Role> rolesAfter = roleManager.getListOfRoles();
-        assertEquals(0, rolesAfter.size());*/
-/*
+    
     /**
      * Test of updateDoctor method, of class JDBCDoctorManager.
      */
     
     public void testUpdateDoctor() {
         System.out.println("updateDoctor");
-        Doctor d = null;
-        JDBCDoctorManager instance = null;
-        instance.updateDoctor(d);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Doctor d = new Doctor ("Doctor");
+        doctorManager.createDoctor(d);
+        d.setName("UpdatedDoctor");
+        doctorManager.updateDoctor(d);
+        Doctor updatedDoctor = doctorManager.getDoctorById(d.getId());
+        assertNotNull(updatedDoctor);
+        assertEquals("UpdatedDoctor", updatedDoctor.getName());
+       
     }
 
     /**
@@ -132,13 +126,15 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testGetListOfDoctors() {
         System.out.println("getListOfDoctors");
-        JDBCDoctorManager instance = null;
-        List<Doctor> expResult = null;
-        List<Doctor> result = instance.getListOfDoctors();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        doctorManager.createDoctor(new Doctor("Doctor1"));
+        doctorManager.createDoctor(new Doctor("Doctor2"));
+
+        List<Doctor> doctors = doctorManager.getListOfDoctors();
+        assertEquals(2, doctors.size());
+        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getName().equals("Doctor1")));
+        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getName().equals("Doctor2")));
     }
+    
 
     /**
      * Test of getDoctorById method, of class JDBCDoctorManager.
@@ -146,14 +142,29 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testGetDoctorById() {
         System.out.println("getDoctorById");
-        Integer id = null;
-        JDBCDoctorManager instance = null;
-        Doctor expResult = null;
-        Doctor result = instance.getDoctorById(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Doctor d = new Doctor("TempDoctor");
+        doctorManager.createDoctor(d);
+        Doctor fetchedDoctor = doctorManager.getDoctorById(d.getId());
+        assertNotNull(fetchedDoctor);
+        assertEquals(d.getId(), fetchedDoctor.getId());
+       
     }
+    
+    /**
+     * Test of getDoctorById method, of class JDBCDoctorManager.
+     */
+    @Test
+    public void testgetDoctorByUser(){
+        
+       /* System.out.println("getDoctorByUser");
+        Doctor d = new Doctor("TempDoctor");
+        doctorManager.createDoctor(d);
+        Doctor fetchedDoctor = doctorManager.getDoctorById(d.getId());
+        assertNotNull(fetchedDoctor);
+        assertEquals(d.getId(), fetchedDoctor.getId());
+    */
+        }
+    
 
     /**
      * Test of getDoctorByName method, of class JDBCDoctorManager.
@@ -161,13 +172,12 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testGetDoctorByName() {
         System.out.println("getDoctorByName");
-        String name = "";
-        JDBCDoctorManager instance = null;
-        List<Doctor> expResult = null;
-        List<Doctor> result = instance.getDoctorByName(name);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Doctor d = new Doctor("TempDoctor");
+        doctorManager.createDoctor(d);
+        List<Doctor> doctors= doctorManager.getDoctorByName("TempDoctor");
+        assertNotNull(doctors);
+        assertFalse(doctors.isEmpty());
+        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getName().equals("TempDoctor")));
     }
     
 }
