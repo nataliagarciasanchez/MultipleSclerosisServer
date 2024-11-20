@@ -81,6 +81,7 @@ public class ServerPatientCommunication {
             try{
                 in = new ObjectInputStream(patientSocket.getInputStream());
                 out = new ObjectOutputStream(patientSocket.getOutputStream());
+               
                 handlePatientsRequest();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -130,20 +131,25 @@ public class ServerPatientCommunication {
 
         }
 
-        private void handleRegister(){
+        private void handleRegister() {
             try {
                 User user = (User) in.readObject();
                 userManager.registerUser(user);
-                Role role=new Role(1,"patient");
+                Role role = new Role(1, "patient");
                 userManager.assignRole2User(user, role);
-                Patient patient=(Patient) in.readObject();
+                Patient patient = (Patient) in.readObject();
                 patientManager.registerPatient(patient, user);
                 out.writeObject("Registered with success");
-                out.flush();
-            } catch (IOException ex) {
+                
+            } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception exc) {
+                try {
+                    out.writeObject("Error during registration: " + exc.getMessage());
+                    out.flush();
+                } catch (IOException ex) {
+                    Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
 
@@ -154,9 +160,7 @@ public class ServerPatientCommunication {
                 User user = userManager.login(username, password);
                 out.writeObject((user != null) ? "Successful login" : "Incorrect introduced data");
                 
-            } catch (IOException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
+            } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -183,9 +187,7 @@ public class ServerPatientCommunication {
                 } else {
                     out.writeObject("Incorrect username or password");
                 }
-            } catch (IOException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
+            } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -203,9 +205,7 @@ public class ServerPatientCommunication {
                 } else {
                     out.writeObject("Patient not found or incorrect credentials");
                 }
-            } catch (IOException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
+            } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
