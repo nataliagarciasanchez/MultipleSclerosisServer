@@ -139,6 +139,7 @@ public class ServerPatientCommunication {
                 userManager.assignRole2User(user, role);
                 Patient patient = (Patient) in.readObject();
                 patientManager.registerPatient(patient, user);
+                
                 out.writeObject("Registered with success");
                 
             } catch (IOException | ClassNotFoundException ex) {
