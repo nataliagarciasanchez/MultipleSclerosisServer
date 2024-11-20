@@ -145,12 +145,19 @@ public class JDBCAdministratorManagerTest {
     @Test
     public void testGetListOfAdministrators() {
         System.out.println("getListOfAdministrators");
-        JDBCAdministratorManager instance = null;
-        List<Administrator> expResult = null;
-        List<Administrator> result = instance.getListOfAdministrators();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        // Crear usuarios y administradores
+        User user1 = new User("admin1@example.com", "password1", new Role(1, "Admin"));
+        User user2 = new User("admin2@example.com", "password2", new Role(1, "Admin"));
+        userManager.registerUser(user1);
+        userManager.registerUser(user2);
+
+        adminManager.createAdministrator(new Administrator("Admin1", user1));
+        adminManager.createAdministrator(new Administrator("Admin2", user2));
+
+        // Obtener lista de administradores
+        List<Administrator> admins = adminManager.getListOfAdministrators();
+        assertEquals(2, admins.size(), "Debería haber exactamente 2 administradores.");
     }
 
     /**
@@ -158,14 +165,20 @@ public class JDBCAdministratorManagerTest {
      */
     @Test
     public void testGetAdministratorById() {
-        System.out.println("getAdministratorById");
-        Integer id = null;
-        JDBCAdministratorManager instance = null;
-        Administrator expResult = null;
-        Administrator result = instance.getAdministratorById(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+         System.out.println("getAdministratorById");
+
+        // Crear usuario
+        User user = new User("admin@example.com", "password123", new Role(1, "Admin"));
+        userManager.registerUser(user);
+
+        // Crear administrador
+        Administrator admin = new Administrator("AdminName", user);
+        adminManager.createAdministrator(admin);
+
+        // Obtener administrador por ID
+        Administrator fetchedAdmin = adminManager.getAdministratorById(admin.getId());
+        assertNotNull(fetchedAdmin, "El administrador debería existir.");
+        assertEquals(admin.getName(), fetchedAdmin.getName(), "El nombre del administrador debería coincidir.");
     }
 
     /**
@@ -173,14 +186,20 @@ public class JDBCAdministratorManagerTest {
      */
     @Test
     public void testGetAdministratorByName() {
-        System.out.println("getAdministratorByName");
-        String name = "";
-        JDBCAdministratorManager instance = null;
-        List<Administrator> expResult = null;
-        List<Administrator> result = instance.getAdministratorByName(name);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+         System.out.println("getAdministratorByName");
+
+        // Crear usuario
+        User user = new User("admin@example.com", "password123", new Role(1, "Admin"));
+        userManager.registerUser(user);
+
+        // Crear administrador
+        Administrator admin = new Administrator("AdminName", user);
+        adminManager.createAdministrator(admin);
+
+        // Buscar administrador por nombre
+        List<Administrator> admins = adminManager.getAdministratorByName("AdminName");
+        assertEquals(1, admins.size(), "Debería haber exactamente 1 administrador con ese nombre.");
+        assertEquals(admin.getName(), admins.get(0).getName(), "El nombre del administrador debería coincidir.");
     }
 
 }
