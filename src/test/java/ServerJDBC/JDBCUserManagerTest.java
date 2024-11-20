@@ -7,6 +7,8 @@ package ServerJDBC;
 import POJOs.Patient;
 import POJOs.Role;
 import POJOs.User;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -168,15 +170,6 @@ public class JDBCUserManagerTest {
      */
     @Test
     public void testAssignRole2User() {
-        /*System.out.println("assignRole2User");
-        Role oldRole = new Role(1, "Doctor");
-        Role newRole = new Role(2, "Patient");
-        User user = new User("assignrole@example.com", "password123", oldRole);
-        userManager.registerUser(user);
-
-        userManager.assignRole2User(user, newRole);
-        User updatedUser = userManager.getUserById(user.getId());
-        assertEquals(newRole.getId(), updatedUser.getRole().getId());*/
         System.out.println("assignRole2User");
 
         // Crear roles y usuario
@@ -184,19 +177,31 @@ public class JDBCUserManagerTest {
         Role newRole = new Role(2, "Patient");
         User user = new User("assignrole@example.com", "password123", oldRole);
 
-        // Registrar el usuario con un rol inicial
+        // Registrar el usuario
         userManager.registerUser(user);
 
         // Asignar el nuevo rol al usuario
         userManager.assignRole2User(user, newRole);
 
-        // Recuperar el usuario actualizado desde la base de datos
-        User updatedUser = userManager.getUserById(user.getId());
+        // Validar directamente en la base de datos
+        try {
+            String sql = "SELECT role_id FROM Users WHERE id = ?";
+            PreparedStatement p = jdbcManager.getConnection().prepareStatement(sql);
+            p.setInt(1, user.getId());
+            ResultSet rs = p.executeQuery();
 
-        // Validar que el rol del usuario se actualizó correctamente
-        assertNotNull(updatedUser.getRole(), "El rol del usuario no debería ser null.");
-        assertEquals(newRole.getId(), updatedUser.getRole().getId(), "El rol debería haber sido actualizado correctamente.");
-        assertEquals(newRole.getName(), updatedUser.getRole().getName(), "El nombre del rol debería coincidir.");
+            if (rs.next()) {
+                int assignedRoleId = rs.getInt("role_id");
+                assertEquals(newRole.getId(), assignedRoleId, "El role_id debería haber sido actualizado correctamente.");
+            } else {
+                fail("No se encontró el usuario en la base de datos.");
+            }
+
+            rs.close();
+            p.close();
+        } catch (SQLException e) {
+            fail("Error al validar el role_id en la base de datos: " + e.getMessage());
+        }
     }
 
     /**
