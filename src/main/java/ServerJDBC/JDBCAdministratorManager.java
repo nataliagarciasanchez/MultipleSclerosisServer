@@ -26,7 +26,8 @@ public class JDBCAdministratorManager implements AdministratorManager {
 
     public JDBCAdministratorManager(JDBCManager manager) {
         this.manager = manager;
-        }
+        this.userMan = new JDBCUserManager(manager);
+    }
     
     @Override
     public void createAdministrator(Administrator a) {
