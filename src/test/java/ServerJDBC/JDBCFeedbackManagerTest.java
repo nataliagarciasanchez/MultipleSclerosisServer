@@ -48,6 +48,10 @@ public class JDBCFeedbackManagerTest {
         fail("No se pudo configurar la conexión para transacciones.");
     }
     assertNotNull(userManager);
+    assertNotNull(feedbackManager);
+    assertNotNull(roleManager);
+    assertNotNull(patientManager);
+    assertNotNull(doctorManager);
     }
 
     @AfterAll
