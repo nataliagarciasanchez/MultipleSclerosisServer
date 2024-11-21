@@ -11,6 +11,7 @@ import POJOs.Patient;
 import POJOs.Role;
 import POJOs.User;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
