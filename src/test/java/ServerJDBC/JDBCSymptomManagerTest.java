@@ -94,6 +94,7 @@ public class JDBCSymptomManagerTest {
         System.out.println("deleteSymptom");
         Symptom sys = new Symptom ("TempSymptom");
         symptomManager.createSymptom(sys);
+        System.out.println(sys.toString());
         List<Symptom> rolesBefore = symptomManager.getListOfSymptoms();
         assertEquals(1, rolesBefore.size());
         symptomManager.removeSymptom(sys.getId());
@@ -110,9 +111,11 @@ public class JDBCSymptomManagerTest {
         System.out.println("updateSymptom");
         Symptom symptom = new Symptom ("TempSymptom");
         symptomManager.createSymptom(symptom);
+        System.out.println(symptom.toString());
         symptom.setName("UpdatedSymptom");
         symptomManager.updateSymptom(symptom);
         Symptom updatedSymptom = symptomManager.getSymptomById(symptom.getId());
+        System.out.println(updatedSymptom.toString());
         assertNotNull(updatedSymptom);
         assertEquals(symptom.getId(), updatedSymptom.getId());
         assertEquals(symptom.getName(), updatedSymptom.getName());
@@ -128,6 +131,8 @@ public class JDBCSymptomManagerTest {
         Symptom symptom2 = new Symptom ("TempSymptom2");
         symptomManager.createSymptom(symptom1);
         symptomManager.createSymptom(symptom2);
+        System.out.println(symptom1.toString());
+        System.out.println(symptom2.toString());
         List<Symptom> sys = symptomManager.getListOfSymptoms();
         System.out.println(sys.toString());
         assertEquals(2, sys.size());
@@ -143,13 +148,14 @@ public class JDBCSymptomManagerTest {
     @Test
     public void testGetSymptomById() {
         System.out.println("getSymptomById");
-        Integer id = null;
-        JDBCSymptomManager instance = null;
-        Symptom expResult = null;
-        Symptom result = instance.getSymptomById(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Symptom symptom = new Symptom ("TempSymptom");
+        symptomManager.createSymptom(symptom);
+        System.out.println(symptom.toString());
+        
+        Symptom fetchedSymptom = symptomManager.getSymptomById(symptom.getId());
+        assertNotNull(fetchedSymptom);
+        assertEquals(symptom.getId(), fetchedSymptom.getId());
+        assertEquals(symptom.getName(), fetchedSymptom.getName());
     }
 
     /**
@@ -158,13 +164,16 @@ public class JDBCSymptomManagerTest {
     @Test
     public void testGetSymptomByName() {
         System.out.println("getSymptomByName");
-        String name = "";
-        JDBCSymptomManager instance = null;
-        List<Symptom> expResult = null;
-        List<Symptom> result = instance.getSymptomByName(name);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+        Symptom sys = new Symptom ("TempSymptom");
+        symptomManager.createSymptom(sys);
+        System.out.println(sys.toString());
+        
+        List<Symptom> symptoms= symptomManager.getSymptomByName("TempSymptom");
+        assertNotNull(symptoms);
+        assertFalse(symptoms.isEmpty());
+        assertTrue(symptoms.stream().anyMatch(symptom -> symptom.getName().equals(sys.getName())));
+        assertTrue(symptoms.stream().anyMatch(symptom -> symptom.getId().equals(sys.getId())));
+        
+          }
     
 }
