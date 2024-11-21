@@ -54,6 +54,11 @@ public class Doctor implements Serializable{
         
     }
     
+    public Doctor(String name, String specialty) {
+        this.name = name;
+        this.specialty = specialty;
+    }
+    
     public Doctor(Integer id, String name, String specialty) {
         this.name = name;
         this.id = id;

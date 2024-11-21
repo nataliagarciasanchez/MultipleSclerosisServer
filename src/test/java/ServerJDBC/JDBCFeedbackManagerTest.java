@@ -4,7 +4,7 @@
  */
 package ServerJDBC;
 
-import POJOs.Feedback;
+import POJOs.*;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
@@ -22,8 +22,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class JDBCFeedbackManagerTest {
     
     private static JDBCFeedbackManager feedbackManager;
+    private static JDBCDoctorManager doctorManager;
+    private static JDBCPatientManager patientManager;
     private static JDBCManager jdbcManager;
-    
     
     public JDBCFeedbackManagerTest() {
     }
@@ -31,8 +32,10 @@ public class JDBCFeedbackManagerTest {
     @BeforeAll
     public static void setUpClass() {
         jdbcManager = new JDBCManager();
-        jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
+        jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar feedbackManager
         feedbackManager = new JDBCFeedbackManager(jdbcManager);
+        doctorManager = new JDBCDoctorManager(jdbcManager);
+        patientManager = new JDBCPatientManager(jdbcManager);
         try {
             // Desactiva auto-commit para manejar transacciones manualmente
             jdbcManager.getConnection().setAutoCommit(false);
@@ -45,29 +48,29 @@ public class JDBCFeedbackManagerTest {
     
     @AfterAll
     public static void tearDownClass() throws SQLException {
-         if (jdbcManager != null) {
-        try {
-            // Asegúrate de que la conexión esté cerrada correctamente
-            jdbcManager.getConnection().setAutoCommit(true); // Restaura auto-commit
-            jdbcManager.disconnect();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (jdbcManager != null) {
+            try {
+                // Asegúrate de que la conexión esté cerrada correctamente
+                jdbcManager.getConnection().setAutoCommit(true); // Restaura auto-commit
+                jdbcManager.disconnect();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-    }
     }
     
     @BeforeEach
     public void setUp() throws SQLException {
-         // Limpiar la base de datos antes de cada prueba
+        // Limpiar la base de datos antes de cada prueba
         jdbcManager.clearAllTables();
     }
     
     @AfterEach
-    public void tearDown() throws SQLException{
-           if (jdbcManager != null) {
-        // Deshace todos los cambios realizados durante la prueba
-        jdbcManager.getConnection().rollback();
-    }
+    public void tearDown() throws SQLException {
+        if (jdbcManager != null) {
+            // Deshace todos los cambios realizados durante la prueba
+            jdbcManager.getConnection().rollback();
+        }
     }
 
     /**
@@ -76,13 +79,24 @@ public class JDBCFeedbackManagerTest {
     @Test
     public void testCreateFeedback() {
         System.out.println("createFeedback");
-        Feedback f = new Feedback ("Your diagnosis was correct");
-        System.out.println(f.toString());
-        feedbackManager.createFeedback(f);
-        Feedback fetchedFeedback = feedbackManager.getFeedBackById(f.getId());
-        System.out.println(fetchedFeedback.toString());
+
+        // Crear un doctor y un paciente para asociar al feedback
+        Doctor doctor = new Doctor("Dr. Smith", "Neurology");
+        doctorManager.createDoctor(doctor);
+
+        Patient patient = new Patient("John", "Doe", "12345678A", java.sql.Date.valueOf("1990-01-01"), Gender.MALE, "123456789", doctor);
+        patientManager.registerPatient(patient);
+
+        // Crear el feedback
+        Feedback feedback = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Excellent treatment!", doctor, patient);
+        feedbackManager.createFeedback(feedback);
+
+        // Verificar que el feedback fue creado correctamente
+        Feedback fetchedFeedback = feedbackManager.getFeedBackById(feedback.getId());
         assertNotNull(fetchedFeedback);
-        assertEquals("Your diagnosis was correct", fetchedFeedback.getMessage());
+        assertEquals("Excellent treatment!", fetchedFeedback.getMessage());
+        assertEquals(doctor.getId(), fetchedFeedback.getDoctor().getId());
+        assertEquals(patient.getId(), fetchedFeedback.getPatient().getId());
     }
 
     /**

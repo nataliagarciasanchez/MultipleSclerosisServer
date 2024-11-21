@@ -49,6 +49,8 @@ public class Patient implements Serializable{
         this.feedbacks = feedbacks;
         this.user = user;
     }
+    
+    
     public Patient (String name){
     this.name=name;
     }
