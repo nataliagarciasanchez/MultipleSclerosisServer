@@ -37,12 +37,19 @@ public class Feedback {
         this.doctor = doctor;
         this.patient = patient;
     }
+    public Feedback( Date date,String message,  Doctor doctor, Patient patient) {
+        this.date = date;
+        this.message = message;
+        this.doctor = doctor;
+        this.patient = patient;
+    }
     public Feedback(String message, Date date, Doctor doctor, Patient patient) {
         this.message = message;
         this.date = date;
         this.doctor = doctor;
         this.patient = patient;
     }
+    
     //FOR THE TEST
      public Feedback(String message){
          this.message = message;

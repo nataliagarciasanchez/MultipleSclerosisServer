@@ -20,32 +20,36 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Andreoti
  */
 public class JDBCFeedbackManagerTest {
-    
+
     private static JDBCFeedbackManager feedbackManager;
     private static JDBCDoctorManager doctorManager;
     private static JDBCPatientManager patientManager;
+    private static JDBCUserManager userManager;
+    private static JDBCRoleManager roleManager;
     private static JDBCManager jdbcManager;
-    
+
     public JDBCFeedbackManagerTest() {
     }
-    
+
     @BeforeAll
     public static void setUpClass() {
-        jdbcManager = new JDBCManager();
-        jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar feedbackManager
-        feedbackManager = new JDBCFeedbackManager(jdbcManager);
-        doctorManager = new JDBCDoctorManager(jdbcManager);
-        patientManager = new JDBCPatientManager(jdbcManager);
-        try {
-            // Desactiva auto-commit para manejar transacciones manualmente
-            jdbcManager.getConnection().setAutoCommit(false);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            fail("No se pudo configurar la conexión para transacciones.");
-        }
-        assertNotNull(feedbackManager);
+    jdbcManager = new JDBCManager();
+    jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar managers
+    roleManager = new JDBCRoleManager(jdbcManager); // Inicializar roleManager
+    userManager = new JDBCUserManager(jdbcManager); // Inicializar userManager
+    feedbackManager = new JDBCFeedbackManager(jdbcManager);
+    doctorManager = new JDBCDoctorManager(jdbcManager);
+    patientManager = new JDBCPatientManager(jdbcManager);
+    try {
+        // Desactiva auto-commit para manejar transacciones manualmente
+        jdbcManager.getConnection().setAutoCommit(false);
+    } catch (SQLException e) {
+        e.printStackTrace();
+        fail("No se pudo configurar la conexión para transacciones.");
     }
-    
+    assertNotNull(userManager);
+    }
+
     @AfterAll
     public static void tearDownClass() throws SQLException {
         if (jdbcManager != null) {
@@ -58,13 +62,13 @@ public class JDBCFeedbackManagerTest {
             }
         }
     }
-    
+
     @BeforeEach
     public void setUp() throws SQLException {
         // Limpiar la base de datos antes de cada prueba
         jdbcManager.clearAllTables();
     }
-    
+
     @AfterEach
     public void tearDown() throws SQLException {
         if (jdbcManager != null) {
@@ -79,24 +83,38 @@ public class JDBCFeedbackManagerTest {
     @Test
     public void testCreateFeedback() {
         System.out.println("createFeedback");
+        assertNotNull(roleManager, "roleManager no debe ser null");
+        // Crear un rol para el paciente y el doctor
+        Role patientRole = new Role(1, "Patient");
+        roleManager.createRole(patientRole);
+        Role doctorRole = new Role(2, "Doctor");
+        roleManager.createRole(doctorRole);
 
-        // Crear un doctor y un paciente para asociar al feedback
-        Doctor doctor = new Doctor("Dr. Smith", "Neurology");
+        // Crear usuarios para paciente y doctor
+        User patientUser = new User("patient@example.com", "password123", patientRole);
+        userManager.registerUser(patientUser); // Registrar el usuario antes de asociarlo al paciente
+
+        User doctorUser = new User("doctor@example.com", "password456", doctorRole);
+        userManager.registerUser(doctorUser);
+
+        // Crear un doctor asociado
+        Doctor doctor = new Doctor("Dr. Smith", "Neurology", doctorUser);
         doctorManager.createDoctor(doctor);
 
-        //Patient patient = new Patient("John", "Doe", "12345678A", java.sql.Date.valueOf("1990-01-01"), Gender.MALE, "123456789", doctor);
-        //patientManager.registerPatient(patient);
+        // Crear un paciente asociado, asignándole el User antes de registrarlo
+        Patient patient = new Patient("John", "Doe", "12345678A", java.sql.Date.valueOf("1990-01-01"), Gender.MALE, "123456789", doctor, patientUser);
+        patientManager.registerPatient(patient); // Ya no se pasa `patientUser` porque está incluido en el objeto `Patient`
 
         // Crear el feedback
-        //Feedback feedback = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Excellent treatment!", doctor, patient);
-        //feedbackManager.createFeedback(feedback);
+        Feedback feedback = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Excellent treatment!", doctor, patient);
+        feedbackManager.createFeedback(feedback);
 
         // Verificar que el feedback fue creado correctamente
-        /*Feedback fetchedFeedback = feedbackManager.getFeedBackById(feedback.getId());
-        assertNotNull(fetchedFeedback);
-        assertEquals("Excellent treatment!", fetchedFeedback.getMessage());
-        assertEquals(doctor.getId(), fetchedFeedback.getDoctor().getId());
-        assertEquals(patient.getId(), fetchedFeedback.getPatient().getId());*/
+        Feedback fetchedFeedback = feedbackManager.getFeedBackById(feedback.getId());
+        assertNotNull(fetchedFeedback, "El feedback no debería ser nulo.");
+        assertEquals("Excellent treatment!", fetchedFeedback.getMessage(), "El mensaje del feedback no coincide.");
+        assertEquals(doctor.getId(), fetchedFeedback.getDoctor().getId(), "El doctor del feedback no coincide.");
+        assertEquals(patient.getId(), fetchedFeedback.getPatient().getId(), "El paciente del feedback no coincide.");
     }
 
     /**
@@ -184,5 +202,5 @@ public class JDBCFeedbackManagerTest {
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
-    
+
 }

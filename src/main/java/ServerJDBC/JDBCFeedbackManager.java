@@ -26,9 +26,15 @@ public class JDBCFeedbackManager implements FeedbackManager {
     private JDBCPatientManager patientman;
    
 
-    public JDBCFeedbackManager(JDBCManager manager) {
+    public JDBCFeedbackManager(JDBCManager manager, JDBCDoctorManager doctorman, JDBCPatientManager patientman) {
         this.manager = manager;
-        }
+        this.doctorman = doctorman;
+        this.patientman = patientman;
+    }
+
+    public JDBCFeedbackManager(JDBCManager jdbcManager) {
+       this.manager = manager;
+    }
   
     
     @Override
