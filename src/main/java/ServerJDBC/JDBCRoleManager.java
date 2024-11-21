@@ -99,7 +99,6 @@ public class JDBCRoleManager implements RoleManager{
                 
                 
                 Role role = new Role(id, name); // no le pasamos al lista de users
-                role.setId(rs.getInt("id"));
                 roles.add(role);
             }
             rs.close();

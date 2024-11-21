@@ -184,7 +184,7 @@ public class JDBCManager {
             
             stmt.executeUpdate(create_table_feedbacks);
             //System.out.println("\nFeedbacks table created");
-
+            stmt.close();
             System.out.println("\nTables created!");
             
 			

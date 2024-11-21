@@ -5,7 +5,9 @@
 package ServerJDBC;
 
 import POJOs.Symptom;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -32,6 +34,7 @@ public class JDBCSymptomManagerTest {
         jdbcManager = new JDBCManager();
         jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
         symptomManager = new JDBCSymptomManager(jdbcManager);
+        
         try {
             // Desactiva auto-commit para manejar transacciones manualmente
             jdbcManager.getConnection().setAutoCommit(false);
@@ -60,11 +63,24 @@ public class JDBCSymptomManagerTest {
     public void setUp() throws SQLException {
          // Limpiar la base de datos antes de cada prueba
         jdbcManager.clearAllTables();
+        try (Statement statement = jdbcManager.getConnection().createStatement()) {
+        ResultSet countRs = statement.executeQuery("SELECT COUNT(*) FROM Symptoms");
+        if (countRs.next()) {
+            int count = countRs.getInt(1);
+            System.out.println("Registros en Symptoms después de clearAllTables: " + count);
+        }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        
+
     }
     
     @AfterEach
     public void tearDown() throws SQLException {
         if (jdbcManager != null) {
+            jdbcManager.clearAllTables();
         // Deshace todos los cambios realizados durante la prueba
         jdbcManager.getConnection().rollback();
         }
@@ -78,7 +94,9 @@ public class JDBCSymptomManagerTest {
         System.out.println("createSymptom");
         Symptom sys = new Symptom ("TempSymptom");
         System.out.println(sys.toString());
+        
         symptomManager.createSymptom(sys);
+        
         Symptom fetchedSymptom = symptomManager.getSymptomById(sys.getId());
         System.out.println(fetchedSymptom.toString());
         assertNotNull(fetchedSymptom);
@@ -90,16 +108,21 @@ public class JDBCSymptomManagerTest {
      * Test of removeSymptom method, of class JDBCSymptomManager.
      */
     @Test
-    public void testRemoveSymptom() {
-        System.out.println("deleteSymptom");
+    public void testRemoveSymptom() { //TODO revisar por que se regeneran los sintomas
+        System.out.println("removeSymptom");
         Symptom sys = new Symptom ("TempSymptom");
+        
+        List<Symptom> symptomsInitial = symptomManager.getListOfSymptoms();
+        int initialSymptoms = symptomsInitial.size();
+        
         symptomManager.createSymptom(sys);
         System.out.println(sys.toString());
-        List<Symptom> rolesBefore = symptomManager.getListOfSymptoms();
-        assertEquals(1, rolesBefore.size());
+        List<Symptom> symptomsBefore = symptomManager.getListOfSymptoms();
+        assertEquals(initialSymptoms + 1, symptomsBefore.size());
+        
         symptomManager.removeSymptom(sys.getId());
-        List<Symptom> rolesAfter = symptomManager.getListOfSymptoms();
-        assertEquals(0, rolesAfter.size());   //Debe haber 1
+        List<Symptom> symptomsAfter = symptomManager.getListOfSymptoms();
+        assertEquals(initialSymptoms, symptomsAfter.size());   //Debe haber el mimsmo numero que initial
        
     }
 
@@ -127,15 +150,20 @@ public class JDBCSymptomManagerTest {
     @Test
     public void testGetListOfSymptoms() {
         System.out.println("getListOfSymptoms");
+        
+        List<Symptom> symptomsInitial = symptomManager.getListOfSymptoms();
+        int initialSymptoms = symptomsInitial.size();
+        
         Symptom symptom1 = new Symptom ("TempSymptom1");
         Symptom symptom2 = new Symptom ("TempSymptom2");
         symptomManager.createSymptom(symptom1);
         symptomManager.createSymptom(symptom2);
-        System.out.println(symptom1.toString());
-        System.out.println(symptom2.toString());
+        
+        
         List<Symptom> sys = symptomManager.getListOfSymptoms();
         System.out.println(sys.toString());
-        assertEquals(2, sys.size());
+        assertEquals(initialSymptoms + 2, sys.size());
+        
         assertTrue(sys.stream().anyMatch(symptom -> symptom.getId().equals(symptom1.getId())));
         assertTrue(sys.stream().anyMatch(symptom -> symptom.getId().equals(symptom2.getId())));
         assertTrue(sys.stream().anyMatch(symptom -> symptom.getName().equals(symptom1.getName())));
@@ -174,6 +202,6 @@ public class JDBCSymptomManagerTest {
         assertTrue(symptoms.stream().anyMatch(symptom -> symptom.getName().equals(sys.getName())));
         assertTrue(symptoms.stream().anyMatch(symptom -> symptom.getId().equals(sys.getId())));
         
-          }
+    }
     
 }

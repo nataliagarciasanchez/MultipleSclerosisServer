@@ -20,16 +20,20 @@ import java.util.List;
 public class JDBCSymptomManager implements SymptomManager{
     
     private JDBCManager manager;
+   
+    public JDBCSymptomManager() {
+        
+    }
     
     public JDBCSymptomManager(JDBCManager manager) {
         this.manager = manager;
-        }
+    }
 
     @Override
     public void createSymptom(Symptom symptom) {
         try{
-            String sql = "INSERT INTO Symptoms (name)"
-                    +"values (?)";
+            String sql = "INSERT INTO Symptoms (name) VALUES (?)";
+                    
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1,symptom.getName());
             p.executeUpdate();
@@ -76,8 +80,9 @@ public class JDBCSymptomManager implements SymptomManager{
     @Override
     public List<Symptom> getListOfSymptoms() {
         List<Symptom> symptoms = new ArrayList<>();
+        String sql = "SELECT * FROM Symptoms";
 	try {
-	    String sql = "SELECT * FROM Symptoms";
+	    
 	    PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
 	    ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -99,7 +104,7 @@ public class JDBCSymptomManager implements SymptomManager{
 
     @Override
     public Symptom getSymptomById(Integer id) {
-        Symptom symptom=null;
+        Symptom symptom = null;
 	
 	    try {
 	        String sql = "SELECT * FROM Symptoms WHERE id = ?";
