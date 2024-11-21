@@ -5,6 +5,7 @@
 package ServerJDBC;
 
 import POJOs.Doctor;
+import POJOs.Role;
 import POJOs.User;
 import java.sql.SQLException;
 import java.util.List;
@@ -23,6 +24,10 @@ public class JDBCDoctorManagerTest {
     
     private static JDBCDoctorManager doctorManager;
     private static JDBCManager jdbcManager;
+    private static JDBCRoleManager roleManager;
+    private static JDBCUserManager userManager;
+    private static Role r;
+    private static User u;
     
     public JDBCDoctorManagerTest() {
     }
@@ -32,6 +37,8 @@ public class JDBCDoctorManagerTest {
         jdbcManager = new JDBCManager();
         jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
         doctorManager = new JDBCDoctorManager(jdbcManager);
+        roleManager = new JDBCRoleManager(jdbcManager);
+        userManager = new JDBCUserManager(jdbcManager);
         try {
             // Desactiva auto-commit para manejar transacciones manualmente
             jdbcManager.getConnection().setAutoCommit(false);
@@ -60,6 +67,11 @@ public class JDBCDoctorManagerTest {
     public void setUp() throws SQLException {
          // Limpiar la base de datos antes de cada prueba
         jdbcManager.clearAllTables();
+        r = new Role ("Doctor");
+        roleManager.createRole(r);
+        u = new User ("email", "password", r);
+        userManager.registerUser(u);
+        
     }
     
     @AfterEach
@@ -77,7 +89,7 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testCreateDoctor() {
         System.out.println("createDoctor");
-        User u= new User ("TempUser");
+        
         Doctor d = new Doctor("TempDoctor", "NEUROLOGY", u);
         System.out.println(d.toString());
         
@@ -85,10 +97,10 @@ public class JDBCDoctorManagerTest {
         Doctor fetchedDoctor = doctorManager.getDoctorById(d.getId());
         System.out.println(fetchedDoctor.toString());
         assertNotNull(fetchedDoctor);
-        assertEquals("TempDoctor", fetchedDoctor.getName());
-        assertEquals("TempDoctor", fetchedDoctor.getName());
-        assertEquals("TempDoctor", fetchedDoctor.getName());
-        assertEquals("TempDoctor", fetchedDoctor.getName());
+        assertEquals(d.getName(), fetchedDoctor.getName());
+        assertEquals(d.getId(), fetchedDoctor.getId());
+        assertEquals(d.getSpecialty(), fetchedDoctor.getSpecialty());
+        
         
     }
 
