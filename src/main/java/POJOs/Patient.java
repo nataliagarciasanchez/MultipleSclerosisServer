@@ -67,10 +67,13 @@ public class Patient implements Serializable{
         this.feedbacks = null;
         
     }
+    
+    
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
+
 
     public Integer getId() {
         return id;
