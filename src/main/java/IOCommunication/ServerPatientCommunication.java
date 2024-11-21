@@ -106,11 +106,8 @@ public class ServerPatientCommunication {
                             break;
                         case "logout":
                             handleLogout();
-                        case "changePassword":
-                            handleChangePassword();
-                            break;
-                        case "findPatient":
-                            handleFindPatient();
+                        case "updateInformation":
+                            handleUpdateInformation();
                             break;
                         case "sendECGSignals":
                             handleECGSignals();
@@ -141,7 +138,7 @@ public class ServerPatientCommunication {
                 patientManager.registerPatient(patient, user);
                 
                 out.writeObject("Registered with success");
-                
+                out.flush();
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception exc) {
@@ -159,7 +156,12 @@ public class ServerPatientCommunication {
                 String username = (String) in.readObject();
                 String password = (String) in.readObject();
                 User user = userManager.login(username, password);
-                out.writeObject((user != null) ? "Successful login" : "Incorrect introduced data");
+                Patient patient = patientManager.getPatientByUser(user);
+                if (patient != null) {
+                    out.writeObject("Successful login");
+                } else {
+                    out.writeObject("Incorrect username and/or password");
+                }
                 
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
@@ -175,36 +177,17 @@ public class ServerPatientCommunication {
             }
         }
 
-        private void handleChangePassword() {
+        private void handleUpdateInformation() {
             try {
                 String username = (String) in.readObject();
-                String oldPassword = (String) in.readObject();
                 String newPassword = (String) in.readObject();
                 
-                User user = userManager.login(username, oldPassword);
+                User user = userManager.login(username, newPassword);
                 if (user != null) {
                     userManager.changePassword(user, newPassword);
                     out.writeObject("Password changed correclty");
                 } else {
                     out.writeObject("Incorrect username or password");
-                }
-            } catch (IOException | ClassNotFoundException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        private void handleFindPatient() {
-            try {
-                String username = (String) in.readObject();
-                String password = (String) in.readObject();
-                
-                User user = new User(username, password, new Role("patient"));
-                Patient patient = patientManager.getPatientByUser(user);
-                
-                if (patient != null) {
-                    out.writeObject("Patient found: " + patient);
-                } else {
-                    out.writeObject("Patient not found or incorrect credentials");
                 }
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
