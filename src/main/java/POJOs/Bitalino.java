@@ -48,6 +48,14 @@ public class Bitalino implements Serializable{
         this.duration = duration;
         this.report = report;
     }
+    
+    public Bitalino(Date date, SignalType signal_type, String file_path, Float duration, Report report) {
+        this.date = date;
+        this.signal_type = signal_type;
+        this.file_path = file_path;
+        this.duration = duration;
+        this.report = report;
+    }
 
     public static long getSerialVersionUID() {
         return serialVersionUID;

@@ -42,7 +42,6 @@ public class Report implements Serializable{
      }
     
     public Report(Date date, Patient patient) {
-        
         this.date = date;
         this.patient = patient;
         this.bitalinos = null;
