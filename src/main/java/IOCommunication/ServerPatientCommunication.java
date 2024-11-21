@@ -129,7 +129,7 @@ public class ServerPatientCommunication {
         }
 
         private void handleRegister() {
-            try {
+           /* try {
                 User user = (User) in.readObject();
                 userManager.registerUser(user);
                 Role role = new Role(1, "patient");
@@ -147,7 +147,7 @@ public class ServerPatientCommunication {
                 } catch (IOException ex) {
                     Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }
+            }*/
         }
 
         private void handleLogin() {
