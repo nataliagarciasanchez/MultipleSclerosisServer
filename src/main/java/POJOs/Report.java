@@ -40,10 +40,16 @@ public class Report implements Serializable{
         this.id = id;
         this.date = date;
      }
+    
+    public Report(Date date) {
+        this.date = date;
+     }
+
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
+
 
     public Integer getId() {
         return id;
