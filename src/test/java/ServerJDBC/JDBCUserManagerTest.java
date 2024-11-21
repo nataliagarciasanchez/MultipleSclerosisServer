@@ -38,7 +38,16 @@ public class JDBCUserManagerTest {
         jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
         userManager = new JDBCUserManager(jdbcManager);
         roleManager = new JDBCRoleManager(jdbcManager);
+        try {
+            // Desactiva auto-commit para manejar transacciones manualmente
+            jdbcManager.getConnection().setAutoCommit(false);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            fail("No se pudo configurar la conexión para transacciones.");
+        }
         assertNotNull(userManager);
+        assertNotNull(roleManager);
+        
     }
 
     @AfterAll
@@ -51,16 +60,17 @@ public class JDBCUserManagerTest {
     @BeforeEach
     public void setUp() throws SQLException {
         // Limpiar la base de datos antes de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Users");
+        jdbcManager.clearAllTables();
         r = new Role("Doctor"); // role ficticio
         roleManager.createRole(r);
     }
 
     @AfterEach
     public void tearDown() throws SQLException {
-        // Limpiar la base de datos después de cada prueba
-        jdbcManager.getConnection().createStatement().execute("DELETE FROM Users");
-    }
+        if (jdbcManager != null) {
+            // Deshace todos los cambios realizados durante la prueba
+            jdbcManager.getConnection().rollback();
+        }}
 
     /**
      * Test of register method, of class JDBCUserManager.

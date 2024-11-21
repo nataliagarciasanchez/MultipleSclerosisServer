@@ -4,13 +4,18 @@
  */
 package ServerJDBC;
 
+import POJOs.Doctor;
+import POJOs.Patient;
 import POJOs.Report;
+import POJOs.Role;
 import POJOs.Symptom;
+import POJOs.User;
 import ServerInterfaces.ReportManager;
-import ServerJDBC.JDBCPatientManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import POJOs.Gender;
+import java.sql.Date;
+
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -27,28 +32,40 @@ public class JDBCReport_SymptomsManagerTest {
 
     private static JDBCReport_SymptomsManager reportSymptomsManager;
     private static JDBCSymptomManager symptomManager;
+    private static JDBCReportManager reportManager;
     private static JDBCManager jdbcManager;
+    private static JDBCRoleManager roleManager;
+    private static JDBCUserManager userManager;
+    private static JDBCDoctorManager doctorManager;
+    private static JDBCPatientManager patientManager;
+    
+    private static Role rp; // role patient
+    private static Role rd; // role doctor
+    private static User up; // user patient
+    private static User ud; // user doctor
+    private static Doctor d;
+    private static Patient p;
+    private static Report report;
+    private static Symptom s1;
+    private static Symptom s2;
+    private static Symptom s3;
 
     public JDBCReport_SymptomsManagerTest() {
     }
 
     @BeforeAll
     public static void setUpClass() {
-        /* jdbcManager = new JDBCManager();
-        jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar roleManager
-        Report_SymptomsManager = new JDBCReport_SymptomsManager(jdbcManager);
-        try {
-            // Desactiva auto-commit para manejar transacciones manualmente
-            jdbcManager.getConnection().setAutoCommit(false);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            fail("No se pudo configurar la conexión para transacciones.");
-        }
-        assertNotNull(Report_SymptomsManager);*/
+        
         jdbcManager = new JDBCManager();
         jdbcManager.connect(); // Conectar la base de datos
         symptomManager = new JDBCSymptomManager(jdbcManager);
+        reportManager = new JDBCReportManager(jdbcManager);
         reportSymptomsManager = new JDBCReport_SymptomsManager(jdbcManager);
+        roleManager = new JDBCRoleManager(jdbcManager);
+        userManager = new JDBCUserManager(jdbcManager);
+        doctorManager = new JDBCDoctorManager(jdbcManager);
+        patientManager = new JDBCPatientManager(jdbcManager);
+
 
         try {
             // Desactiva auto-commit para manejar transacciones manualmente
@@ -61,6 +78,11 @@ public class JDBCReport_SymptomsManagerTest {
 
         assertNotNull(reportSymptomsManager);
         assertNotNull(symptomManager);
+        assertNotNull(reportManager);
+        assertNotNull(roleManager);
+        assertNotNull(userManager);
+        assertNotNull(doctorManager);
+        assertNotNull(patientManager);
     }
 
     @AfterAll
@@ -76,9 +98,37 @@ public class JDBCReport_SymptomsManagerTest {
     }
 
     @BeforeEach
-    public void setUp() throws SQLException {
+    public void setUp() throws SQLException, ParseException {
         // Limpiar la base de datos antes de cada prueba
         jdbcManager.clearAllTables();
+        // para crear doctor
+        rd = new Role("Doctor");
+        roleManager.createRole(rd);
+        ud = new User("emailD", "passD", rd);
+        userManager.registerUser(ud);
+        d = new Doctor("name", "specialty", ud);
+        doctorManager.createDoctor(d);
+        
+        //para crear patient
+        rp = new Role("Patient");
+        roleManager.createRole(rp);
+        up = new User("emailP", "passP", rp);
+        userManager.registerUser(up);
+        Date dob = java.sql.Date.valueOf("2003-09-30");
+        p = new Patient("name", "surname", "123456789", dob, Gender.FEMALE, "666666666", d, up);
+        
+        //para crear symptoms
+        s1 = new Symptom("symptom1");
+        symptomManager.createSymptom(s1);
+        s2 = new Symptom("symptom1");
+        symptomManager.createSymptom(s2);
+        s3 = new Symptom("symptom3");
+        symptomManager.createSymptom(s3);
+        
+        //para crear report
+        Date date = java.sql.Date.valueOf("2024-01-01");;
+        report = new Report(date, p);
+        
     }
 
     @AfterEach
@@ -96,23 +146,16 @@ public class JDBCReport_SymptomsManagerTest {
     public void testAddSymptomToReport() {
         System.out.println("addSymptomToReport");
 
-        // Crear un síntoma
-        Symptom symptom = new Symptom(1, "Fever");
-        symptomManager.createSymptom(symptom); // Guarda el síntoma en la base de datos
-
-        // Crear un reporte
-        Report report = new Report(java.sql.Date.valueOf("2024-01-01")); // Reporte sin paciente
-        ReportManager reportManager = new JDBCReportManager(jdbcManager);
-        reportManager.createReport(report); // Guarda el reporte en la base de datos
-
         // Agregar relación entre síntoma y reporte
-        reportSymptomsManager.addSymptomToReport(symptom.getId(), report.getId());
+        reportSymptomsManager.addSymptomToReport(s1.getId(), report.getId());
 
         // Validar que la relación se creó correctamente
         List<Symptom> symptoms = reportSymptomsManager.getSymptomsFromReport(report.getId());
         assertNotNull(symptoms, "La lista de síntomas no debería ser null.");
         assertEquals(1, symptoms.size(), "Debería haber exactamente 1 síntoma asociado al reporte.");
-        assertEquals(symptom.getName(), symptoms.get(0).getName(), "El nombre del síntoma debería coincidir.");
+        
+        assertEquals(s1.getName(), symptoms.get(0).getName(), "El nombre del síntoma debería coincidir.");
+        assertEquals(s1.getId(), symptoms.get(0).getId());
     }
 
     /**
@@ -123,25 +166,19 @@ public class JDBCReport_SymptomsManagerTest {
     public void testRemoveSymptomFromReport() {
         System.out.println("removeSymptomFromReport");
 
-        // Crear un síntoma
-        Symptom symptom = new Symptom(1, "Headache");
-        symptomManager.createSymptom(symptom);
-
-        // Crear un reporte
-        Report report = new Report(java.sql.Date.valueOf("2024-01-01"));
-        ReportManager reportManager = new JDBCReportManager(jdbcManager);
-        reportManager.createReport(report);
-
         // Asociar síntoma al reporte
-        reportSymptomsManager.addSymptomToReport(symptom.getId(), report.getId());
+        reportSymptomsManager.addSymptomToReport(s1.getId(), report.getId());
+        
+        List<Symptom> symptomsBefore = reportSymptomsManager.getSymptomsFromReport(report.getId());
+        assertEquals(1, symptomsBefore.size()); //comprobamos que hay 1 role
 
         // Eliminar la asociación entre síntoma y reporte
-        reportSymptomsManager.removeSymptomFromReport(symptom.getId(), report.getId());
+        reportSymptomsManager.removeSymptomFromReport(s1.getId(), report.getId());
 
         // Validar que el síntoma fue eliminado del reporte
-        List<Symptom> symptoms = reportSymptomsManager.getSymptomsFromReport(report.getId());
-        assertNotNull(symptoms, "La lista de síntomas no debería ser null.");
-        assertEquals(0, symptoms.size(), "No debería haber síntomas asociados al reporte.");
+        List<Symptom> symptomsAfter = reportSymptomsManager.getSymptomsFromReport(report.getId());
+        assertNotNull(symptomsAfter, "La lista de síntomas no debería ser null.");
+        assertEquals(0, symptomsAfter.size(), "No debería haber síntomas asociados al reporte.");
     }
 
     /**
@@ -151,28 +188,23 @@ public class JDBCReport_SymptomsManagerTest {
     public void testEmptyReport() {
         System.out.println("emptyReport");
 
-        // Crear dos síntomas
-        Symptom symptom1 = new Symptom(1, "Cough");
-        Symptom symptom2 = new Symptom(2, "Nausea");
-        symptomManager.createSymptom(symptom1);
-        symptomManager.createSymptom(symptom2);
-
-        // Crear un reporte
-        Report report = new Report(java.sql.Date.valueOf("2024-01-01"));
-        ReportManager reportManager = new JDBCReportManager(jdbcManager);
-        reportManager.createReport(report);
+        
 
         // Asociar síntomas al reporte
-        reportSymptomsManager.addSymptomToReport(symptom1.getId(), report.getId());
-        reportSymptomsManager.addSymptomToReport(symptom2.getId(), report.getId());
+        reportSymptomsManager.addSymptomToReport(s1.getId(), report.getId());
+        reportSymptomsManager.addSymptomToReport(s2.getId(), report.getId());
+        reportSymptomsManager.addSymptomToReport(s3.getId(), report.getId());
+
+        List<Symptom> symptomsBefore = reportSymptomsManager.getSymptomsFromReport(report.getId());
+        assertEquals(3, symptomsBefore.size()); //comprobamos que hay 3 sintomas
 
         // Vaciar el reporte
         reportSymptomsManager.emptyReport(report.getId());
 
         // Validar que el reporte esté vacío
-        List<Symptom> symptoms = reportSymptomsManager.getSymptomsFromReport(report.getId());
-        assertNotNull(symptoms, "La lista de síntomas no debería ser null.");
-        assertEquals(0, symptoms.size(), "No debería haber síntomas asociados al reporte.");
+        List<Symptom> symptomsAfter = reportSymptomsManager.getSymptomsFromReport(report.getId());
+        assertNotNull(symptomsAfter, "La lista de síntomas no debería ser null.");
+        assertEquals(0, symptomsAfter.size(), "No debería haber síntomas asociados al reporte.");
     }
 
     /**
@@ -183,23 +215,20 @@ public class JDBCReport_SymptomsManagerTest {
     public void testGetSymptomsFromReport() {
         System.out.println("getSymptomsFromReport");
 
-    // Crear un síntoma
-    Symptom symptom = new Symptom(1, "Fatigue");
-    symptomManager.createSymptom(symptom);
+        
 
-    // Crear un reporte
-    Report report = new Report(java.sql.Date.valueOf("2024-01-01"));
-    ReportManager reportManager = new JDBCReportManager(jdbcManager);
-    reportManager.createReport(report);
+        // Asociar síntoma al reporte
+        reportSymptomsManager.addSymptomToReport(s1.getId(), report.getId());
+        reportSymptomsManager.addSymptomToReport(s2.getId(), report.getId());
+        reportSymptomsManager.addSymptomToReport(s3.getId(), report.getId());
 
-    // Asociar síntoma al reporte
-    reportSymptomsManager.addSymptomToReport(symptom.getId(), report.getId());
-
-    // Recuperar los síntomas asociados al reporte
-    List<Symptom> symptoms = reportSymptomsManager.getSymptomsFromReport(report.getId());
-    assertNotNull(symptoms, "La lista de síntomas no debería ser null.");
-    assertEquals(1, symptoms.size(), "Debería haber exactamente 1 síntoma asociado al reporte.");
-    assertEquals(symptom.getName(), symptoms.get(0).getName(), "El nombre del síntoma debería coincidir.");
+        // Recuperar los síntomas asociados al reporte
+        List<Symptom> symptoms = reportSymptomsManager.getSymptomsFromReport(report.getId());
+        assertNotNull(symptoms, "La lista de síntomas no debería ser null.");
+        assertEquals(3, symptoms.size(), "Debería haber exactamente 3 síntoma asociado al reporte.");
+        assertEquals(s1.getName(), symptoms.get(0).getName(), "El nombre del síntoma debería coincidir.");
+        assertEquals(s2.getName(), symptoms.get(1).getName(), "El nombre del síntoma debería coincidir.");
+        assertEquals(s3.getName(), symptoms.get(2).getName(), "El nombre del síntoma debería coincidir.");
     }
 
 }
