@@ -64,7 +64,7 @@ public class JDBCPatientManagerTest {
     }
     }
 
-    /**
+   /**
      * Test of createPatient method, of class JDBCPatientManager.
      */
     @Test
@@ -161,7 +161,7 @@ public class JDBCPatientManagerTest {
     }
 
     /**
-     * Test of getPatientsFromDoctor method, of class JDBCPatientManager.
+     * Test of getPatientByUser method, of class JDBCPatientManager.
      */
     @Test
     public void  testGetPatientByUser(){
@@ -173,6 +173,18 @@ public class JDBCPatientManagerTest {
         assertNotNull(fetchedPatient);
         assertEquals(p.getUser(), fetchedPatient.getUser());
         
+    }
+    
+    /**
+     * Test of getPatientsFromDoctor method, of class JDBCPatientManager.
+     */
+    @Test
+    public void testGetPatientsFromDoctor(){
+        System.out.println("testGetPatientsFromDoctor");
+        Patient p = new Patient("TempPatient");
+        User u= new User ("TempUser");
+        patientManager.registerPatient(p,u);
+        //Integer doctorId
     }
     
 }
