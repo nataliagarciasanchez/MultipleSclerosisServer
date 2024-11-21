@@ -4,6 +4,7 @@
  */
 package POJOs;
 
+import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -11,7 +12,7 @@ import javax.persistence.*;
  *
  * @author Andreoti
  */
-public class Symptom {
+public class Symptom implements Serializable{
     
     private static final long serialVersionUID = 1L;
     private Integer id;
