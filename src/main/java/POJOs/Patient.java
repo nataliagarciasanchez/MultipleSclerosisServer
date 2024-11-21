@@ -70,6 +70,21 @@ public class Patient implements Serializable{
         
     }
     
+    public Patient( String name,String surname,String NIF, Date dob, Gender gender, String phone) {
+        this.id = null;
+        this.name = name;
+        this.surname=surname;
+        this.NIF=NIF;
+        this.dob = dob;
+        this.gender = gender;
+        this.phone = phone;
+        this.doctor = null;
+        this.user = null;
+        this.reports = null;
+        this.feedbacks = null;
+        
+    }
+    
     
 
     public static long getSerialVersionUID() {
