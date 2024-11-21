@@ -44,6 +44,7 @@ public class JDBCReportManager implements ReportManager{
                 int generatedId = generatedKeys.getInt(1);
                 r.setId(generatedId);  // Asigna el ID generado al objeto Role
             }
+            
             p.close();
             
         }catch(SQLException e) {

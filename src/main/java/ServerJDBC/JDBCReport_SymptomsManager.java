@@ -24,6 +24,7 @@ public class JDBCReport_SymptomsManager implements Report_SymptomsManager{
    
     public JDBCReport_SymptomsManager(JDBCManager manager) {
         this.manager = manager;
+        this.symptomman = new JDBCSymptomManager(manager);
         }
     
     @Override
@@ -45,12 +46,13 @@ public class JDBCReport_SymptomsManager implements Report_SymptomsManager{
     @Override
     public void removeSymptomFromReport(Integer symptomId, Integer reportId) {
         try {
-            String sql = "DELETE FROM Report_Symptoms WHERE symptom_id = ?, report_id = ?";
+            String sql = "DELETE FROM Report_Symptoms WHERE symptom_id = ? AND report_id = ?";
             PreparedStatement prep = manager.getConnection().prepareStatement(sql);
             prep.setInt(1, symptomId);
             prep.setInt(2, reportId);
 
-            prep.executeUpdate();			
+            prep.executeUpdate();
+            prep.close();
 	}catch(Exception e){
 	e.printStackTrace();
 	}
@@ -63,7 +65,8 @@ public class JDBCReport_SymptomsManager implements Report_SymptomsManager{
             PreparedStatement prep = manager.getConnection().prepareStatement(sql);
             prep.setInt(1, reportId);
 
-            prep.executeUpdate();			
+            prep.executeUpdate();
+            prep.close();
 	}catch(Exception e){
 	e.printStackTrace();
 	}
@@ -79,17 +82,17 @@ public class JDBCReport_SymptomsManager implements Report_SymptomsManager{
 	    stmt.setInt(1, reportId);
 	    ResultSet rs = stmt.executeQuery();
             
-            if (rs.next()) {
+            while (rs.next()) {
                 Integer symptom_id= rs.getInt("symptom_id");
 	        Symptom s= symptomman.getSymptomById(symptom_id);
                 symptoms.add(s);
 	   
-	        }else {
-	            System.out.println("Report with id " + reportId + " has no symptoms associated.");
 	        }
-
-	        rs.close();
-	        stmt.close();
+            if (symptoms.isEmpty()) {
+                System.out.println("Report with id " + reportId + " has no symptoms associated.");
+            }
+	    rs.close();
+	    stmt.close();
         }catch(SQLException e){
         e.printStackTrace();
         }

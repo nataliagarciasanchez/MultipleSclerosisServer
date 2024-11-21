@@ -10,7 +10,6 @@ import POJOs.Report;
 import POJOs.Role;
 import POJOs.Symptom;
 import POJOs.User;
-import ServerInterfaces.ReportManager;
 import POJOs.Gender;
 import java.sql.Date;
 
@@ -116,6 +115,7 @@ public class JDBCReport_SymptomsManagerTest {
         userManager.registerUser(up);
         Date dob = java.sql.Date.valueOf("2003-09-30");
         p = new Patient("name", "surname", "123456789", dob, Gender.FEMALE, "666666666", d, up);
+        patientManager.registerPatient(p);
         
         //para crear symptoms
         s1 = new Symptom("symptom1");
@@ -126,8 +126,9 @@ public class JDBCReport_SymptomsManagerTest {
         symptomManager.createSymptom(s3);
         
         //para crear report
-        Date date = java.sql.Date.valueOf("2024-01-01");;
+        Date date = java.sql.Date.valueOf("2024-01-01");
         report = new Report(date, p);
+        reportManager.createReport(report);
         
     }
 
@@ -171,12 +172,14 @@ public class JDBCReport_SymptomsManagerTest {
         
         List<Symptom> symptomsBefore = reportSymptomsManager.getSymptomsFromReport(report.getId());
         assertEquals(1, symptomsBefore.size()); //comprobamos que hay 1 role
-
+        
+        
         // Eliminar la asociación entre síntoma y reporte
         reportSymptomsManager.removeSymptomFromReport(s1.getId(), report.getId());
 
         // Validar que el síntoma fue eliminado del reporte
         List<Symptom> symptomsAfter = reportSymptomsManager.getSymptomsFromReport(report.getId());
+        
         assertNotNull(symptomsAfter, "La lista de síntomas no debería ser null.");
         assertEquals(0, symptomsAfter.size(), "No debería haber síntomas asociados al reporte.");
     }
@@ -197,12 +200,13 @@ public class JDBCReport_SymptomsManagerTest {
 
         List<Symptom> symptomsBefore = reportSymptomsManager.getSymptomsFromReport(report.getId());
         assertEquals(3, symptomsBefore.size()); //comprobamos que hay 3 sintomas
-
+        
         // Vaciar el reporte
         reportSymptomsManager.emptyReport(report.getId());
 
         // Validar que el reporte esté vacío
         List<Symptom> symptomsAfter = reportSymptomsManager.getSymptomsFromReport(report.getId());
+        
         assertNotNull(symptomsAfter, "La lista de síntomas no debería ser null.");
         assertEquals(0, symptomsAfter.size(), "No debería haber síntomas asociados al reporte.");
     }
@@ -214,8 +218,6 @@ public class JDBCReport_SymptomsManagerTest {
     @Test
     public void testGetSymptomsFromReport() {
         System.out.println("getSymptomsFromReport");
-
-        
 
         // Asociar síntoma al reporte
         reportSymptomsManager.addSymptomToReport(s1.getId(), report.getId());

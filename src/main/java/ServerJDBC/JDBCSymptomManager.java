@@ -33,6 +33,12 @@ public class JDBCSymptomManager implements SymptomManager{
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1,symptom.getName());
             p.executeUpdate();
+            // Obtener el ID generado por la base de datos
+            ResultSet generatedKeys = p.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int generatedId = generatedKeys.getInt(1);
+                symptom.setId(generatedId);  // Asigna el ID generado al objeto Role
+            }
             p.close();
             
         }catch(SQLException e) {
