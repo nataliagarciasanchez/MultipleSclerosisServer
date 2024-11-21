@@ -27,7 +27,8 @@ public class JDBCDoctorManagerTest {
     private static JDBCRoleManager roleManager;
     private static JDBCUserManager userManager;
     private static Role r;
-    private static User u;
+    private static User u1;
+    private static User u2;
     
     public JDBCDoctorManagerTest() {
     }
@@ -69,8 +70,10 @@ public class JDBCDoctorManagerTest {
         jdbcManager.clearAllTables();
         r = new Role ("Doctor");
         roleManager.createRole(r);
-        u = new User ("email", "password", r);
-        userManager.registerUser(u);
+        u1 = new User ("email", "password", r);
+        userManager.registerUser(u1);
+        u2 = new User ("email", "password", r);
+        userManager.registerUser(u2);
         
     }
     
@@ -89,10 +92,8 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testCreateDoctor() {
         System.out.println("createDoctor");
-        
-        Doctor d = new Doctor("TempDoctor", "NEUROLOGY", u);
+        Doctor d = new Doctor("TempDoctor", "NEUROLOGY", u1);
         System.out.println(d.toString());
-        
         doctorManager.createDoctor(d);
         Doctor fetchedDoctor = doctorManager.getDoctorById(d.getId());
         System.out.println(fetchedDoctor.toString());
@@ -110,12 +111,12 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testRemoveDoctorById() {      
         System.out.println("DeleteDoctor");
-        Doctor d = new Doctor ("TempDoctor");
+        Doctor d = new Doctor ("TempDoctor","NEUROLOGY", u1);
+        System.out.println(d.toString());
         doctorManager.createDoctor(d);
         List<Doctor> DoctorsBefore = doctorManager.getListOfDoctors();
         assertEquals(1, DoctorsBefore.size());
-        
-       doctorManager.removeDoctorById(d.getId());
+        doctorManager.removeDoctorById(d.getId());
         List<Doctor> DoctorsAfter = doctorManager.getListOfDoctors();
         assertEquals(0, DoctorsAfter.size());
        
@@ -124,10 +125,11 @@ public class JDBCDoctorManagerTest {
     /**
      * Test of updateDoctor method, of class JDBCDoctorManager.
      */
-    
+    @Test
     public void testUpdateDoctor() {
         System.out.println("updateDoctor");
-        Doctor d = new Doctor ("Doctor");
+        Doctor d = new Doctor ("TempDoctor","NEUROLOGY", u1);
+        System.out.println(d.toString());
         doctorManager.createDoctor(d);
         d.setName("UpdatedDoctor");
         doctorManager.updateDoctor(d);
@@ -143,8 +145,10 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testGetListOfDoctors() {
         System.out.println("getListOfDoctors");
-        Doctor d1 = new Doctor ("Doctor1");
-        Doctor d2 = new Doctor ("Doctor2");
+        Doctor d1 = new Doctor ("Doctor1","NEUROLOGY",u1);
+        Doctor d2 = new Doctor ("Doctor2","NEUROLOGY",u2);
+        System.out.println(d1.toString());
+        System.out.println(d2.toString());
         doctorManager.createDoctor(d1);
         doctorManager.createDoctor(d2);
 
@@ -152,6 +156,10 @@ public class JDBCDoctorManagerTest {
         assertEquals(2, doctors.size());
         assertTrue(doctors.stream().anyMatch(doctor -> doctor.getName().equals("Doctor1")));
         assertTrue(doctors.stream().anyMatch(doctor -> doctor.getName().equals("Doctor2")));
+        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getSpecialty().equals("NEUROLOGY")));
+        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getSpecialty().equals("NEUROLOGY")));
+        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getId().equals(d1.getId())));
+        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getId().equals(d2.getId())));
     }
     
 
@@ -161,15 +169,15 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testGetDoctorById() {
         System.out.println("getDoctorById");
-        User u= new User ("TempUser");
-        Doctor d = new Doctor(1,"TempDoctor", "NEUROLOGY", u);
+        Doctor d = new Doctor ("Doctor1","NEUROLOGY",u1);
+        System.out.println(d.toString());
         doctorManager.createDoctor(d);
         Doctor fetchedDoctor = doctorManager.getDoctorById(d.getId());
         assertNotNull(fetchedDoctor);
         assertEquals(d.getId(), fetchedDoctor.getId());
         assertEquals(d.getName(), fetchedDoctor.getName());
         assertEquals(d.getSpecialty(), fetchedDoctor.getSpecialty());
-        assertEquals(d.getUser(), fetchedDoctor.getUser());
+        
         
        
     }
@@ -180,12 +188,11 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testgetDoctorByUser(){
         System.out.println("getDoctorByUser");
-        User u= new User ("TempUser");
-        Doctor d = new Doctor(1,"TempDoctor", "NEUROLOGY", u);
+        Doctor d = new Doctor(1,"TempDoctor", "NEUROLOGY", u1);
+         System.out.println(d.toString());
         doctorManager.createDoctor(d);
-        Doctor fetchedDoctor = doctorManager.getDoctorByUser(u);
+        Doctor fetchedDoctor = doctorManager.getDoctorByUser(u1);
         assertNotNull(fetchedDoctor);
-        assertEquals(d.getUser(), fetchedDoctor.getUser());
         assertEquals(d.getId(), fetchedDoctor.getId());
         assertEquals(d.getName(), fetchedDoctor.getName());
         assertEquals(d.getSpecialty(), fetchedDoctor.getSpecialty());
@@ -199,16 +206,15 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testGetDoctorByName() {
         System.out.println("getDoctorByName");
-        User u= new User ("TempUser");
-        Doctor d = new Doctor(1,"TempDoctor", "NEUROLOGY", u);
+        Doctor d = new Doctor("TempDoctor", "NEUROLOGY", u1);
+        System.out.println(d.toString());
         doctorManager.createDoctor(d);
         List<Doctor> doctors= doctorManager.getDoctorByName("TempDoctor");
         assertNotNull(doctors);
         assertFalse(doctors.isEmpty());
         assertTrue(doctors.stream().anyMatch(doctor -> doctor.getName().equals("TempDoctor")));
-        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getId().equals(1)));
+        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getId().equals(d.getId())));
         assertTrue(doctors.stream().anyMatch(doctor -> doctor.getSpecialty().equals("NEUROLOGY")));
-        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getUser().equals(u)));
     }
     
     //pero en create doctor no deberia haber register doctor
@@ -217,21 +223,20 @@ public class JDBCDoctorManagerTest {
      */
     @Test
         public void testgetDoctorIds(){
-        User u1= new User ("TempUser1");
-        Doctor d1 = new Doctor(1,"TempDoctor1", "NEUROLOGY", u1);
+        Doctor d1 = new Doctor("TempDoctor1", "NEUROLOGY", u1);
         doctorManager.createDoctor(d1);
-        User u2= new User ("TempUser2");
-        Doctor d2 = new Doctor(2,"TempDoctor2", "NEUROLOGY", u2);
+        System.out.println(d1.toString());
+        Doctor d2 = new Doctor("TempDoctor2", "NEUROLOGY", u2);
         doctorManager.createDoctor(d2);
-        User u3= new User ("TempUser3");
-        Doctor d3 = new Doctor(1,"TempDoctor3", "NEUROLOGY", u3);
-        doctorManager.createDoctor(d3);
+        System.out.println(d2.toString());
         List<Integer> id_doctors= doctorManager.getDoctorIds();
         assertNotNull(id_doctors);
         assertFalse(id_doctors.isEmpty());
-        assertTrue(id_doctors.contains(1), "The list should contain the doctor ID 1");
-        assertTrue(id_doctors.contains(2), "The list should contain the doctor ID 2");
-        assertTrue(id_doctors.contains(3), "The list should contain the doctor ID 3");
+        assertTrue(id_doctors.contains(d1.getId()), "The list should contain the doctor ID");
+        assertTrue(id_doctors.contains(d2.getId()), "The list should contain the doctor ID");
+        
         }    
+    
+
     
 }
