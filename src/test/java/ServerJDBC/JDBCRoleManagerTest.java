@@ -68,6 +68,7 @@ public class JDBCRoleManagerTest {
     @AfterEach
     public void tearDown() throws SQLException {
         if (jdbcManager != null) {
+            jdbcManager.clearAllTables();
         // Deshace todos los cambios realizados durante la prueba
         jdbcManager.getConnection().rollback();
     }
@@ -89,7 +90,8 @@ public class JDBCRoleManagerTest {
         Role fetchedRole = roleManager.getRoleById(role.getId());
         System.out.println(fetchedRole.toString());
         assertNotNull(fetchedRole);
-        assertEquals("Admin", fetchedRole.getName());
+        assertEquals(role.getId(), fetchedRole.getId());
+        assertEquals(role.getName(), fetchedRole.getName());
         
     }
 
@@ -103,12 +105,12 @@ public class JDBCRoleManagerTest {
         roleManager.createRole(role);
 
         List<Role> rolesBefore = roleManager.getListOfRoles();
-        assertEquals(1, rolesBefore.size());
+        assertEquals(1, rolesBefore.size()); //comprobamos que hay 1 role
 
         roleManager.removeRoleById(role.getId());
 
         List<Role> rolesAfter = roleManager.getListOfRoles();
-        assertEquals(0, rolesAfter.size());
+        assertEquals(0, rolesAfter.size()); //comprobamos que hay 0 roles
     }
 
     /**
@@ -128,7 +130,8 @@ public class JDBCRoleManagerTest {
         // Verificar que el rol fue actualizado
         Role updatedRole = roleManager.getRoleById(role.getId());
         assertNotNull(updatedRole);
-        assertEquals("UpdatedUser", updatedRole.getName());
+        assertEquals(role.getId(), updatedRole.getId());
+        assertEquals(role.getName(), updatedRole.getName());
     }
 
     /**
@@ -137,13 +140,18 @@ public class JDBCRoleManagerTest {
     @Test
     public void testGetListOfRoles() {
         System.out.println("getListOfRoles");
-        roleManager.createRole(new Role("User"));
-        roleManager.createRole(new Role("Moderator"));
+        Role r1 = new Role ("Doctor");
+        Role r2 = new Role ("Patient");
+        roleManager.createRole(r1);
+        roleManager.createRole(r2);
 
         List<Role> roles = roleManager.getListOfRoles();
+        System.out.println(roles.toString());
         assertEquals(2, roles.size());
-        assertTrue(roles.stream().anyMatch(role -> role.getName().equals("User")));
-        assertTrue(roles.stream().anyMatch(role -> role.getName().equals("Moderator")));
+        assertTrue(roles.stream().anyMatch(role -> role.getId().equals(r1.getId())));
+        assertTrue(roles.stream().anyMatch(role -> role.getId().equals(r2.getId())));
+        assertTrue(roles.stream().anyMatch(role -> role.getName().equals(r1.getName())));
+        assertTrue(roles.stream().anyMatch(role -> role.getName().equals(r2.getName())));
     }
 
     /**
@@ -161,8 +169,8 @@ public class JDBCRoleManagerTest {
 
         // Verificar que el rol obtenido sea el mismo
         assertNotNull(fetchedRole);
-        assertEquals("Admin", fetchedRole.getName());
         assertEquals(role.getId(), fetchedRole.getId());
+        assertEquals(role.getName(), fetchedRole.getName());
     }
 
     /**
@@ -180,7 +188,8 @@ public class JDBCRoleManagerTest {
         System.out.println(fetchedRole.toString());
         // Verificar que el rol obtenido sea el correcto
         assertNotNull(fetchedRole);
-        assertEquals("Moderator", fetchedRole.getName());
+        assertEquals(role.getName(), fetchedRole.getName());
+        assertEquals(role.getId(), fetchedRole.getId());
     }
     
 }
