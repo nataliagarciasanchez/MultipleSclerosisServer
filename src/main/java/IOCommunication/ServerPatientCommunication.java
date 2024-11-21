@@ -133,7 +133,6 @@ public class ServerPatientCommunication {
                 User user = (User) in.readObject();
                 userManager.registerUser(user);
                 Role role = new Role(1, "patient");
-                userManager.assignRole2User(user, role);
                 Patient patient = (Patient) in.readObject();
                 patientManager.registerPatient(patient, user);
                 
@@ -181,14 +180,12 @@ public class ServerPatientCommunication {
             try {
                 String username = (String) in.readObject();
                 String newPassword = (String) in.readObject();
-                
-                User user = userManager.login(username, newPassword);
-                if (user != null) {
-                    userManager.changePassword(user, newPassword);
-                    out.writeObject("Password changed correclty");
-                } else {
-                    out.writeObject("Incorrect username or password");
-                }
+
+                User user = new User(username, newPassword, new Role("patient"));
+
+                userManager.updateUser(user);
+                out.writeObject("Information changed correclty");
+
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
