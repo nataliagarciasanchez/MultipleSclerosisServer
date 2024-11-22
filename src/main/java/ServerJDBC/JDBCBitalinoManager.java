@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class JDBCBitalinoManager implements BitalinoManager{
      private JDBCManager manager;
-     private JDBCReportManager reportman;
+     
    
     public JDBCBitalinoManager(JDBCManager manager) {
         this.manager = manager;
@@ -98,9 +98,7 @@ public class JDBCBitalinoManager implements BitalinoManager{
                 Float duration = rs.getFloat("duration");
                 String signalTypeString = rs.getString("signal_type");
                 SignalType ST = SignalType.valueOf(signalTypeString);
-                Integer report_id = rs.getInt("report_id");
-                Report r = reportman.getReportById(report_id);
-	        Bitalino b = new Bitalino(id,date,ST,file_path, duration,r);
+                Bitalino b = new Bitalino(id,date,ST,file_path, duration);
 	        bitalinos.add(b);
 	    }
 	    rs.close();
@@ -126,10 +124,8 @@ public class JDBCBitalinoManager implements BitalinoManager{
 	            String signalTypeString = rs.getString("signal_type");
                     String b_file_path = rs.getNString("file_path");
                     Float b_duration = rs.getFloat("duration");
-                    Integer report_id = rs.getInt("report_id");
-                    Report r= reportman.getReportById(report_id);
                     SignalType signal_type = SignalType.valueOf(signalTypeString);
-                    bitalino = new Bitalino(id, b_date, signal_type,b_file_path, b_duration, r);
+                    bitalino = new Bitalino(id, b_date, signal_type,b_file_path, b_duration);
 	        } else {
 	            System.out.println("Bitalino with ID " + id + " not found.");
 	        }
@@ -157,11 +153,9 @@ public class JDBCBitalinoManager implements BitalinoManager{
 	            String signalTypeString = rs.getString("signal_type");
                     String b_file_path= rs.getString("file_path");
                     Float b_duration = rs.getFloat("duration");
-                    Integer report_id = rs.getInt("report_id");
-                    Report r = reportman.getReportById(report_id);
                     SignalType signal_type = SignalType.valueOf(signalTypeString);
                     
-                    bitalinos.add(new Bitalino(id, b_date, signal_type,b_file_path, b_duration, r));
+                    bitalinos.add(new Bitalino(id, b_date, signal_type,b_file_path, b_duration));
 	        } else {
 	            System.out.println("Bitalino with date " + d + " not found.");
 	        }
@@ -189,11 +183,9 @@ public class JDBCBitalinoManager implements BitalinoManager{
 	            String signalTypeString = rs.getString("signal_type");
                     String b_file_path = rs.getString("file_path");
                     Float b_duration = rs.getFloat("duration");
-                    Integer r_id = rs.getInt("report_id");
-                    Report r = reportman.getReportById(r_id);
                     SignalType signal_type = SignalType.valueOf(signalTypeString);
                     
-                    bitalinos.add(new Bitalino(id, b_date, signal_type,b_file_path, b_duration, r));
+                    bitalinos.add(new Bitalino(id, b_date, signal_type,b_file_path, b_duration));
 	        } else {
 	            System.out.println("Bitalino with date " + report_id + " not found.");
 	        }

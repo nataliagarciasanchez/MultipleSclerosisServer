@@ -36,6 +36,7 @@ public class JDBCReportManager implements ReportManager{
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setDate(1,r.getDate());
             p.setInt(2,r.getPatient().getId());
+            
             p.executeUpdate();
             // Obtener el ID generado por la base de datos
             ResultSet generatedKeys = p.getGeneratedKeys();
