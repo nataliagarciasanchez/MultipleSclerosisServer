@@ -21,7 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Class used to test all the method in the communication
  * @author maipa
  */
 public class ServerPatientCommunication {
@@ -41,6 +41,7 @@ public class ServerPatientCommunication {
     
     
     /**
+     * 
      * startServer is called from the menu when the Server is executed
      */
     public void startServer(){
@@ -81,7 +82,7 @@ public class ServerPatientCommunication {
             try{
                 in = new ObjectInputStream(patientSocket.getInputStream());
                 out = new ObjectOutputStream(patientSocket.getOutputStream());
-               
+                out.flush();
                 handlePatientsRequest();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -92,8 +93,8 @@ public class ServerPatientCommunication {
         }
         
         private void handlePatientsRequest(){
-            
-            while(true){
+            boolean running=true;
+            while(running){
                 try {
                     String action = (String) in.readObject(); // Leer acción del cliente
                     
@@ -105,7 +106,9 @@ public class ServerPatientCommunication {
                             handleLogin();
                             break;
                         case "logout":
+                            running=false;
                             handleLogout();
+                            break;
                         case "updateInformation":
                             handleUpdateInformation();
                             break;
@@ -129,12 +132,12 @@ public class ServerPatientCommunication {
         }
 
         private void handleRegister() {
-           /* try {
+          try {
                 User user = (User) in.readObject();
                 userManager.registerUser(user);
                 Role role = new Role(1, "patient");
                 Patient patient = (Patient) in.readObject();
-                patientManager.registerPatient(patient, user);
+                patientManager.registerPatient(patient);
                 
                 out.writeObject("Registered with success");
                 out.flush();
@@ -147,7 +150,7 @@ public class ServerPatientCommunication {
                 } catch (IOException ex) {
                     Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }*/
+            }
         }
 
         private void handleLogin() {
@@ -156,11 +159,7 @@ public class ServerPatientCommunication {
                 String password = (String) in.readObject();
                 User user = userManager.login(username, password);
                 Patient patient = patientManager.getPatientByUser(user);
-                if (patient != null) {
-                    out.writeObject("Successful login");
-                } else {
-                    out.writeObject("Incorrect username and/or password");
-                }
+                out.writeObject(patient);
                 
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
