@@ -4,9 +4,11 @@
  */
 package IOCommunication;
 
+import POJOs.Doctor;
 import POJOs.Patient;
 import POJOs.Role;
 import POJOs.User;
+import ServerJDBC.JDBCDoctorManager;
 import ServerJDBC.JDBCManager;
 import ServerJDBC.JDBCPatientManager;
 import ServerJDBC.JDBCRoleManager;
@@ -31,11 +33,14 @@ public class ServerPatientCommunication {
     private JDBCUserManager userManager;
     private JDBCRoleManager roleManager;
     private JDBCPatientManager patientManager;
+    private JDBCDoctorManager doctorManager;
+    
 
     public ServerPatientCommunication(int port, JDBCManager jdbcManager) {
         this.roleManager=new JDBCRoleManager(jdbcManager);
         this.userManager = new JDBCUserManager(jdbcManager, roleManager);
         this.patientManager=new JDBCPatientManager(jdbcManager);
+        this.doctorManager=new JDBCDoctorManager(jdbcManager);
         this.port=port;   
     }
     
@@ -159,6 +164,9 @@ public class ServerPatientCommunication {
                 String password = (String) in.readObject();
                 User user = userManager.login(username, password);
                 Patient patient = patientManager.getPatientByUser(user);
+                Doctor doctor = doctorManager.getDoctorById(patientManager.getDoctorIdFromPatient(patient));
+                patient.setDoctor(doctor);
+                patient.setUser(user);
                 out.writeObject(patient);
                 
             } catch (IOException | ClassNotFoundException ex) {
