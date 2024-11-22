@@ -34,12 +34,16 @@ public class Bitalino implements Serializable{
          this.file_path=file_path;
          this.duration=duration;
      }
-    
-    //FOR THE TEST
-    public Bitalino (SignalType signal_type){
+     
+    public Bitalino (Integer id,Date date,SignalType signal_type,String file_path,Float duration){
+         this.id=id;
          this.signal_type=signal_type;
-        }
-
+         this.file_path=file_path;
+         this.duration=duration;
+     }
+  
+    
+    
     public Bitalino(Integer id, Date date, SignalType signal_type, String file_path, Float duration, Report report) {
         this.id = id;
         this.date = date;

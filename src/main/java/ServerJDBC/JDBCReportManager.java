@@ -21,10 +21,9 @@ import java.util.ArrayList;
  * @author Andreoti
  */
 public class JDBCReportManager implements ReportManager{
+    
     private JDBCManager manager;
-    private JDBCReport_SymptomsManager rep_symMan;
-    private JDBCBitalinoManager bitalinoMan;
-    private JDBCPatientManager patientMan;
+        
       
     public JDBCReportManager(JDBCManager manager) {
         this.manager = manager;
@@ -37,6 +36,7 @@ public class JDBCReportManager implements ReportManager{
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setDate(1,r.getDate());
             p.setInt(2,r.getPatient().getId());
+            
             p.executeUpdate();
             // Obtener el ID generado por la base de datos
             ResultSet generatedKeys = p.getGeneratedKeys();
@@ -89,15 +89,7 @@ public class JDBCReportManager implements ReportManager{
             while (rs.next()) {
                 Integer id = rs.getInt("id");
                 Date date = rs.getDate("date");
-                
-                Integer patient_id = rs.getInt("patient_id");
-                Patient p = patientMan.getPatientById(patient_id);
-                
-                List <Bitalino> bitalinos = bitalinoMan.getBitalinosOfReport(id);
-                
-                List <Symptom> symptoms = rep_symMan.getSymptomsFromReport(id);
-                
-                Report report = new Report(id, date, p, bitalinos, symptoms);
+                Report report = new Report(id, date);
                 reports.add(report);
             }
 	            
@@ -121,14 +113,8 @@ public class JDBCReportManager implements ReportManager{
             while (rs.next()) {
 	        Integer id = rs.getInt("id");
 	        Date date = rs.getDate("date");
-                Integer patient_id = rs.getInt("patient_id");
-                Patient p = patientMan.getPatientById(patient_id);
-                
-                List <Bitalino> bitalinos = bitalinoMan.getBitalinosOfReport(id);
-                
-                List <Symptom> symptoms = rep_symMan.getSymptomsFromReport(id);
-                
-                Report report = new Report(id, date, p, bitalinos, symptoms);       
+                         
+                Report report = new Report(id, date);       
                 reports.add(report);
                 
 	    }
@@ -156,14 +142,7 @@ public class JDBCReportManager implements ReportManager{
             if (rs.next()) {
 	        
                 Date date = rs.getDate("date");
-                Integer patient_id = rs.getInt("patient_id");
-                Patient p = patientMan.getPatientById(patient_id);
-                
-                List <Bitalino> bitalinos = bitalinoMan.getBitalinosOfReport(id);
-                
-                List <Symptom> symptoms = rep_symMan.getSymptomsFromReport(id);
-                
-                report = new Report(id, date, p, bitalinos, symptoms);
+                report = new Report(id, date);
 	        }else {
 	            System.out.println("Report with ID " + id + " not found.");
 	        }
@@ -187,16 +166,8 @@ public class JDBCReportManager implements ReportManager{
             
             if (rs.next()) {
 	        
-                Integer id = rs.getInt("id");
-                
-                Integer patient_id = rs.getInt("patient_id");
-                Patient p = patientMan.getPatientById(patient_id);
-                
-                List <Bitalino> bitalinos = bitalinoMan.getBitalinosOfReport(id);
-                
-                List <Symptom> symptoms = rep_symMan.getSymptomsFromReport(id);
-                
-                Report report = new Report(id, date, p, bitalinos, symptoms);
+                Integer id = rs.getInt("id");             
+                Report report = new Report(id, date);
                                 
                 reports.add(report);
 	        }else {

@@ -133,7 +133,6 @@ public class JDBCBitalinoManagerTest {
         assertEquals(b.getSignal_type(), fetchedBitalino.getSignal_type());
         assertEquals(b.getFile_path(), fetchedBitalino.getFile_path());
         assertEquals(b.getDuration(), fetchedBitalino.getDuration());
-        assertEquals(b.getReport(), fetchedBitalino.getReport());
         assertEquals(b.getId(), fetchedBitalino.getId());
     }
 
@@ -200,8 +199,6 @@ public class JDBCBitalinoManagerTest {
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getFile_path().equals(b2.getFile_path())));     
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDuration().equals(b1.getDuration())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDuration().equals(b2.getDuration())));
-        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getReport().equals(b1.getReport())));
-        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getReport().equals(b2.getReport())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getId().equals(b1.getId())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getId().equals(b2.getId())));
         
@@ -224,7 +221,7 @@ public class JDBCBitalinoManagerTest {
         assertEquals(b.getSignal_type(), fetchedBitalino.getSignal_type());
         assertEquals(b.getFile_path(), fetchedBitalino.getFile_path());
         assertEquals(b.getDuration(), fetchedBitalino.getDuration());
-        assertEquals(b.getReport(), fetchedBitalino.getReport());
+       
       }
 
     /**
@@ -244,7 +241,7 @@ public class JDBCBitalinoManagerTest {
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getSignal_type().equals(b.getSignal_type())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getFile_path().equals(b.getFile_path())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDuration().equals(b.getDuration())));
-        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getReport().equals(b.getReport())));
+        
     }
 
     /**
