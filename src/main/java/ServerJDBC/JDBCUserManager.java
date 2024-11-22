@@ -236,20 +236,26 @@ public class JDBCUserManager implements UserManager {
      */
     @Override
     public User getUserByEmail(String email) {
+        User userTemp = null;
         User user = null;
+        Integer id = null;
+        String password = null;
         String sql = "SELECT * FROM Users WHERE email = ?";
         try {
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1, email);
             ResultSet rs = p.executeQuery();
             if (rs.next()) {
-                Integer id = rs.getInt("id");
-                String password = rs.getString("password");
-                //Role role = roleMan.getRoleById(rs.getInt("role_id"));
-                user = new User(id, email, password);
+                id = rs.getInt("id");
+                password = rs.getString("password");
+                userTemp = new User(id, email, password);
             }
             rs.close();
             p.close();
+            
+            Role role=this.getRoleByUser(userTemp);
+            user=new User(id,email,password,role);
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -293,5 +299,28 @@ public class JDBCUserManager implements UserManager {
         }
         return users;
 
+    }
+    
+    @Override
+    public Role getRoleByUser(User user) {
+        Role role = null;
+        String sql = "SELECT * FROM Users u JOIN Roles r ON u.role_id=r.id WHERE u.id = ?";
+        try {
+            PreparedStatement p = manager.getConnection().prepareStatement(sql);
+            p.setInt(1, user.getId());
+            ResultSet rs = p.executeQuery();
+            if (rs.next()) {
+
+                int roleId = rs.getInt("id");
+                String roleName = rs.getString("name");
+                role = new Role(roleId, roleName);
+
+            }
+            rs.close();
+            p.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return role;
     }
 }

@@ -132,13 +132,13 @@ public class ServerPatientCommunication {
         }
 
         private void handleRegister() {
-          try {
+            try {
                 User user = (User) in.readObject();
                 userManager.registerUser(user);
                 Role role = new Role(1, "patient");
                 Patient patient = (Patient) in.readObject();
                 patientManager.registerPatient(patient);
-                
+
                 out.writeObject("Registered with success");
                 out.flush();
             } catch (IOException | ClassNotFoundException ex) {
@@ -179,9 +179,9 @@ public class ServerPatientCommunication {
             try {
                 String username = (String) in.readObject();
                 String newPassword = (String) in.readObject();
-
-                User user = new User(username, newPassword, new Role("patient"));
-
+                //Role role_patient = roleManager.getRoleByName("patient");
+                User user=userManager.getUserByEmail(username);
+                user.setPassword(newPassword);
                 userManager.updateUser(user);
                 out.writeObject("Information changed correclty");
 

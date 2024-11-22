@@ -19,13 +19,10 @@ public interface UserManager {
     public void registerUser(User user);
     public User login(String email, String password);
     public void removeUserById(Integer id);
-    public void updateUser(User u);
+    public void updateUser(User user);
     public List <User> getListOfUsers();
     public User getUserById(Integer id);
     public User getUserByEmail(String email); // not a list because it must be unique
     public List <User> getUsersByRole(Integer role_id);
-    
-    
-    
-    
+    public Role getRoleByUser(User user); 
 }
