@@ -49,6 +49,7 @@ public class Report implements Serializable{
         this.patient = patient;
         this.bitalinos = null;
         this.symptoms = null;
+        this.bitalinos = null;
         
      }
     
