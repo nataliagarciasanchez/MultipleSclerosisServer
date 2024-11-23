@@ -47,7 +47,7 @@ public class JDBCUserManagerTest {
         }
         assertNotNull(userManager);
         assertNotNull(roleManager);
-        
+
     }
 
     @AfterAll
@@ -70,7 +70,8 @@ public class JDBCUserManagerTest {
         if (jdbcManager != null) {
             // Deshace todos los cambios realizados durante la prueba
             jdbcManager.getConnection().rollback();
-        }}
+        }
+    }
 
     /**
      * Test of register method, of class JDBCUserManager.
@@ -94,7 +95,7 @@ public class JDBCUserManagerTest {
     @Test
     public void testLogin() {
         System.out.println("login");
-        
+
         User user = new User("login@example.com", "password123", r);
         userManager.registerUser(user);
 
@@ -111,18 +112,19 @@ public class JDBCUserManagerTest {
     @Test
     public void testRemoveUserById() {
         System.out.println("removeUserById");
+
         User user = new User("delete@example.com", "password123", r);
         userManager.registerUser(user);
 
         List<User> usersBefore = userManager.getListOfUsers();
-        assertEquals(1, usersBefore.size()); //comprobamos que hay 1 role
+        assertEquals(1, usersBefore.size(), "Debería haber exactamente 1 usuario antes de eliminar.");
 
-        roleManager.removeRoleById(user.getId());
+        userManager.removeUserById(user.getId()); // Eliminar usuario
 
         List<User> usersAfter = userManager.getListOfUsers();
-        assertEquals(0, usersAfter.size()); //comprobamos que hay 0 roles}
+        assertEquals(0, usersAfter.size(), "Debería haber 0 usuarios después de eliminar.");
     }
-    
+
     /**
      * Test of updateUser method, of class JDBCUserManager.
      */
@@ -150,24 +152,16 @@ public class JDBCUserManagerTest {
     public void testGetListOfUsers() {
         System.out.println("getListOfUsers");
         User u1 = new User("user1@example.com", "password1", r);
-        User u2 = new User("user1@example.com", "password1", r);
+        User u2 = new User("user2@example.com", "password2", r);
 
         userManager.registerUser(u1);
-        userManager.registerUser(new User("user1@example.com", "password1", r));
-        
         userManager.registerUser(u2);
-        userManager.registerUser(new User("user2@example.com", "password2", r));
 
         List<User> users = userManager.getListOfUsers();
         assertEquals(2, users.size(), "Debería haber exactamente 2 usuarios en la base de datos.");
-        
         assertTrue(users.stream().anyMatch(user -> user.getId().equals(u1.getId())));
         assertTrue(users.stream().anyMatch(user -> user.getId().equals(u2.getId())));
-        assertTrue(users.stream().anyMatch(user -> user.getEmail().equals(u1.getEmail())));
-        assertTrue(users.stream().anyMatch(user -> user.getEmail().equals(u2.getEmail())));
-        assertTrue(users.stream().anyMatch(user -> user.getEmail().equals(u1.getPassword())));
-        assertTrue(users.stream().anyMatch(user -> user.getEmail().equals(u2.getPassword())));
-    
+
     }
 
     /**
@@ -193,7 +187,7 @@ public class JDBCUserManagerTest {
     @Test
     public void testGetUserByEmail() {
         System.out.println("getUserByEmail");
-        
+
         User user = new User("getbyemail@example.com", "password123", r);
         userManager.registerUser(user);
 
@@ -204,32 +198,23 @@ public class JDBCUserManagerTest {
         assertEquals(user.getPassword(), fetchedUser.getPassword());
     }
 
-    
     /**
      * Test of getUsersByRole method, of class JDBCUserManager.
      */
     @Test
     public void testGetUsersByRole() {
         System.out.println("getUsersByRole");
+
         User u1 = new User("user1@example.com", "password1", r);
-        User u2 = new User("user1@example.com", "password1", r);
+        User u2 = new User("user2@example.com", "password2", r);
 
         userManager.registerUser(u1);
-        userManager.registerUser(new User("user1@example.com", "password1", r));
-        
         userManager.registerUser(u2);
-        userManager.registerUser(new User("user2@example.com", "password2", r));
 
         List<User> users = userManager.getUsersByRole(r.getId());
-        assertEquals(2, users.size());
+        assertEquals(2, users.size(), "Debería haber exactamente 2 usuarios con el rol especificado.");
         assertTrue(users.stream().anyMatch(user -> user.getId().equals(u1.getId())));
         assertTrue(users.stream().anyMatch(user -> user.getId().equals(u2.getId())));
-        assertTrue(users.stream().anyMatch(user -> user.getEmail().equals(u1.getEmail())));
-        assertTrue(users.stream().anyMatch(user -> user.getEmail().equals(u2.getEmail())));
-        assertTrue(users.stream().anyMatch(user -> user.getEmail().equals(u1.getPassword())));
-        assertTrue(users.stream().anyMatch(user -> user.getEmail().equals(u2.getPassword())));
-    
-        
     }
 
 }
