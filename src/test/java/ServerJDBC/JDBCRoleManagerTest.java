@@ -71,7 +71,7 @@ public class JDBCRoleManagerTest {
             jdbcManager.clearAllTables();
         // Deshace todos los cambios realizados durante la prueba
         jdbcManager.getConnection().rollback();
-    }
+        }
     }
 
     /**

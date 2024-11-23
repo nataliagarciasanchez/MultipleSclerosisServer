@@ -4,11 +4,8 @@
  */
 package ServerJDBC;
 
-import POJOs.Patient;
 import POJOs.Role;
 import POJOs.User;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -53,7 +50,12 @@ public class JDBCUserManagerTest {
     @AfterAll
     public static void tearDownClass() {
         if (jdbcManager != null) {
+            try{
+            jdbcManager.getConnection().setAutoCommit(true); // Restaura auto-commit
             jdbcManager.disconnect();
+            }catch (SQLException e) {
+            e.printStackTrace();
+        }
         }
     }
 
@@ -68,8 +70,9 @@ public class JDBCUserManagerTest {
     @AfterEach
     public void tearDown() throws SQLException {
         if (jdbcManager != null) {
-            // Deshace todos los cambios realizados durante la prueba
-            jdbcManager.getConnection().rollback();
+            jdbcManager.clearAllTables();
+        // Deshace todos los cambios realizados durante la prueba
+        jdbcManager.getConnection().rollback();
         }
     }
 
@@ -161,7 +164,10 @@ public class JDBCUserManagerTest {
         assertEquals(2, users.size(), "Debería haber exactamente 2 usuarios en la base de datos.");
         assertTrue(users.stream().anyMatch(user -> user.getId().equals(u1.getId())));
         assertTrue(users.stream().anyMatch(user -> user.getId().equals(u2.getId())));
-
+        assertTrue(users.stream().anyMatch(user -> user.getEmail().equals(u1.getEmail())));
+        assertTrue(users.stream().anyMatch(user -> user.getEmail().equals(u2.getEmail())));
+        assertTrue(users.stream().anyMatch(user -> user.getPassword().equals(u1.getPassword())));
+        assertTrue(users.stream().anyMatch(user -> user.getPassword().equals(u2.getPassword())));
     }
 
     /**
@@ -215,6 +221,11 @@ public class JDBCUserManagerTest {
         assertEquals(2, users.size(), "Debería haber exactamente 2 usuarios con el rol especificado.");
         assertTrue(users.stream().anyMatch(user -> user.getId().equals(u1.getId())));
         assertTrue(users.stream().anyMatch(user -> user.getId().equals(u2.getId())));
+        assertTrue(users.stream().anyMatch(user -> user.getEmail().equals(u1.getEmail())));
+        assertTrue(users.stream().anyMatch(user -> user.getEmail().equals(u2.getEmail())));
+        assertTrue(users.stream().anyMatch(user -> user.getPassword().equals(u1.getPassword())));
+        assertTrue(users.stream().anyMatch(user -> user.getPassword().equals(u2.getPassword())));
+
     }
 
 }
