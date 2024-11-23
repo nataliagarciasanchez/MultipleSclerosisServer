@@ -20,30 +20,40 @@ import java.util.List;
  * @author noeli
  */
 public class JDBCFeedbackManager implements FeedbackManager {
-    
+
     private JDBCManager manager;
     private JDBCDoctorManager doctorman;
     private JDBCPatientManager patientman;
-   
 
+    /**
+     * Constructor for JDBCFeedbackManager.
+     *
+     * @param manager the JDBCManager instance for database connection
+     * management.
+     * @param doctorman the JDBCDoctorManager instance for managing doctors.
+     * @param patientman the JDBCPatientManager instance for managing patients.
+     */
     public JDBCFeedbackManager(JDBCManager manager, JDBCDoctorManager doctorman, JDBCPatientManager patientman) {
         this.manager = manager;
         this.doctorman = doctorman;
         this.patientman = patientman;
     }
 
-  
-    
+    /**
+     * Creates a new feedback entry in the database.
+     *
+     * @param f the Feedback object containing the data to be inserted.
+     */
     @Override
     public void createFeedback(Feedback f) {
-        try{
+        try {
             String sql = "INSERT INTO Feedbacks (date, message, doctor_id, patient_id)"
-                    +"values (?,?,?,?)";
+                    + "values (?,?,?,?)";
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
-            p.setDate(1,f.getDate());
-            p.setString(2,f.getMessage());
-            p.setInt(3,f.getDoctor().getId());
-            p.setInt(4,f.getPatient().getId());
+            p.setDate(1, f.getDate());
+            p.setString(2, f.getMessage());
+            p.setInt(3, f.getDoctor().getId());
+            p.setInt(4, f.getPatient().getId());
             p.executeUpdate();
             // Obtener el ID generado por la base de datos
             ResultSet generatedKeys = p.getGeneratedKeys();
@@ -52,160 +62,195 @@ public class JDBCFeedbackManager implements FeedbackManager {
                 f.setId(generatedId);  // Asigna el ID generado al objeto Role
             }
             p.close();
-            
-        }catch(SQLException e) {
+
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Removes a feedback entry from the database by its ID.
+     *
+     * @param id the ID of the feedback to be removed.
+     */
     @Override
     public void removeFeedbackById(Integer id) {
         try {
             String sql = "DELETE FROM Feedbacks WHERE id = ?";
             PreparedStatement prep = manager.getConnection().prepareStatement(sql);
             prep.setInt(1, id);
-            prep.executeUpdate();			
-	}catch(Exception e){
+            prep.executeUpdate();
+        } catch (Exception e) {
             e.printStackTrace();
-        }}
+        }
+    }
 
+    /**
+     * Updates an existing feedback entry in the database.
+     *
+     * @param f the Feedback object containing updated data.
+     */
     @Override
     public void updateFeedback(Feedback f) {
         String sql = "UPDATE Feedbacks SET date = ?, message = ?, doctor_id= ?, patient_id= ? WHERE id = ?";
-	try {
+        try {
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	    stmt.setDate(1, f.getDate());
-            stmt.setString (2, f.getMessage());
+            stmt.setDate(1, f.getDate());
+            stmt.setString(2, f.getMessage());
             stmt.setInt(3, f.getDoctor().getId());
             stmt.setInt(4, f.getPatient().getId());
-	    stmt.setInt(5, f.getId());
+            stmt.setInt(5, f.getId());
 
-	    stmt.executeUpdate();
-	} catch (SQLException e) {
-	     e.printStackTrace();
-	} }
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    /**
+     * Retrieves a feedback entry by its ID.
+     *
+     * @param id the ID of the feedback to retrieve.
+     * @return the Feedback object if found, or null otherwise.
+     */
     @Override
     public Feedback getFeedBackById(Integer id) {
         Feedback feedback = null;
-        try{
+        try {
             String sql = "SELECT * FROM Feedbacks WHERE id = ?";
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	    stmt.setInt(1, id);
-	    ResultSet rs = stmt.executeQuery();
-            
-            if (rs.next()) {
-	        Date date = rs.getDate("date");
-                String message = rs.getString("message");
-                Integer doctor_id= rs.getInt("doctor_id");
-                Doctor d= doctorman.getDoctorById(doctor_id);
-                Integer patient_id= rs.getInt("patient_id");
-                Patient p= patientman.getPatientById(patient_id);                
-                feedback = new Feedback(id, message, date, d, p);
-	        }else {
-	            System.out.println("Feedback with ID " + id + " not found.");
-	        }
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
 
-	        rs.close();
-	        stmt.close();
-        }catch(SQLException e){
-        e.printStackTrace();
+            if (rs.next()) {
+                Date date = rs.getDate("date");
+                String message = rs.getString("message");
+                Integer doctor_id = rs.getInt("doctor_id");
+                Doctor d = doctorman.getDoctorById(doctor_id);
+                Integer patient_id = rs.getInt("patient_id");
+                Patient p = patientman.getPatientById(patient_id);
+                feedback = new Feedback(id, message, date, d, p);
+            } else {
+                System.out.println("Feedback with ID " + id + " not found.");
+            }
+
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return feedback;
     }
 
+    /**
+     * Retrieves a list of feedbacks for a specific date.
+     *
+     * @param date the date to filter feedbacks by.
+     * @return a list of Feedback objects matching the specified date.
+     */
     @Override
     public List<Feedback> getFeedBackByDate(Date date) {
         List<Feedback> feedbacks = new ArrayList<>();
-        try{
+        try {
             String sql = "SELECT * FROM Feedbacks WHERE date = ?";
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	    stmt.setDate(1,  date);
-	    ResultSet rs = stmt.executeQuery();
-            
+            stmt.setDate(1, date);
+            ResultSet rs = stmt.executeQuery();
+
             while (rs.next()) {
                 Integer id = rs.getInt("id");
-	        String message = rs.getString("message");
+                String message = rs.getString("message");
                 Integer doctor_id = rs.getInt("doctor_id");
                 Doctor d = doctorman.getDoctorById(doctor_id);
                 Integer patient_id = rs.getInt("patient_id");
-                Patient p = patientman.getPatientById(patient_id); 
-                
+                Patient p = patientman.getPatientById(patient_id);
+
                 feedbacks.add(new Feedback(id, message, date, d, p));
             }
-            if(feedbacks.isEmpty()) {
-	            System.out.println("No feedbacks found for date " + date);
-	        }
-
-	    rs.close();
-	    stmt.close();
-        }catch(SQLException e){
-        e.printStackTrace();
-        }
-        return feedbacks;}
-
-    @Override
-    public List<Feedback> getListOfFeedbacksOfPatient(Integer patient_id) {
-        List<Feedback> feedbacks = new ArrayList<>();
-        try{
-            String sql = "SELECT * FROM Feedbacks WHERE patient_id = ?";
-            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	    stmt.setInt(1,  patient_id);
-	    ResultSet rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                Integer id= rs.getInt("id");
-	        Date date = rs.getDate("date");
-                String message = rs.getString("message");
-                Integer doctor_id= rs.getInt("doctor_id");
-                Doctor d = doctorman.getDoctorById(doctor_id);
-                Patient p = patientman.getPatientById(patient_id); 
-                
-                feedbacks.add(new Feedback(id, message, date, d, p));
+            if (feedbacks.isEmpty()) {
+                System.out.println("No feedbacks found for date " + date);
             }
-            if(feedbacks.isEmpty()) {
-	            System.out.println("Patient ID " + patient_id + " has no feedback saved.");
-	        }
 
-	    rs.close();
-	    stmt.close();
-        }catch(SQLException e){
-        e.printStackTrace();
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return feedbacks;
     }
 
+    /**
+     * Retrieves a list of feedbacks associated with a specific patient.
+     *
+     * @param patient_id the ID of the patient.
+     * @return a list of Feedback objects associated with the patient.
+     */
+    @Override
+    public List<Feedback> getListOfFeedbacksOfPatient(Integer patient_id) {
+        List<Feedback> feedbacks = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM Feedbacks WHERE patient_id = ?";
+            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+            stmt.setInt(1, patient_id);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Integer id = rs.getInt("id");
+                Date date = rs.getDate("date");
+                String message = rs.getString("message");
+                Integer doctor_id = rs.getInt("doctor_id");
+                Doctor d = doctorman.getDoctorById(doctor_id);
+                Patient p = patientman.getPatientById(patient_id);
+
+                feedbacks.add(new Feedback(id, message, date, d, p));
+            }
+            if (feedbacks.isEmpty()) {
+                System.out.println("Patient ID " + patient_id + " has no feedback saved.");
+            }
+
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return feedbacks;
+    }
+
+    /**
+     * Retrieves a list of feedbacks associated with a specific doctor.
+     *
+     * @param doctor_id the ID of the doctor.
+     * @return a list of Feedback objects associated with the doctor.
+     */
     @Override
     public List<Feedback> getListOfFeedbacksOfDoctor(Integer doctor_id) {
         List<Feedback> feedbacks = new ArrayList<>();
-        try{
+        try {
             String sql = "SELECT * FROM Feedbacks WHERE doctor_id = ?";
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	    stmt.setInt(1,  doctor_id);
-	    ResultSet rs = stmt.executeQuery();
-            
+            stmt.setInt(1, doctor_id);
+            ResultSet rs = stmt.executeQuery();
+
             while (rs.next()) {
-                Integer id= rs.getInt("id");
-	        Date date = rs.getDate("date");
+                Integer id = rs.getInt("id");
+                Date date = rs.getDate("date");
                 String message = rs.getString("message");
                 Doctor d = doctorman.getDoctorById(doctor_id);
-                Integer patient_id= rs.getInt("patient_id");
-                Patient p = patientman.getPatientById(patient_id); 
-                
+                Integer patient_id = rs.getInt("patient_id");
+                Patient p = patientman.getPatientById(patient_id);
+
                 feedbacks.add(new Feedback(id, message, date, d, p));
             }
-            if(feedbacks.isEmpty()) {
-	            System.out.println("Doctor ID " + doctor_id + " has no feedback saved.");
-	        }
+            if (feedbacks.isEmpty()) {
+                System.out.println("Doctor ID " + doctor_id + " has no feedback saved.");
+            }
 
-	    rs.close();
-	    stmt.close();
-        }catch(SQLException e){
-        e.printStackTrace();
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return feedbacks;
     }
 
 }
-    
-
