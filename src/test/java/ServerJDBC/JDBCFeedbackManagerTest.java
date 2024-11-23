@@ -175,13 +175,35 @@ public class JDBCFeedbackManagerTest {
     @Test
     public void testGetFeedBackById() {
         System.out.println("getFeedBackById");
-        Integer id = null;
-        JDBCFeedbackManager instance = null;
-        Feedback expResult = null;
-        Feedback result = instance.getFeedBackById(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        // Crear el entorno necesario: un feedback válido en la base de datos
+        Role patientRole = new Role("Patient");
+        roleManager.createRole(patientRole);
+        Role doctorRole = new Role("Doctor");
+        roleManager.createRole(doctorRole);
+
+        User patientUser = new User("patient@example.com", "password123", patientRole);
+        userManager.registerUser(patientUser);
+        User doctorUser = new User("doctor@example.com", "password456", doctorRole);
+        userManager.registerUser(doctorUser);
+
+        Doctor doctor = new Doctor("Dr. Smith", "NEUROLOGY", doctorUser);
+        doctorManager.createDoctor(doctor);
+
+        Patient patient = new Patient("John", "Doe", "12345678A", java.sql.Date.valueOf("1990-01-01"), Gender.MALE, "123456789", doctor, patientUser);
+        patientManager.registerPatient(patient);
+
+        Feedback feedback = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Great doctor!", doctor, patient);
+        feedbackManager.createFeedback(feedback);
+
+        // Recuperar el feedback por ID
+        Feedback fetchedFeedback = feedbackManager.getFeedBackById(feedback.getId());
+
+        // Validar los resultados
+        assertNotNull(fetchedFeedback, "El feedback no debería ser nulo.");
+        assertEquals(feedback.getMessage(), fetchedFeedback.getMessage(), "El mensaje del feedback debería coincidir.");
+        assertEquals(feedback.getDoctor().getId(), fetchedFeedback.getDoctor().getId(), "El doctor asociado debería coincidir.");
+        assertEquals(feedback.getPatient().getId(), fetchedFeedback.getPatient().getId(), "El paciente asociado debería coincidir.");
     }
 
     /**
