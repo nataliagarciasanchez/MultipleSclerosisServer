@@ -42,11 +42,13 @@ public class JDBCFeedbackManagerTest {
     public static void setUpClass() {
         jdbcManager = new JDBCManager();
         jdbcManager.connect(); // Conectar a la base de datos
-        feedbackManager = new JDBCFeedbackManager(jdbcManager);
-        doctorManager = new JDBCDoctorManager(jdbcManager);
-        patientManager = new JDBCPatientManager(jdbcManager);
+
         roleManager = new JDBCRoleManager(jdbcManager);
         userManager = new JDBCUserManager(jdbcManager);
+        doctorManager = new JDBCDoctorManager(jdbcManager);
+        patientManager = new JDBCPatientManager(jdbcManager);
+
+        feedbackManager = new JDBCFeedbackManager(jdbcManager, doctorManager, patientManager);
         try {
             // Desactiva auto-commit para manejar transacciones manualmente
             jdbcManager.getConnection().setAutoCommit(false);
@@ -93,7 +95,7 @@ public class JDBCFeedbackManagerTest {
         userManager.registerUser(doctorUser);
 
         // Crear doctor asociado al usuario
-        doctor = new Doctor("Dr. Smith", "Neurology", doctorUser);
+        doctor = new Doctor("Dr. Smith", "NEUROLOGY", doctorUser);
         doctorManager.createDoctor(doctor);
 
         // Crear paciente asociado al usuario y al doctor

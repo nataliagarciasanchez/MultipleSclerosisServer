@@ -32,9 +32,6 @@ public class JDBCFeedbackManager implements FeedbackManager {
         this.patientman = patientman;
     }
 
-    public JDBCFeedbackManager(JDBCManager jdbcManager) {
-       this.manager = manager;
-    }
   
     
     @Override
