@@ -140,7 +140,6 @@ public class ServerPatientCommunication {
             try {
                 User user = (User) in.readObject();
                 userManager.registerUser(user);
-                Role role = new Role(1, "patient");
                 Patient patient = (Patient) in.readObject();
                 patientManager.registerPatient(patient);
 
