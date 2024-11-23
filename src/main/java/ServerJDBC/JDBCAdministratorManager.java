@@ -23,12 +23,21 @@ public class JDBCAdministratorManager implements AdministratorManager {
     private JDBCUserManager userMan;
 
    
-
+     /**
+     * Constructor for the JDBCAdministratorManager.
+     * 
+     * @param manager the {@link JDBCManager} instance used to manage database connections.
+     */
     public JDBCAdministratorManager(JDBCManager manager) {
         this.manager = manager;
         this.userMan = new JDBCUserManager(manager);
     }
     
+    /**
+     * Creates a new Administrator in the database.
+     * 
+     * @param a the {@link Administrator} object containing the data to insert.
+     */
     @Override
     public void createAdministrator(Administrator a) {
         try{
@@ -52,6 +61,11 @@ public class JDBCAdministratorManager implements AdministratorManager {
         }
     }
     
+    /**
+     * Removes an Administrator from the database by their ID.
+     * 
+     * @param id the ID of the Administrator to remove.
+     */
     @Override
     public void removeAdministratorById(Integer id) {
         try {
@@ -65,6 +79,11 @@ public class JDBCAdministratorManager implements AdministratorManager {
         
     }
 
+    /**
+     * Updates an existing Administrator in the database.
+     * 
+     * @param a the {@link Administrator} object containing the updated data.
+     */
     @Override
     public void updateAdministrator(Administrator a) {
         String sql = "UPDATE Administrators SET name = ? WHERE id = ?";
@@ -80,8 +99,11 @@ public class JDBCAdministratorManager implements AdministratorManager {
 	}    
     }
 
-    
-
+    /**
+     * Retrieves a list of all Administrators from the database.
+     * 
+     * @return a {@link List} of {@link Administrator} objects.
+     */
     @Override
     public List<Administrator> getListOfAdministrators() {
         List<Administrator> administrators = new ArrayList<>();
@@ -107,7 +129,12 @@ public class JDBCAdministratorManager implements AdministratorManager {
         return administrators;
     }
 
-   
+   /**
+     * Retrieves an Administrator from the database by their ID.
+     * 
+     * @param id the ID of the Administrator to retrieve.
+     * @return the {@link Administrator} object if found, or null otherwise.
+     */
     @Override
     public Administrator getAdministratorById(Integer id) {
         Administrator administrator=null;
@@ -139,8 +166,13 @@ public class JDBCAdministratorManager implements AdministratorManager {
 
 	    return administrator;
 	}
-    
 
+    /**
+     * Retrieves a list of Administrators from the database by their name.
+     * 
+     * @param name the name or part of the name of the Administrator(s) to retrieve.
+     * @return a {@link List} of {@link Administrator} objects matching the given name.
+     */
     @Override
     public List<Administrator> getAdministratorByName(String name) {
         List<Administrator> administrators = new ArrayList<>();
