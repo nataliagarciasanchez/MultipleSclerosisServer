@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package ServerJDBC;
+
 import POJOs.Doctor;
 import POJOs.Feedback;
 import POJOs.Patient;
@@ -20,29 +21,38 @@ import java.util.List;
  * @author Andreoti
  */
 public class JDBCDoctorManager implements DoctorManager {
-    
+
     private JDBCManager manager;
     private JDBCUserManager userMan;
     private JDBCPatientManager patientMan;
     private JDBCFeedbackManager feedbackMan;
-   
 
+    /**
+     * Constructor for JDBCDoctorManager.
+     *
+     * @param manager the JDBCManager instance used for database connections.
+     */
     public JDBCDoctorManager(JDBCManager manager) {
         this.manager = manager;
-        this.userMan=new JDBCUserManager(manager);
-        
+        this.userMan = new JDBCUserManager(manager);
+
     }
 
+    /**
+     * Creates a new Doctor entry in the database.
+     *
+     * @param d the Doctor object containing the data to be inserted.
+     */
     @Override
     public void createDoctor(Doctor d) {
-        try{
+        try {
             String sql = "INSERT INTO Doctors (name,specialty,user_id)"
-                          +"values (?,?,?)";
+                    + "values (?,?,?)";
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
-            p.setString(1,d.getName());
+            p.setString(1, d.getName());
             //p.setString(2,d.getSpecialty().toString());
-            p.setString(2,d.getSpecialty());
-            p.setInt(3,d.getUser().getId());
+            p.setString(2, d.getSpecialty());
+            p.setInt(3, d.getUser().getId());
             p.executeUpdate();
             // Obtener el ID generado por la base de datos
             ResultSet generatedKeys = p.getGeneratedKeys();
@@ -52,100 +62,126 @@ public class JDBCDoctorManager implements DoctorManager {
             }
             p.close();
 
-                }catch(SQLException e) {
-                    e.printStackTrace();
-                }    
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
+    /**
+     * Removes a Doctor entry from the database by its ID.
+     *
+     * @param id the ID of the Doctor to be removed.
+     */
     @Override
     public void removeDoctorById(Integer id) {
         try {
             String sql = "DELETE FROM Doctors WHERE id = ?";
             PreparedStatement prep = manager.getConnection().prepareStatement(sql);
             prep.setInt(1, id);
-            prep.executeUpdate();			
-	}catch(Exception e){
-	e.printStackTrace();
-	}
+            prep.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    /**
+     * Updates an existing Doctor entry in the database.
+     *
+     * @param d the Doctor object containing updated data.
+     */
     @Override
     public void updateDoctor(Doctor d) {
         String sql = "UPDATE Doctors SET name = ?, specialty = ? WHERE id = ?";
-	try {
+        try {
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	        stmt.setString(1, d.getName());
-                //stmt.setString(2,d.getSpecialty().toString());
-                stmt.setString(2,d.getSpecialty());
-	        stmt.setInt(3, d.getId());
+            stmt.setString(1, d.getName());
+            //stmt.setString(2,d.getSpecialty().toString());
+            stmt.setString(2, d.getSpecialty());
+            stmt.setInt(3, d.getId());
 
-	        stmt.executeUpdate();
-	    } catch (SQLException ex) {
-	        ex.printStackTrace();
-	    }
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
+    /**
+     * Retrieves a list of all Doctors from the database.
+     *
+     * @return a list of Doctor objects.
+     */
     @Override
     public List<Doctor> getListOfDoctors() {
         List<Doctor> doctors = new ArrayList<>();
-	try {
-	    String sql = "SELECT * FROM Doctors";
-	    PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	    ResultSet rs = stmt.executeQuery();
+        try {
+            String sql = "SELECT * FROM Doctors";
+            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
 
-	    while (rs.next()) {
-	        Integer id = rs.getInt("id");
-	        String name = rs.getString("name");
+            while (rs.next()) {
+                Integer id = rs.getInt("id");
+                String name = rs.getString("name");
                 String specialtyString = rs.getString("specialty");
                 Specialty specialty = Specialty.valueOf(specialtyString); // no borrar aunque no se use
-                               
-                
+
                 Doctor doctor = new Doctor(id, name, specialtyString);
-	        doctors.add(doctor);
-	        }
+                doctors.add(doctor);
+            }
 
-	        rs.close();
-	        stmt.close();
+            rs.close();
+            stmt.close();
 
-	    }catch (SQLException e) {
-	    e.printStackTrace();
-	    }
-	return doctors;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return doctors;
     }
 
+    /**
+     * Retrieves a Doctor from the database by its ID.
+     *
+     * @param id the ID of the Doctor to retrieve.
+     * @return the Doctor object if found, or null otherwise.
+     */
     @Override
     public Doctor getDoctorById(Integer id) {
         Doctor doctor = null;
-        try{
+        try {
             String sql = "SELECT * FROM Doctors WHERE id = ?";
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
-	    stmt.setInt(1, id);
-	    ResultSet rs = stmt.executeQuery();
-            
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
-	        
-	        String name = rs.getString("name");
+
+                String name = rs.getString("name");
                 String specialtyString = rs.getString("specialty");
                 Specialty specialty = Specialty.valueOf(specialtyString); //no borrar aunque no se use
-                  
-                doctor = new Doctor(id, name, specialtyString);
-                
-	        }else {
-	            System.out.println("Doctor with ID " + id + " not found.");
-	        }
 
-	        rs.close();
-	        stmt.close();
-        }catch(SQLException e){
-        e.printStackTrace();
+                doctor = new Doctor(id, name, specialtyString);
+
+            } else {
+                System.out.println("Doctor with ID " + id + " not found.");
+            }
+
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return doctor;
     }
 
+    /**
+     * Retrieves a list of Doctors by their name.
+     *
+     * @param name the name of the Doctor(s) to search for.
+     * @return a list of Doctor objects matching the given name.
+     */
     @Override
     public List<Doctor> getDoctorByName(String name) {
         List<Doctor> doctors = new ArrayList<>();
-	try {
+        try {
             String sql = "SELECT * FROM Doctors WHERE name LIKE ?";
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
             stmt.setString(1, "%" + name + "%");
@@ -155,30 +191,30 @@ public class JDBCDoctorManager implements DoctorManager {
                 String n = rs.getString("name");
                 String specialtyString = rs.getString("specialty");
                 Specialty specialty = Specialty.valueOf(specialtyString); // no borrar aunque no se use
-                
-                
+
                 Doctor d = new Doctor(d_id, name, specialtyString);
                 doctors.add(d);
 
             }
-            if(doctors.isEmpty()){
-	            System.out.println("Doctor with name " + name + " not found.");
-	        }
+            if (doctors.isEmpty()) {
+                System.out.println("Doctor with name " + name + " not found.");
+            }
             rs.close();
             stmt.close();
-            } catch (SQLException e) {
-	e.printStackTrace();
-	}
-	return doctors;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return doctors;
     }
-    
+
     /**
      * Retrieves a doctor associated to the specified user
+     *
      * @param user
-     * @return 
+     * @return
      */
     @Override
-    public Doctor getDoctorByUser(User user) { 
+    public Doctor getDoctorByUser(User user) {
         Doctor doctor = null;
         String sql = "SELECT * FROM Doctors WHERE user_id = ?";
 
@@ -194,25 +230,24 @@ public class JDBCDoctorManager implements DoctorManager {
                 String specialtyString = rs.getString("specialty");
                 Specialty specialty = Specialty.valueOf(specialtyString); // no borrar aunque no se use
 
-                
-
                 // Using the constructor to create the Doctor object
                 doctor = new Doctor(id, name, specialtyString);
 
                 p.close();
                 rs.close();
-            }else{
-            System.out.println("Doctor with user_id " + user.getId() + " not found.");
-        }
+            } else {
+                System.out.println("Doctor with user_id " + user.getId() + " not found.");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return doctor;
     }
-    
-    
+
     /**
-     * Method that returns a list of all the ids of the doctors registered to assign a random doc to a patient
+     * Method that returns a list of all the ids of the doctors registered to
+     * assign a random doc to a patient
+     *
      * @return list of ids of doctors
      */
     @Override
@@ -220,8 +255,7 @@ public class JDBCDoctorManager implements DoctorManager {
         List<Integer> doctorIds = new ArrayList<>();
         String query = "SELECT id FROM Doctors";
 
-        try (PreparedStatement pstmt = manager.getConnection().prepareStatement(query);
-             ResultSet rs = pstmt.executeQuery()) {
+        try (PreparedStatement pstmt = manager.getConnection().prepareStatement(query); ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
                 doctorIds.add(rs.getInt("id"));
