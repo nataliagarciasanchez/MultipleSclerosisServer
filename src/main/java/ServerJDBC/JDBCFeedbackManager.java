@@ -22,21 +22,17 @@ import java.util.List;
 public class JDBCFeedbackManager implements FeedbackManager {
 
     private JDBCManager manager;
-    private JDBCDoctorManager doctorman;
-    private JDBCPatientManager patientman;
+
 
     /**
      * Constructor for JDBCFeedbackManager.
      *
      * @param manager the JDBCManager instance for database connection
      * management.
-     * @param doctorman the JDBCDoctorManager instance for managing doctors.
-     * @param patientman the JDBCPatientManager instance for managing patients.
      */
-    public JDBCFeedbackManager(JDBCManager manager, JDBCDoctorManager doctorman, JDBCPatientManager patientman) {
+    public JDBCFeedbackManager(JDBCManager manager){
         this.manager = manager;
-        this.doctorman = doctorman;
-        this.patientman = patientman;
+        
     }
 
     /**
@@ -125,11 +121,8 @@ public class JDBCFeedbackManager implements FeedbackManager {
             if (rs.next()) {
                 Date date = rs.getDate("date");
                 String message = rs.getString("message");
-                Integer doctor_id = rs.getInt("doctor_id");
-                Doctor d = doctorman.getDoctorById(doctor_id);
-                Integer patient_id = rs.getInt("patient_id");
-                Patient p = patientman.getPatientById(patient_id);
-                feedback = new Feedback(id, message, date, d, p);
+                
+                feedback = new Feedback(id, message, date);
             } else {
                 System.out.println("Feedback with ID " + id + " not found.");
             }
@@ -160,12 +153,10 @@ public class JDBCFeedbackManager implements FeedbackManager {
             while (rs.next()) {
                 Integer id = rs.getInt("id");
                 String message = rs.getString("message");
-                Integer doctor_id = rs.getInt("doctor_id");
-                Doctor d = doctorman.getDoctorById(doctor_id);
-                Integer patient_id = rs.getInt("patient_id");
-                Patient p = patientman.getPatientById(patient_id);
-
-                feedbacks.add(new Feedback(id, message, date, d, p));
+                
+                Feedback feedback = new Feedback(id, message, date);
+                feedbacks.add(feedback);
+                
             }
             if (feedbacks.isEmpty()) {
                 System.out.println("No feedbacks found for date " + date);
@@ -198,11 +189,9 @@ public class JDBCFeedbackManager implements FeedbackManager {
                 Integer id = rs.getInt("id");
                 Date date = rs.getDate("date");
                 String message = rs.getString("message");
-                Integer doctor_id = rs.getInt("doctor_id");
-                Doctor d = doctorman.getDoctorById(doctor_id);
-                Patient p = patientman.getPatientById(patient_id);
-
-                feedbacks.add(new Feedback(id, message, date, d, p));
+                
+                Feedback feedback = new Feedback(id, message, date);
+                feedbacks.add(feedback);
             }
             if (feedbacks.isEmpty()) {
                 System.out.println("Patient ID " + patient_id + " has no feedback saved.");
@@ -235,11 +224,9 @@ public class JDBCFeedbackManager implements FeedbackManager {
                 Integer id = rs.getInt("id");
                 Date date = rs.getDate("date");
                 String message = rs.getString("message");
-                Doctor d = doctorman.getDoctorById(doctor_id);
-                Integer patient_id = rs.getInt("patient_id");
-                Patient p = patientman.getPatientById(patient_id);
-
-                feedbacks.add(new Feedback(id, message, date, d, p));
+                
+                Feedback feedback = new Feedback(id, message, date);
+                feedbacks.add(feedback);
             }
             if (feedbacks.isEmpty()) {
                 System.out.println("Doctor ID " + doctor_id + " has no feedback saved.");

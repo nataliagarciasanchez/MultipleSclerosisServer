@@ -48,7 +48,7 @@ public class JDBCFeedbackManagerTest {
         doctorManager = new JDBCDoctorManager(jdbcManager);
         patientManager = new JDBCPatientManager(jdbcManager);
 
-        feedbackManager = new JDBCFeedbackManager(jdbcManager, doctorManager, patientManager);
+        feedbackManager = new JDBCFeedbackManager(jdbcManager);
         try {
             // Desactiva auto-commit para manejar transacciones manualmente
             jdbcManager.getConnection().setAutoCommit(false);
@@ -124,9 +124,9 @@ public class JDBCFeedbackManagerTest {
         // Verificar que el feedback fue creado correctamente
         Feedback fetchedFeedback = feedbackManager.getFeedBackById(feedback.getId());
         assertNotNull(fetchedFeedback, "El feedback no debería ser null.");
-        assertEquals("Excellent treatment!", fetchedFeedback.getMessage(), "El mensaje del feedback no coincide.");
-        assertEquals(doctor.getId(), fetchedFeedback.getDoctor().getId(), "El doctor del feedback no coincide.");
-        assertEquals(patient.getId(), fetchedFeedback.getPatient().getId(), "El paciente del feedback no coincide.");
+        assertEquals(feedback.getId(), fetchedFeedback.getId());
+        assertEquals(feedback.getDate(), fetchedFeedback.getDate());
+        assertEquals(feedback.getMessage(), fetchedFeedback.getMessage(), "El mensaje del feedback no coincide.");
     }
 
     /**
@@ -166,7 +166,9 @@ public class JDBCFeedbackManagerTest {
         // Verificar que el feedback fue actualizado correctamente
         Feedback fetchedFeedback = feedbackManager.getFeedBackById(feedback.getId());
         assertNotNull(fetchedFeedback);
-        assertEquals("Excellent treatment!", fetchedFeedback.getMessage(), "El mensaje del feedback no coincide tras la actualización.");
+        assertEquals(feedback.getId(), fetchedFeedback.getId());
+        assertEquals(feedback.getDate(), fetchedFeedback.getDate());
+        assertEquals(feedback.getMessage(), fetchedFeedback.getMessage(), "El mensaje del feedback no coincide.");
     }
 
     /**
@@ -176,22 +178,6 @@ public class JDBCFeedbackManagerTest {
     public void testGetFeedBackById() {
         System.out.println("getFeedBackById");
 
-        // Crear el entorno necesario: un feedback válido en la base de datos
-        Role patientRole = new Role("Patient");
-        roleManager.createRole(patientRole);
-        Role doctorRole = new Role("Doctor");
-        roleManager.createRole(doctorRole);
-
-        User patientUser = new User("patient@example.com", "password123", patientRole);
-        userManager.registerUser(patientUser);
-        User doctorUser = new User("doctor@example.com", "password456", doctorRole);
-        userManager.registerUser(doctorUser);
-
-        Doctor doctor = new Doctor("Dr. Smith", "NEUROLOGY", doctorUser);
-        doctorManager.createDoctor(doctor);
-
-        Patient patient = new Patient("John", "Doe", "12345678A", java.sql.Date.valueOf("1990-01-01"), Gender.MALE, "123456789", doctor, patientUser);
-        patientManager.registerPatient(patient);
 
         Feedback feedback = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Great doctor!", doctor, patient);
         feedbackManager.createFeedback(feedback);
@@ -201,9 +187,9 @@ public class JDBCFeedbackManagerTest {
 
         // Validar los resultados
         assertNotNull(fetchedFeedback, "El feedback no debería ser nulo.");
-        assertEquals(feedback.getMessage(), fetchedFeedback.getMessage(), "El mensaje del feedback debería coincidir.");
-        assertEquals(feedback.getDoctor().getId(), fetchedFeedback.getDoctor().getId(), "El doctor asociado debería coincidir.");
-        assertEquals(feedback.getPatient().getId(), fetchedFeedback.getPatient().getId(), "El paciente asociado debería coincidir.");
+        assertEquals(feedback.getId(), fetchedFeedback.getId());
+        assertEquals(feedback.getDate(), fetchedFeedback.getDate());
+        assertEquals(feedback.getMessage(), fetchedFeedback.getMessage(), "El mensaje del feedback no coincide.");
     }
 
     /**
@@ -214,14 +200,19 @@ public class JDBCFeedbackManagerTest {
         System.out.println("getFeedBackByDate");
 
         // Crear un feedback
-        Feedback feedback = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Excellent treatment!", doctor, patient);
-        feedbackManager.createFeedback(feedback);
+        Feedback feedback1 = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Excellent treatment!", doctor, patient);
+        feedbackManager.createFeedback(feedback1);
+        Feedback feedback2 = new Feedback(java.sql.Date.valueOf("2023-01-01"), "Excellent treatment!", doctor, patient);
+        feedbackManager.createFeedback(feedback2);
 
         // Recuperar feedbacks por fecha
         List<Feedback> feedbacks = feedbackManager.getFeedBackByDate(java.sql.Date.valueOf("2024-01-01"));
         assertNotNull(feedbacks);
         assertEquals(1, feedbacks.size());
-        assertEquals(feedback.getId(), feedbacks.get(0).getId());
+        assertTrue(feedbacks.stream().anyMatch(feedback -> feedback.getId().equals(feedback1.getId())));
+        assertTrue(feedbacks.stream().anyMatch(feedback -> feedback.getDate().equals(feedback1.getDate())));
+        assertTrue(feedbacks.stream().anyMatch(feedback -> feedback.getMessage().equals(feedback1.getMessage())));
+        
     }
 
     /**
@@ -232,14 +223,16 @@ public class JDBCFeedbackManagerTest {
         System.out.println("getListOfFeedbacksOfPatient");
 
         // Crear un feedback
-        Feedback feedback = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Great experience!", doctor, patient);
-        feedbackManager.createFeedback(feedback);
+        Feedback f = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Great experience!", doctor, patient);
+        feedbackManager.createFeedback(f);
 
         // Recuperar feedbacks del paciente
         List<Feedback> feedbacks = feedbackManager.getListOfFeedbacksOfPatient(patient.getId());
         assertNotNull(feedbacks);
         assertEquals(1, feedbacks.size());
-        assertEquals(feedback.getId(), feedbacks.get(0).getId());
+        assertTrue(feedbacks.stream().anyMatch(feedback -> feedback.getId().equals(f.getId())));
+        assertTrue(feedbacks.stream().anyMatch(feedback -> feedback.getDate().equals(f.getDate())));
+        assertTrue(feedbacks.stream().anyMatch(feedback -> feedback.getMessage().equals(f.getMessage())));
     }
 
     /**
@@ -250,14 +243,22 @@ public class JDBCFeedbackManagerTest {
         System.out.println("getListOfFeedbacksOfDoctor");
 
         // Crear un feedback
-        Feedback feedback = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Very professional!", doctor, patient);
-        feedbackManager.createFeedback(feedback);
+        Feedback feedback1 = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Very professional!", doctor, patient);
+        feedbackManager.createFeedback(feedback1);
+        Feedback feedback2 = new Feedback(java.sql.Date.valueOf("2024-02-02"), "All good", doctor, patient);
+        feedbackManager.createFeedback(feedback2);
 
         // Recuperar feedbacks del doctor
         List<Feedback> feedbacks = feedbackManager.getListOfFeedbacksOfDoctor(doctor.getId());
         assertNotNull(feedbacks);
-        assertEquals(1, feedbacks.size());
-        assertEquals(feedback.getId(), feedbacks.get(0).getId());
+        assertEquals(2, feedbacks.size());
+        assertTrue(feedbacks.stream().anyMatch(feedback -> feedback.getId().equals(feedback1.getId())));
+        assertTrue(feedbacks.stream().anyMatch(feedback -> feedback.getId().equals(feedback2.getId())));
+        assertTrue(feedbacks.stream().anyMatch(feedback -> feedback.getDate().equals(feedback1.getDate())));
+        assertTrue(feedbacks.stream().anyMatch(feedback -> feedback.getDate().equals(feedback2.getDate())));
+        assertTrue(feedbacks.stream().anyMatch(feedback -> feedback.getMessage().equals(feedback1.getMessage())));
+        assertTrue(feedbacks.stream().anyMatch(feedback -> feedback.getMessage().equals(feedback2.getMessage())));
+
     }
 
 }

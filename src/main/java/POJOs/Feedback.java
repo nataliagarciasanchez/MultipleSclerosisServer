@@ -50,10 +50,13 @@ public class Feedback {
         this.patient = patient;
     }
     
-    //FOR THE TEST
-     public Feedback(String message){
-         this.message = message;
-     }
+    public Feedback(Integer id, String message, Date date) {
+        this.id = id;
+        this.message = message;
+        this.date = date;
+        this.doctor = null;
+        this.patient = null;
+    }
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
