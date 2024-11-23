@@ -28,34 +28,41 @@ public class JDBCFeedbackManagerTest {
     private static JDBCRoleManager roleManager;
     private static JDBCManager jdbcManager;
 
+    private static Role patientRole;
+    private static Role doctorRole;
+    private static User patientUser;
+    private static User doctorUser;
+    private static Doctor doctor;
+    private static Patient patient;
+
     public JDBCFeedbackManagerTest() {
     }
 
     @BeforeAll
     public static void setUpClass() {
-    jdbcManager = new JDBCManager();
-    jdbcManager.connect(); // Asegúrate de que la conexión esté establecida antes de usar managers
-    roleManager = new JDBCRoleManager(jdbcManager); // Inicializar roleManager
-    userManager = new JDBCUserManager(jdbcManager); // Inicializar userManager
-    feedbackManager = new JDBCFeedbackManager(jdbcManager);
-    doctorManager = new JDBCDoctorManager(jdbcManager);
-    patientManager = new JDBCPatientManager(jdbcManager);
-    try {
-        // Desactiva auto-commit para manejar transacciones manualmente
-        jdbcManager.getConnection().setAutoCommit(false);
-    } catch (SQLException e) {
-        e.printStackTrace();
-        fail("No se pudo configurar la conexión para transacciones.");
-    }
-    assertNotNull(userManager);
-    assertNotNull(feedbackManager);
-    assertNotNull(roleManager);
-    assertNotNull(patientManager);
-    assertNotNull(doctorManager);
+        jdbcManager = new JDBCManager();
+        jdbcManager.connect(); // Conectar a la base de datos
+        feedbackManager = new JDBCFeedbackManager(jdbcManager);
+        doctorManager = new JDBCDoctorManager(jdbcManager);
+        patientManager = new JDBCPatientManager(jdbcManager);
+        roleManager = new JDBCRoleManager(jdbcManager);
+        userManager = new JDBCUserManager(jdbcManager);
+        try {
+            // Desactiva auto-commit para manejar transacciones manualmente
+            jdbcManager.getConnection().setAutoCommit(false);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            fail("No se pudo configurar la conexión para transacciones.");
+        }
+        assertNotNull(roleManager);
+        assertNotNull(userManager);
+        assertNotNull(feedbackManager);
+        assertNotNull(doctorManager);
+        assertNotNull(patientManager);
     }
 
     @AfterAll
-    public static void tearDownClass() throws SQLException {
+    public static void tearDownClass() {
         if (jdbcManager != null) {
             try {
                 // Asegúrate de que la conexión esté cerrada correctamente
@@ -71,6 +78,27 @@ public class JDBCFeedbackManagerTest {
     public void setUp() throws SQLException {
         // Limpiar la base de datos antes de cada prueba
         jdbcManager.clearAllTables();
+
+        // Crear roles para doctor y paciente
+        patientRole = new Role("Patient");
+        roleManager.createRole(patientRole);
+        doctorRole = new Role("Doctor");
+        roleManager.createRole(doctorRole);
+
+        // Crear usuarios para doctor y paciente
+        patientUser = new User("patient@example.com", "password123", patientRole);
+        userManager.registerUser(patientUser);
+
+        doctorUser = new User("doctor@example.com", "password456", doctorRole);
+        userManager.registerUser(doctorUser);
+
+        // Crear doctor asociado al usuario
+        doctor = new Doctor("Dr. Smith", "Neurology", doctorUser);
+        doctorManager.createDoctor(doctor);
+
+        // Crear paciente asociado al usuario y al doctor
+        patient = new Patient("John", "Doe", "12345678A", java.sql.Date.valueOf("1990-01-01"), Gender.MALE, "123456789", doctor, patientUser);
+        patientManager.registerPatient(patient);
     }
 
     @AfterEach
@@ -87,35 +115,13 @@ public class JDBCFeedbackManagerTest {
     @Test
     public void testCreateFeedback() {
         System.out.println("createFeedback");
-        assertNotNull(roleManager, "roleManager no debe ser null");
-        // Crear un rol para el paciente y el doctor
-        Role patientRole = new Role(1, "Patient");
-        roleManager.createRole(patientRole);
-        Role doctorRole = new Role(2, "Doctor");
-        roleManager.createRole(doctorRole);
-
-        // Crear usuarios para paciente y doctor
-        User patientUser = new User("patient@example.com", "password123", patientRole);
-        userManager.registerUser(patientUser); // Registrar el usuario antes de asociarlo al paciente
-
-        User doctorUser = new User("doctor@example.com", "password456", doctorRole);
-        userManager.registerUser(doctorUser);
-
-        // Crear un doctor asociado
-        Doctor doctor = new Doctor("Dr. Smith", "Neurology", doctorUser);
-        doctorManager.createDoctor(doctor);
-
-        // Crear un paciente asociado, asignándole el User antes de registrarlo
-        Patient patient = new Patient("John", "Doe", "12345678A", java.sql.Date.valueOf("1990-01-01"), Gender.MALE, "123456789", doctor, patientUser);
-        patientManager.registerPatient(patient); // Ya no se pasa `patientUser` porque está incluido en el objeto `Patient`
-
-        // Crear el feedback
+        // Crear un feedback
         Feedback feedback = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Excellent treatment!", doctor, patient);
         feedbackManager.createFeedback(feedback);
 
         // Verificar que el feedback fue creado correctamente
         Feedback fetchedFeedback = feedbackManager.getFeedBackById(feedback.getId());
-        assertNotNull(fetchedFeedback, "El feedback no debería ser nulo.");
+        assertNotNull(fetchedFeedback, "El feedback no debería ser null.");
         assertEquals("Excellent treatment!", fetchedFeedback.getMessage(), "El mensaje del feedback no coincide.");
         assertEquals(doctor.getId(), fetchedFeedback.getDoctor().getId(), "El doctor del feedback no coincide.");
         assertEquals(patient.getId(), fetchedFeedback.getPatient().getId(), "El paciente del feedback no coincide.");
@@ -127,11 +133,17 @@ public class JDBCFeedbackManagerTest {
     @Test
     public void testRemoveFeedbackById() {
         System.out.println("removeFeedbackById");
-        Integer id = null;
-        JDBCFeedbackManager instance = null;
-        instance.removeFeedbackById(id);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        // Crear un feedback
+        Feedback feedback = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Excellent treatment!", doctor, patient);
+        feedbackManager.createFeedback(feedback);
+
+        // Remover el feedback
+        feedbackManager.removeFeedbackById(feedback.getId());
+
+        // Verificar que el feedback fue eliminado correctamente
+        Feedback fetchedFeedback = feedbackManager.getFeedBackById(feedback.getId());
+        assertNull(fetchedFeedback, "El feedback debería ser null tras su eliminación.");
     }
 
     /**
@@ -140,11 +152,19 @@ public class JDBCFeedbackManagerTest {
     @Test
     public void testUpdateFeedback() {
         System.out.println("updateFeedback");
-        Feedback f = null;
-        JDBCFeedbackManager instance = null;
-        instance.updateFeedback(f);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        // Crear un feedback
+        Feedback feedback = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Good treatment", doctor, patient);
+        feedbackManager.createFeedback(feedback);
+
+        // Actualizar el mensaje del feedback
+        feedback.setMessage("Excellent treatment!");
+        feedbackManager.updateFeedback(feedback);
+
+        // Verificar que el feedback fue actualizado correctamente
+        Feedback fetchedFeedback = feedbackManager.getFeedBackById(feedback.getId());
+        assertNotNull(fetchedFeedback);
+        assertEquals("Excellent treatment!", fetchedFeedback.getMessage(), "El mensaje del feedback no coincide tras la actualización.");
     }
 
     /**
@@ -168,13 +188,16 @@ public class JDBCFeedbackManagerTest {
     @Test
     public void testGetFeedBackByDate() {
         System.out.println("getFeedBackByDate");
-        Date date = null;
-        JDBCFeedbackManager instance = null;
-        List<Feedback> expResult = null;
-        List<Feedback> result = instance.getFeedBackByDate(date);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        // Crear un feedback
+        Feedback feedback = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Excellent treatment!", doctor, patient);
+        feedbackManager.createFeedback(feedback);
+
+        // Recuperar feedbacks por fecha
+        List<Feedback> feedbacks = feedbackManager.getFeedBackByDate(java.sql.Date.valueOf("2024-01-01"));
+        assertNotNull(feedbacks);
+        assertEquals(1, feedbacks.size());
+        assertEquals(feedback.getId(), feedbacks.get(0).getId());
     }
 
     /**
@@ -183,13 +206,16 @@ public class JDBCFeedbackManagerTest {
     @Test
     public void testGetListOfFeedbacksOfPatient() {
         System.out.println("getListOfFeedbacksOfPatient");
-        Integer patient_id = null;
-        JDBCFeedbackManager instance = null;
-        List<Feedback> expResult = null;
-        List<Feedback> result = instance.getListOfFeedbacksOfPatient(patient_id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        // Crear un feedback
+        Feedback feedback = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Great experience!", doctor, patient);
+        feedbackManager.createFeedback(feedback);
+
+        // Recuperar feedbacks del paciente
+        List<Feedback> feedbacks = feedbackManager.getListOfFeedbacksOfPatient(patient.getId());
+        assertNotNull(feedbacks);
+        assertEquals(1, feedbacks.size());
+        assertEquals(feedback.getId(), feedbacks.get(0).getId());
     }
 
     /**
@@ -198,13 +224,16 @@ public class JDBCFeedbackManagerTest {
     @Test
     public void testGetListOfFeedbacksOfDoctor() {
         System.out.println("getListOfFeedbacksOfDoctor");
-        Integer doctor_id = null;
-        JDBCFeedbackManager instance = null;
-        List<Feedback> expResult = null;
-        List<Feedback> result = instance.getListOfFeedbacksOfDoctor(doctor_id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        // Crear un feedback
+        Feedback feedback = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Very professional!", doctor, patient);
+        feedbackManager.createFeedback(feedback);
+
+        // Recuperar feedbacks del doctor
+        List<Feedback> feedbacks = feedbackManager.getListOfFeedbacksOfDoctor(doctor.getId());
+        assertNotNull(feedbacks);
+        assertEquals(1, feedbacks.size());
+        assertEquals(feedback.getId(), feedbacks.get(0).getId());
     }
 
 }
