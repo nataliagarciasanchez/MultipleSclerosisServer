@@ -84,6 +84,7 @@ public class JDBCManager {
 	    String create_table_doctors = "CREATE TABLE IF NOT EXISTS Doctors ("
 		+ "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "    name TEXT NOT NULL, "
+                + "    surname TEXT NOT NULL, "    
 		+ "    specialty TEXT NOT NULL,"
 		+ "    user_id INTEGER,"//TODO PONER NOT NULL-cambiado para la prueba de communication
 		+ "    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE"
@@ -315,20 +316,22 @@ public class JDBCManager {
             p2.close();
 
             // Inserción del primer doctor
-            String insertDoc1 = "INSERT INTO Doctors (name, specialty, user_id) VALUES (?, ?, ?)";
+            String insertDoc1 = "INSERT INTO Doctors (name, surname, specialty, user_id) VALUES (?, ?, ?, ?)";
             PreparedStatement pstmt = c.prepareStatement(insertDoc1);
-            pstmt.setString(1, "DR.Garcia");
-            pstmt.setString(2, "NEUROLOGY");
-            pstmt.setInt(3, userId1); // Usar el ID generado
+            pstmt.setString(1, "DR.Maria");
+            pstmt.setString(1, "Garcia");
+            pstmt.setString(3, "NEUROLOGY");
+            pstmt.setInt(4, userId1); // Usar el ID generado
             pstmt.executeUpdate();
             pstmt.close();
 
             // Inserción del segundo doctor
-            String insertDoc2 = "INSERT INTO Doctors (name, specialty, user_id) VALUES (?, ?, ?)";
+            String insertDoc2 = "INSERT INTO Doctors (name, surname, specialty, user_id) VALUES (?,?, ?, ?)";
             PreparedStatement pstmt2 = c.prepareStatement(insertDoc2);
-            pstmt2.setString(1, "DR.Perales");
-            pstmt2.setString(2, "NEUROLOGY");
-            pstmt2.setInt(3, userId2); // Usar el ID generado
+            pstmt2.setString(1, "DR.Marcos");
+            pstmt2.setString(2, "DR.Marcos");
+            pstmt2.setString(3, "NEUROLOGY");
+            pstmt2.setInt(4, userId2); // Usar el ID generado
             pstmt2.executeUpdate();
             pstmt2.close();
         }
