@@ -14,23 +14,25 @@ import java.util.Objects;
  * @author noeli
  */
 
-public class Bitalino implements Serializable{
-     private static final long serialVersionUID = 123456000L;
-     
+public class Bitalino implements Serializable {
+
+    private static final long serialVersionUID = 123456000L;
+
     private Integer id;
     private Date date;
     private SignalType signal_type;
-    private final Float duration=60.0F;//seconds-> 1 min
+    private final Float duration = 60.0F;//seconds-> 1 min
     private Report report;
-     
-    public Bitalino(){
-    super();
+
+    public Bitalino() {
+        super();
     }
-     
+
     public Bitalino(Date date, SignalType signal_type) {
         this.date = date;
         this.signal_type = signal_type;
     }
+
     public Bitalino(Integer id, Date date, SignalType signal_type) {
         this.id = id;
         this.date = date;
@@ -43,7 +45,7 @@ public class Bitalino implements Serializable{
         this.signal_type = signal_type;
         this.report = report;
     }
-    
+
     public Bitalino(Date date, SignalType signal_type, Report report) {
         this.date = date;
         this.signal_type = signal_type;
@@ -85,6 +87,7 @@ public class Bitalino implements Serializable{
     public void setSignal_type(SignalType signal_type) {
         this.signal_type = signal_type;
     }
+
     public void setReport(Report report) {
         this.report = report;
     }
@@ -131,10 +134,7 @@ public class Bitalino implements Serializable{
         }
         return Objects.equals(this.report, other.report);
     }
-     
-         
-     
-        }
 
+}
 
      

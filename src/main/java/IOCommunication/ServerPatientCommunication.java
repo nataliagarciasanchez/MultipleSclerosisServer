@@ -98,6 +98,9 @@ public class ServerPatientCommunication {
             }
         }
         
+        /**
+         * Handles all requests from patient
+         */
         private void handlePatientsRequest(){
             boolean running=true;
             while(running){
@@ -136,7 +139,10 @@ public class ServerPatientCommunication {
             }
 
         }
-
+        
+        /**
+         * Registers into database the patient
+         */
         private void handleRegister() {
             try {
                 User user = (User) in.readObject();
@@ -157,7 +163,10 @@ public class ServerPatientCommunication {
                 }
             }
         }
-
+        
+        /**
+         * Logs in by retrieving patient info from the registered patient in the database
+         */
         private void handleLogin() {
             try {
                 String username = (String) in.readObject();
@@ -174,6 +183,9 @@ public class ServerPatientCommunication {
             }
         }
         
+        /**
+         * Releases all the resources of the socket established with the patient
+         */
         private void handleLogout(){
             try {
                 releaseResourcesPatient(in,patientSocket);
@@ -182,14 +194,14 @@ public class ServerPatientCommunication {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
+        
+        /**
+         * Changes password in the database
+         */
         private void handleUpdateInformation() {
             try {
-                String username = (String) in.readObject();
-                String newPassword = (String) in.readObject();
-                //Role role_patient = roleManager.getRoleByName("patient");
-                User user=userManager.getUserByEmail(username);
-                user.setPassword(newPassword);
+               
+                User user=(User) in.readObject();
                 userManager.updateUser(user);
                 out.writeObject("Information changed correclty");
 
@@ -197,7 +209,11 @@ public class ServerPatientCommunication {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
+        
+        /**
+         * Receives all signals and sends them to a doctor
+         * @return list of all frames recorded in the ECG
+         */
         private List<Frame> handleECGSignals() {
              List<Frame> ecgFrames=null;
             
@@ -222,7 +238,11 @@ public class ServerPatientCommunication {
             }
             return ecgFrames;
         }
-
+        
+        /**
+         * Receives all signals and sends them to a doctor
+         * @return list of all frames recorded in the ECG
+         */
         private List<Frame> handleEMGSignals() {
             
             List<Frame> emgFrames = null;
