@@ -5,9 +5,6 @@
 package ServerJDBC;
 
 import POJOs.Doctor;
-import POJOs.Feedback;
-import POJOs.Patient;
-import POJOs.Specialty;
 import POJOs.User;
 import ServerInterfaces.DoctorManager;
 import java.sql.PreparedStatement;
@@ -46,13 +43,13 @@ public class JDBCDoctorManager implements DoctorManager {
     @Override
     public void createDoctor(Doctor d) {
         try {
-            String sql = "INSERT INTO Doctors (name,specialty,user_id)"
-                    + "values (?,?,?)";
+            String sql = "INSERT INTO Doctors (name, surname, specialty, user_id)"
+                    + "values (?,?,?,?)";
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1, d.getName());
-            //p.setString(2,d.getSpecialty().toString());
-            p.setString(2, d.getSpecialty());
-            p.setInt(3, d.getUser().getId());
+            p.setString(2,d.getSurname());
+            p.setString(3, d.getSpecialty());
+            p.setInt(4, d.getUser().getId());
             p.executeUpdate();
             // Obtener el ID generado por la base de datos
             ResultSet generatedKeys = p.getGeneratedKeys();
@@ -91,12 +88,12 @@ public class JDBCDoctorManager implements DoctorManager {
      */
     @Override
     public void updateDoctor(Doctor d) {
-        String sql = "UPDATE Doctors SET name = ?, specialty = ? WHERE id = ?";
+        String sql = "UPDATE Doctors SET name = ?, surname = ? WHERE id = ?";
         try {
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
             stmt.setString(1, d.getName());
             //stmt.setString(2,d.getSpecialty().toString());
-            stmt.setString(2, d.getSpecialty());
+            stmt.setString(2, d.getSurname());
             stmt.setInt(3, d.getId());
 
             stmt.executeUpdate();
@@ -121,10 +118,9 @@ public class JDBCDoctorManager implements DoctorManager {
             while (rs.next()) {
                 Integer id = rs.getInt("id");
                 String name = rs.getString("name");
-                String specialtyString = rs.getString("specialty");
-                Specialty specialty = Specialty.valueOf(specialtyString); // no borrar aunque no se use
+                String surname = rs.getString("surname");
 
-                Doctor doctor = new Doctor(id, name, specialtyString);
+                Doctor doctor = new Doctor(id, name, surname);
                 doctors.add(doctor);
             }
 
@@ -155,10 +151,9 @@ public class JDBCDoctorManager implements DoctorManager {
             if (rs.next()) {
 
                 String name = rs.getString("name");
-                String specialtyString = rs.getString("specialty");
-                Specialty specialty = Specialty.valueOf(specialtyString); //no borrar aunque no se use
+                String surname = rs.getString("surname");
 
-                doctor = new Doctor(id, name, specialtyString);
+                doctor = new Doctor(id, name, surname);
 
             } else {
                 System.out.println("Doctor with ID " + id + " not found.");
@@ -189,10 +184,8 @@ public class JDBCDoctorManager implements DoctorManager {
             while (rs.next()) {
                 Integer d_id = rs.getInt("id");
                 String n = rs.getString("name");
-                String specialtyString = rs.getString("specialty");
-                Specialty specialty = Specialty.valueOf(specialtyString); // no borrar aunque no se use
-
-                Doctor d = new Doctor(d_id, name, specialtyString);
+                String surname = rs.getString("surname");
+                Doctor d = new Doctor(d_id, name, surname);
                 doctors.add(d);
 
             }
@@ -227,11 +220,10 @@ public class JDBCDoctorManager implements DoctorManager {
                 // Extracting the data from the ResultSet into variables
                 Integer id = rs.getInt("id");
                 String name = rs.getString("name");
-                String specialtyString = rs.getString("specialty");
-                Specialty specialty = Specialty.valueOf(specialtyString); // no borrar aunque no se use
+                String surname = rs.getString("specialty");
 
                 // Using the constructor to create the Doctor object
-                doctor = new Doctor(id, name, specialtyString);
+                doctor = new Doctor(id, name, surname);
 
                 p.close();
                 rs.close();

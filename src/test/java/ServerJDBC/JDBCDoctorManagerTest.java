@@ -92,7 +92,7 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testCreateDoctor() {
         System.out.println("createDoctor");
-        Doctor d = new Doctor("TempDoctor", "NEUROLOGY", u1);
+        Doctor d = new Doctor("TempNameDoc", "TempSurnameDoc", u1);
         System.out.println(d.toString());
         doctorManager.createDoctor(d);
         Doctor fetchedDoctor = doctorManager.getDoctorById(d.getId());
@@ -100,7 +100,7 @@ public class JDBCDoctorManagerTest {
         assertNotNull(fetchedDoctor);
         assertEquals(d.getName(), fetchedDoctor.getName());
         assertEquals(d.getId(), fetchedDoctor.getId());
-        assertEquals(d.getSpecialty(), fetchedDoctor.getSpecialty());
+        assertEquals(d.getSurname(), fetchedDoctor.getSurname());
         
         
     }
@@ -111,7 +111,7 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testRemoveDoctorById() {      
         System.out.println("DeleteDoctor");
-        Doctor d = new Doctor ("TempDoctor","NEUROLOGY", u1);
+        Doctor d = new Doctor ("TempDoctorName","TempDoctorSurname", u1);
         System.out.println(d.toString());
         doctorManager.createDoctor(d);
         List<Doctor> DoctorsBefore = doctorManager.getListOfDoctors();
@@ -128,15 +128,16 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testUpdateDoctor() {
         System.out.println("updateDoctor");
-        Doctor d = new Doctor ("TempDoctor","NEUROLOGY", u1);
+        Doctor d = new Doctor ("TempDoctorName","TempDoctorSurname", u1);
         System.out.println(d.toString());
         doctorManager.createDoctor(d);
-        d.setName("UpdatedDoctor");
+        d.setName("UpdatedDoctorName");
+        d.setSurname("UpdatedDoctorSurname");
         doctorManager.updateDoctor(d);
         Doctor updatedDoctor = doctorManager.getDoctorById(d.getId());
         assertNotNull(updatedDoctor);
-        assertEquals("UpdatedDoctor", updatedDoctor.getName());
-       
+        assertEquals("UpdatedDoctorName", updatedDoctor.getName());
+        assertEquals("UpdatedDoctorSurname", updatedDoctor.getSurname());
     }
 
     /**
@@ -145,8 +146,8 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testGetListOfDoctors() {
         System.out.println("getListOfDoctors");
-        Doctor d1 = new Doctor ("Doctor1","NEUROLOGY",u1);
-        Doctor d2 = new Doctor ("Doctor2","NEUROLOGY",u2);
+        Doctor d1 = new Doctor ("Doctor1","Surname1",u1);
+        Doctor d2 = new Doctor ("Doctor2","Surname2",u2);
         System.out.println(d1.toString());
         System.out.println(d2.toString());
         doctorManager.createDoctor(d1);
@@ -156,8 +157,8 @@ public class JDBCDoctorManagerTest {
         assertEquals(2, doctors.size());
         assertTrue(doctors.stream().anyMatch(doctor -> doctor.getName().equals("Doctor1")));
         assertTrue(doctors.stream().anyMatch(doctor -> doctor.getName().equals("Doctor2")));
-        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getSpecialty().equals("NEUROLOGY")));
-        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getSpecialty().equals("NEUROLOGY")));
+        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getSpecialty().equals("Surname1")));
+        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getSpecialty().equals("Surname2")));
         assertTrue(doctors.stream().anyMatch(doctor -> doctor.getId().equals(d1.getId())));
         assertTrue(doctors.stream().anyMatch(doctor -> doctor.getId().equals(d2.getId())));
     }
@@ -188,14 +189,14 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testgetDoctorByUser(){
         System.out.println("getDoctorByUser");
-        Doctor d = new Doctor(1,"TempDoctor", "NEUROLOGY", u1);
+        Doctor d = new Doctor(1,"TempDoctorName", "TempDoctorSurname", u1);
          System.out.println(d.toString());
         doctorManager.createDoctor(d);
         Doctor fetchedDoctor = doctorManager.getDoctorByUser(u1);
         assertNotNull(fetchedDoctor);
         assertEquals(d.getId(), fetchedDoctor.getId());
         assertEquals(d.getName(), fetchedDoctor.getName());
-        assertEquals(d.getSpecialty(), fetchedDoctor.getSpecialty());
+        assertEquals(d.getSurname(), fetchedDoctor.getSurname());
         
       }
     

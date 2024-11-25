@@ -4,7 +4,6 @@
  */
 package ServerJDBC;
 import POJOs.Gender;
-import POJOs.Specialty;
 import POJOs.SignalType;
 import java.sql.Connection;
 import java.sql.DriverManager;

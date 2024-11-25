@@ -4,7 +4,6 @@
  */
 package POJOs;
 
-import POJOs.Patient;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -20,74 +19,45 @@ public class Doctor implements Serializable{
     
     private Integer id;
     private String name;
-    private String specialty;
+    private String surname;
+    private final String specialty="NEUROLOGY";
     private User user;
-    
     private List<Patient> patients;
-    
-    private List<Feedback> feedbacks; 
+    private List<Feedback> feedback; 
     
     public Doctor(){
     super();
     }
 
-    public Doctor(Integer id, String name, String specialty, User user, List<Patient> patients, List<Feedback> feedbacks) {
-        this.id = id;
+    public Doctor(String name, User user) {
+        
         this.name = name;
-        this.specialty = specialty;
-        this.user = user;
-        this.patients = patients;
-        this.feedbacks = feedbacks;
-    }
-
-    public Doctor(Integer id,String name, String specialty, User user) {
-        this.name = name;
-        this.id = id;
-        this.specialty = specialty;
         this.user = user;
     }
+    public Doctor(Integer id, String name, String surname){
+        this.id=id;
+        this.name=name;
+        this.surname=surname;
+    }
     
-    public Doctor(String name, Integer id, String specialty) {
-        this.name = name;
-        this.id = id;
-        this.specialty = specialty;
+    public Doctor(String name, String surname, User user){
         
+        this.name=name;
+        this.surname=surname;
+        this.user=user;
     }
     
-    public Doctor(String name, String specialty) {
-        this.name = name;
-        this.specialty = specialty;
-    }
-    
-    
-    public Doctor(String name, String specialty, User user) {
-        this.name = name;
-        this.specialty = specialty;
-        this.user= user;
-    }
-    
-    public Doctor(Integer id, String name, String specialty) {
-        this.name = name;
-        this.id = id;
-        this.specialty = specialty;
-        this.user = null;
-        this.patients = null;
-        this.feedbacks = null;
+    public Doctor(Integer id, String name, String surname, User user){
         
+        this.id=id;
+        this.name=name;
+        this.surname=surname;
+        this.user=user;
     }
-    
-    
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
-
-    //For the test
-    public Doctor(String name) {
-        this.name = name;
-    }
-
-   
 
     public String getName() {
         return name;
@@ -101,6 +71,12 @@ public class Doctor implements Serializable{
         return specialty;
     }
 
+    public String getSurname() {
+        return surname;
+    }
+    
+    
+
     public User getUser() {
         return user;
     }
@@ -113,36 +89,22 @@ public class Doctor implements Serializable{
         this.id = id;
     }
 
-    public void setSpecialty(String specialty) {
-        this.specialty = specialty;
-    }
-
-    public void setPatients(List<Patient> patients) {
-        this.patients = patients;
-    }
-
-    public void setFeedback(List<Feedback> feedbacks) {
-        this.feedbacks = feedbacks;
-    }
-
-    public List<Patient> getPatients() {
-        return patients;
-    }
-
-    public List<Feedback> getFeedbacks() {
-        return feedbacks;
-    }
 
     public void setUser(User user) {
         this.user = user;
     }
 
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+    
+    
+
     @Override
     public String toString() {
-        return "Doctor{" + "id=" + id + ", name=" + name + ", specialty=" + specialty + ", user=" + user + ", patients=" + patients + ", feedbacks=" + feedbacks + '}';
+        return "Doctor{" + "name=" + name + ", id=" + id + ", specialty=" + specialty + ", user=" + user + '}';
     }
 
-    
     @Override
     public int hashCode() {
         int hash = 7;
