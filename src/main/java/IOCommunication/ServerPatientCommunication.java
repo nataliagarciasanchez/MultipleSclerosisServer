@@ -5,8 +5,8 @@
 package IOCommunication;
 
 import POJOs.Doctor;
+import POJOs.Frame;
 import POJOs.Patient;
-import POJOs.Role;
 import POJOs.User;
 import ServerJDBC.JDBCDoctorManager;
 import ServerJDBC.JDBCManager;
@@ -19,6 +19,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -197,12 +198,54 @@ public class ServerPatientCommunication {
             }
         }
 
-        private void handleECGSignals() {
-            //TODO recibe las señales del bitalino y en base a eso y a los symptoms debe crear un diagnóstico 
+        private List<Frame> handleECGSignals() {
+             List<Frame> ecgFrames=null;
+            
+            try {
+                // Receive ECG frames from the client
+                ecgFrames = (List<Frame>) in.readObject();
+                System.out.println("Received ECG Frames: " + ecgFrames.size() + " frames");
+
+                // TODO Should send the list to the doctor and then from the ServerDoctor communication receive the diagnostic from the doctor
+
+                // Send the acknowledgment back to the client
+                out.writeObject("Signals sent to doctor for diagnostic. This might take a few minutes. Please wait.");
+                out.flush();
+            } catch (IOException | ClassNotFoundException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                try {
+                    out.writeObject("Error processing ECG signals: " + ex.getMessage());
+                    out.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return ecgFrames;
         }
 
-        private void handleEMGSignals() {
-            //TODO recibe las señales del bitalino y en base a eso y a los symptoms debe crear un diagnóstico  
+        private List<Frame> handleEMGSignals() {
+            
+            List<Frame> emgFrames = null;
+
+            try {
+                // Receive ECG frames from the client
+                emgFrames = (List<Frame>) in.readObject();
+                System.out.println("Received EMG Frames: " + emgFrames.size() + " frames");
+
+                // Should send the list to the doctor and then return the diagnostic from the doctor
+                // Send the acknowledgment back to the client
+                out.writeObject("Signals sent to doctor for diagnostic. This might take a few minutes. Please wait.");
+                out.flush();
+            } catch (IOException | ClassNotFoundException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                try {
+                    out.writeObject("Error processing EMG signals: " + ex.getMessage());
+                    out.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return emgFrames;
         }
 
         private static void releaseResourcesPatient(InputStream inputStream, Socket socket) {

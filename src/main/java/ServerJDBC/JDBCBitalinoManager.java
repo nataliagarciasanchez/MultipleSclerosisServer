@@ -5,7 +5,6 @@
 package ServerJDBC;
 
 import POJOs.Bitalino;
-import POJOs.Report;
 import POJOs.SignalType;
 import ServerInterfaces.BitalinoManager;
 import java.sql.Date;
@@ -41,15 +40,14 @@ public class JDBCBitalinoManager implements BitalinoManager {
      */
     @Override
     public void createBitalino(Bitalino b) {
-        String sql = "INSERT INTO Bitalinos (date, signal_type, file_path, duration, report_id)"
-                + "values (?,?,?,?,?)";
+        String sql = "INSERT INTO Bitalinos (date, signal_type, duration, report_id)"
+                + "values (?,?,?,?)";
         try {
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setDate(1, b.getDate());
             p.setString(2, b.getSignal_type().toString());
-            p.setString(3, b.getFile_path());
-            p.setString(4, b.getDuration().toString());
-            p.setInt(5, b.getReport().getId());
+            p.setString(3, b.getDuration().toString());
+            p.setInt(4, b.getReport().getId());
 
             p.executeUpdate();
             // Obtener el ID generado por la base de datos
@@ -89,16 +87,15 @@ public class JDBCBitalinoManager implements BitalinoManager {
      */
     @Override
     public void updateBitalino(Bitalino b) {
-        String sql = "UPDATE Bitalinos SET date = ?, signal_type = ?, file_path = ?,"
+        String sql = "UPDATE Bitalinos SET date = ?, signal_type = ?,"
                 + " duration = ?, report_id=? WHERE id = ?";
         try {
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
             stmt.setDate(1, b.getDate());
             stmt.setString(2, b.getSignal_type().toString());
-            stmt.setString(3, b.getFile_path());
-            stmt.setFloat(4, b.getDuration());
-            stmt.setInt(5, b.getReport().getId());
-            stmt.setInt(6, b.getId());
+            stmt.setFloat(3, b.getDuration());
+            stmt.setInt(4, b.getReport().getId());
+            stmt.setInt(5, b.getId());
 
             stmt.executeUpdate();
         } catch (SQLException ex) {
@@ -227,11 +224,9 @@ public class JDBCBitalinoManager implements BitalinoManager {
                 Integer id = rs.getInt("id");
                 Date b_date = rs.getDate("date");
                 String signalTypeString = rs.getString("signal_type");
-                String b_file_path = rs.getString("file_path");
-                Float b_duration = rs.getFloat("duration");
                 SignalType signal_type = SignalType.valueOf(signalTypeString);
 
-                bitalinos.add(new Bitalino(id, b_date, signal_type, b_file_path, b_duration));
+                bitalinos.add(new Bitalino(id, b_date, signal_type));
             } else {
                 System.out.println("Bitalino with date " + report_id + " not found.");
             }
