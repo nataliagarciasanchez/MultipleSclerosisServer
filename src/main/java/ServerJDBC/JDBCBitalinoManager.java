@@ -119,11 +119,9 @@ public class JDBCBitalinoManager implements BitalinoManager {
             while (rs.next()) {
                 Integer id = rs.getInt("id");
                 Date date = rs.getDate("date");
-                String file_path = rs.getString("file_path");
-                Float duration = rs.getFloat("duration");
                 String signalTypeString = rs.getString("signal_type");
-                SignalType ST = SignalType.valueOf(signalTypeString);
-                Bitalino b = new Bitalino(id, date, ST, file_path, duration);
+                SignalType signal_type = SignalType.valueOf(signalTypeString);
+                Bitalino b = new Bitalino(id, date, signal_type);
                 bitalinos.add(b);
             }
             rs.close();
@@ -153,10 +151,8 @@ public class JDBCBitalinoManager implements BitalinoManager {
             if (rs.next()) {
                 Date b_date = rs.getDate("date");
                 String signalTypeString = rs.getString("signal_type");
-                String b_file_path = rs.getNString("file_path");
-                Float b_duration = rs.getFloat("duration");
                 SignalType signal_type = SignalType.valueOf(signalTypeString);
-                bitalino = new Bitalino(id, b_date, signal_type, b_file_path, b_duration);
+                bitalino = new Bitalino(id, b_date, signal_type);
             } else {
                 System.out.println("Bitalino with ID " + id + " not found.");
             }
@@ -188,11 +184,9 @@ public class JDBCBitalinoManager implements BitalinoManager {
                 Integer id = rs.getInt("id");
                 Date b_date = rs.getDate("date");
                 String signalTypeString = rs.getString("signal_type");
-                String b_file_path = rs.getString("file_path");
-                Float b_duration = rs.getFloat("duration");
                 SignalType signal_type = SignalType.valueOf(signalTypeString);
 
-                bitalinos.add(new Bitalino(id, b_date, signal_type, b_file_path, b_duration));
+                bitalinos.add(new Bitalino(id, b_date, signal_type));
             } else {
                 System.out.println("Bitalino with date " + d + " not found.");
             }

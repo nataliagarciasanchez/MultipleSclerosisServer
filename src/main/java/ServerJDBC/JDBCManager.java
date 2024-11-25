@@ -162,7 +162,6 @@ public class JDBCManager {
                 + "     id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "     date DATE NOT NULL, "
                 + "     signal_type TEXT CHECK (signal_type IN ("+bitValues.toString()+")) NOT NULL, "
-                + "     file_path TEXT NOT NULL, "
                 + "     duration FLOAT NOT NULL, "
                 + "     report_id INTEGER NOT NULL, "
                 + "     FOREIGN KEY (report_id) REFERENCES Reports(id) ON DELETE CASCADE"
@@ -319,7 +318,7 @@ public class JDBCManager {
             String insertDoc1 = "INSERT INTO Doctors (name, surname, specialty, user_id) VALUES (?, ?, ?, ?)";
             PreparedStatement pstmt = c.prepareStatement(insertDoc1);
             pstmt.setString(1, "DR.Maria");
-            pstmt.setString(1, "Garcia");
+            pstmt.setString(2, "Garcia");
             pstmt.setString(3, "NEUROLOGY");
             pstmt.setInt(4, userId1); // Usar el ID generado
             pstmt.executeUpdate();
@@ -329,7 +328,7 @@ public class JDBCManager {
             String insertDoc2 = "INSERT INTO Doctors (name, surname, specialty, user_id) VALUES (?,?, ?, ?)";
             PreparedStatement pstmt2 = c.prepareStatement(insertDoc2);
             pstmt2.setString(1, "DR.Marcos");
-            pstmt2.setString(2, "DR.Marcos");
+            pstmt2.setString(2, "Perales");
             pstmt2.setString(3, "NEUROLOGY");
             pstmt2.setInt(4, userId2); // Usar el ID generado
             pstmt2.executeUpdate();
