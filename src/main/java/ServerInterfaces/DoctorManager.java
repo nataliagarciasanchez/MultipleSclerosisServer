@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface DoctorManager {
     
-    public void createDoctor(Doctor d);
+    public void registerDoctor(Doctor d);
     public void removeDoctorById(Integer id);
     public void updateDoctor(Doctor d);
     public List<Doctor> getListOfDoctors();

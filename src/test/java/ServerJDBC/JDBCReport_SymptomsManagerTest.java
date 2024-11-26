@@ -106,7 +106,7 @@ public class JDBCReport_SymptomsManagerTest {
         ud = new User("emailD", "passD", rd);
         userManager.registerUser(ud);
         d = new Doctor("name", "specialty", ud);
-        doctorManager.createDoctor(d);
+        doctorManager.registerDoctor(d);
         
         //para crear patient
         rp = new Role("Patient");

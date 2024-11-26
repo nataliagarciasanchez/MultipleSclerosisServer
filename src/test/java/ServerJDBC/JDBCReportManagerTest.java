@@ -90,7 +90,7 @@ public class JDBCReportManagerTest {
         ud = new User("emailD", "passD", rd);
         userManager.registerUser(ud);
         d = new Doctor("name", "NEUROLOGY", ud);
-        doctorManager.createDoctor(d);
+        doctorManager.registerDoctor(d);
         
         //para crear patient
         rp = new Role("Patient");

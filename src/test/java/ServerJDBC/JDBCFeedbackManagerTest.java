@@ -96,7 +96,7 @@ public class JDBCFeedbackManagerTest {
 
         // Crear doctor asociado al usuario
         doctor = new Doctor("Dr. Smith", "NEUROLOGY", doctorUser);
-        doctorManager.createDoctor(doctor);
+        doctorManager.registerDoctor(doctor);
 
         // Crear paciente asociado al usuario y al doctor
         patient = new Patient("John", "Doe", "12345678A", java.sql.Date.valueOf("1990-01-01"), Gender.MALE, "123456789", doctor, patientUser);

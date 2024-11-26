@@ -41,7 +41,7 @@ public class JDBCDoctorManager implements DoctorManager {
      * @param d the Doctor object containing the data to be inserted.
      */
     @Override
-    public void createDoctor(Doctor d) {
+    public void registerDoctor(Doctor d) {
         try {
             String sql = "INSERT INTO Doctors (name, surname, specialty, user_id)"
                     + "values (?,?,?,?)";

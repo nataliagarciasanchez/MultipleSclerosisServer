@@ -5,6 +5,7 @@
 package Menu.Utilities;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,7 +16,7 @@ import java.time.LocalDate;
  * @author noeli
  */
 public class Utilities {
-     private static BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+    private static BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
 
     public static boolean validateDate(LocalDate doaLocalDate) {
         boolean ok = true;
@@ -34,6 +35,25 @@ public class Utilities {
         
         // Convertir java.util.Date a java.sql.Date
         return new java.sql.Date(utilDate.getTime());
+    }
+    
+    public static String readString() {
+        String text = null;
+        boolean ok = false;
+        do {
+            try {
+                text = r.readLine();
+                if (!text.isEmpty()) {
+                    ok = true;
+                } else {
+                    System.out.println("Empty string, please try again:");
+                }
+            } catch (IOException e) {
+
+            }
+        } while (!ok);
+
+        return text;
     }
 
 }

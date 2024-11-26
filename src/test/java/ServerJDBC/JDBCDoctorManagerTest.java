@@ -94,7 +94,7 @@ public class JDBCDoctorManagerTest {
         System.out.println("createDoctor");
         Doctor d = new Doctor("TempNameDoc", "TempSurnameDoc", u1);
         System.out.println(d.toString());
-        doctorManager.createDoctor(d);
+        doctorManager.registerDoctor(d);
         Doctor fetchedDoctor = doctorManager.getDoctorById(d.getId());
         System.out.println(fetchedDoctor.toString());
         assertNotNull(fetchedDoctor);
@@ -113,7 +113,7 @@ public class JDBCDoctorManagerTest {
         System.out.println("DeleteDoctor");
         Doctor d = new Doctor ("TempDoctorName","TempDoctorSurname", u1);
         System.out.println(d.toString());
-        doctorManager.createDoctor(d);
+        doctorManager.registerDoctor(d);
         List<Doctor> DoctorsBefore = doctorManager.getListOfDoctors();
         assertEquals(1, DoctorsBefore.size());
         doctorManager.removeDoctorById(d.getId());
@@ -130,7 +130,7 @@ public class JDBCDoctorManagerTest {
         System.out.println("updateDoctor");
         Doctor d = new Doctor ("TempDoctorName","TempDoctorSurname", u1);
         System.out.println(d.toString());
-        doctorManager.createDoctor(d);
+        doctorManager.registerDoctor(d);
         d.setName("UpdatedDoctorName");
         d.setSurname("UpdatedDoctorSurname");
         doctorManager.updateDoctor(d);
@@ -150,8 +150,8 @@ public class JDBCDoctorManagerTest {
         Doctor d2 = new Doctor ("Doctor2","Surname2",u2);
         System.out.println(d1.toString());
         System.out.println(d2.toString());
-        doctorManager.createDoctor(d1);
-        doctorManager.createDoctor(d2);
+        doctorManager.registerDoctor(d1);
+        doctorManager.registerDoctor(d2);
 
         List<Doctor> doctors = doctorManager.getListOfDoctors();
         assertEquals(2, doctors.size());
@@ -172,7 +172,7 @@ public class JDBCDoctorManagerTest {
         System.out.println("getDoctorById");
         Doctor d = new Doctor ("Doctor1","NEUROLOGY",u1);
         System.out.println(d.toString());
-        doctorManager.createDoctor(d);
+        doctorManager.registerDoctor(d);
         Doctor fetchedDoctor = doctorManager.getDoctorById(d.getId());
         assertNotNull(fetchedDoctor);
         assertEquals(d.getId(), fetchedDoctor.getId());
@@ -191,7 +191,7 @@ public class JDBCDoctorManagerTest {
         System.out.println("getDoctorByUser");
         Doctor d = new Doctor(1,"TempDoctorName", "TempDoctorSurname", u1);
          System.out.println(d.toString());
-        doctorManager.createDoctor(d);
+        doctorManager.registerDoctor(d);
         Doctor fetchedDoctor = doctorManager.getDoctorByUser(u1);
         assertNotNull(fetchedDoctor);
         assertEquals(d.getId(), fetchedDoctor.getId());
@@ -209,7 +209,7 @@ public class JDBCDoctorManagerTest {
         System.out.println("getDoctorByName");
         Doctor d = new Doctor("TempDoctor", "NEUROLOGY", u1);
         System.out.println(d.toString());
-        doctorManager.createDoctor(d);
+        doctorManager.registerDoctor(d);
         List<Doctor> doctors= doctorManager.getDoctorByName("TempDoctor");
         assertNotNull(doctors);
         assertFalse(doctors.isEmpty());
@@ -225,10 +225,10 @@ public class JDBCDoctorManagerTest {
     @Test
         public void testgetDoctorIds(){
         Doctor d1 = new Doctor("TempDoctor1", "NEUROLOGY", u1);
-        doctorManager.createDoctor(d1);
+        doctorManager.registerDoctor(d1);
         System.out.println(d1.toString());
         Doctor d2 = new Doctor("TempDoctor2", "NEUROLOGY", u2);
-        doctorManager.createDoctor(d2);
+        doctorManager.registerDoctor(d2);
         System.out.println(d2.toString());
         List<Integer> id_doctors= doctorManager.getDoctorIds();
         assertNotNull(id_doctors);

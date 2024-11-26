@@ -95,7 +95,7 @@ public class JDBCBitalinoManagerTest {
         ud = new User("emailD", "passD", rd);
         userManager.registerUser(ud);
         d = new Doctor("name", "surname", ud);
-        doctorManager.createDoctor(d);
+        doctorManager.registerDoctor(d);
         rp = new Role("Patient");
         roleManager.createRole(rp);
         up = new User("emailP", "passP", rp);
