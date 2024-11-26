@@ -5,6 +5,7 @@
 package ServerJDBC;
 
 import POJOs.*;
+import Security.PasswordEncryption;
 import ServerInterfaces.UserManager;
 
 import java.sql.PreparedStatement;
@@ -20,10 +21,7 @@ import java.util.List;
 public class JDBCUserManager implements UserManager {
 
     private JDBCManager manager;
-    private JDBCDoctorManager doctorMan;
-    private JDBCPatientManager patientMan;
-    private JDBCFeedbackManager feedbackMan;
-    private JDBCReportManager reportMan;
+    
     private JDBCRoleManager roleMan;
 
     /**
@@ -66,10 +64,12 @@ public class JDBCUserManager implements UserManager {
     @Override
     public void registerUser(User user) {
         try {
+            String hashedPassword = PasswordEncryption.hashPassword(user.getPassword());
+            
             String sql = "INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1, user.getEmail());
-            p.setString(2, user.getPassword()); //  aplicar el hash aquí si es necesario
+            p.setString(2, hashedPassword); //  metemos la contraseña ya encriptada
             p.setInt(3, user.getRole().getId());
             p.executeUpdate();
             // Obtener el ID generado por la base de datos
@@ -96,20 +96,20 @@ public class JDBCUserManager implements UserManager {
     @Override
     public User login(String email, String password) {
         User user = null;  // Inicializamos user antes del bloque try
-        String sql = "SELECT * FROM Users WHERE email = ? AND password = ?"; // mejor = en vez de LIKE, para buscar solo coincidencias exactas
+        String sql = "SELECT * FROM Users WHERE email = ? "; // mejor = en vez de LIKE, para buscar solo coincidencias exactas
         try {
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1, email);
-            p.setString(2, password);  // Encriptar la contraseña para la comparación
             ResultSet rs = p.executeQuery();
 
             if (rs.next()) {
+                String storedHashedPassword = rs.getString("password");
                 Integer id = rs.getInt("id");
-                //Integer role_id = rs.getInt("role_id");
-                //Role role = roleMan.getRoleById(role_id);
-
-                // Creamos el objeto User
+                
+                if (PasswordEncryption.verifyPassword(password, storedHashedPassword)) {
+                // Creamos el objeto User solo si la contraseña es válida
                 user = new User(id, email, password);
+            }
             }
             rs.close();
             p.close();
@@ -144,13 +144,16 @@ public class JDBCUserManager implements UserManager {
      */
     @Override
     public void updateUser(User user) {
+        
+        String hashedPassword = PasswordEncryption.hashPassword(user.getPassword());
+        
         String sql = "UPDATE Users SET email = ?, password = ?, role_id = ? WHERE id = ?";
 
         try {
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
 
             p.setString(1, user.getEmail());
-            p.setString(2, user.getPassword()); // Puedes aplicar el hash aquí si es necesario
+            p.setString(2, hashedPassword); // Puedes aplicar el hash aquí si es necesario
             p.setInt(3, user.getRole().getId());
             p.setInt(4, user.getId());
 

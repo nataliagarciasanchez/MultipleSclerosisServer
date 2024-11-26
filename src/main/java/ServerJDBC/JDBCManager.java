@@ -5,6 +5,7 @@
 package ServerJDBC;
 import POJOs.Gender;
 import POJOs.SignalType;
+import Security.PasswordEncryption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -262,6 +263,7 @@ public class JDBCManager {
                 Statement stmt=c.createStatement();
                 String insertRole1 = "INSERT INTO Roles (id, name) VALUES (1, 'patient')";
                 String insertRole2 = "INSERT INTO Roles (id, name) VALUES (2, 'doctor')";
+                String insertRole3 = "INSERT INTO Roles (id, name) VALUES (3, 'administrator')";
                 stmt.executeUpdate(insertRole1);
                 stmt.executeUpdate(insertRole2);
                 stmt.close();
@@ -286,7 +288,8 @@ public class JDBCManager {
             String insertUserDoc1 = "INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
             PreparedStatement p1 = c.prepareStatement(insertUserDoc1, Statement.RETURN_GENERATED_KEYS);
             p1.setString(1, "doctor.garcia@multipleSclerosis.com");
-            p1.setString(2, "Password456");
+            String hashedPassword1 = PasswordEncryption.hashPassword("Password456");
+            p1.setString(2, hashedPassword1);
             p1.setInt(3, 2);
             p1.executeUpdate();
 
@@ -302,7 +305,8 @@ public class JDBCManager {
             String insertUserDoc2 = "INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
             PreparedStatement p2 = c.prepareStatement(insertUserDoc2, Statement.RETURN_GENERATED_KEYS);
             p2.setString(1, "doctor.perales@multipleSclerosis.com");
-            p2.setString(2, "Password678");
+            String hashedPassword2 = PasswordEncryption.hashPassword("Password678");
+            p2.setString(2, hashedPassword2);
             p2.setInt(3, 2);
             p2.executeUpdate();
 
