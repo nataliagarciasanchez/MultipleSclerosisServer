@@ -90,7 +90,7 @@ public class JDBCDoctorManagerTest {
      * Test of createDoctor method, of class JDBCDoctorManager.
      */
     @Test
-    public void testCreateDoctor() {
+    public void testRegisterDoctor() {
         System.out.println("createDoctor");
         Doctor d = new Doctor("TempNameDoc", "TempSurnameDoc", u1);
         System.out.println(d.toString());
@@ -155,12 +155,12 @@ public class JDBCDoctorManagerTest {
 
         List<Doctor> doctors = doctorManager.getListOfDoctors();
         assertEquals(2, doctors.size());
-        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getName().equals("Doctor1")));
-        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getName().equals("Doctor2")));
-        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getSpecialty().equals("Surname1")));
-        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getSpecialty().equals("Surname2")));
         assertTrue(doctors.stream().anyMatch(doctor -> doctor.getId().equals(d1.getId())));
         assertTrue(doctors.stream().anyMatch(doctor -> doctor.getId().equals(d2.getId())));
+        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getName().equals(d1.getName())));
+        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getName().equals(d2.getName())));
+        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getSurname().equals(d1.getSurname())));
+        assertTrue(doctors.stream().anyMatch(doctor -> doctor.getSurname().equals(d2.getSurname())));
     }
     
 
@@ -189,7 +189,7 @@ public class JDBCDoctorManagerTest {
     @Test
     public void testgetDoctorByUser(){
         System.out.println("getDoctorByUser");
-        Doctor d = new Doctor(1,"TempDoctorName", "TempDoctorSurname", u1);
+        Doctor d = new Doctor("TempDoctorName", "TempDoctorSurname", u1);
          System.out.println(d.toString());
         doctorManager.registerDoctor(d);
         Doctor fetchedDoctor = doctorManager.getDoctorByUser(u1);

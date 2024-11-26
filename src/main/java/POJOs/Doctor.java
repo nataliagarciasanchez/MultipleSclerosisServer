@@ -23,7 +23,7 @@ public class Doctor implements Serializable{
     private final String specialty="NEUROLOGY";
     private User user;
     private List<Patient> patients;
-    private List<Feedback> feedback; 
+    private List<Feedback> feedbacks; 
     
     public Doctor(){
     super();
@@ -34,10 +34,14 @@ public class Doctor implements Serializable{
         this.name = name;
         this.user = user;
     }
+
     public Doctor(Integer id, String name, String surname){
-        this.id=id;
-        this.name=name;
-        this.surname=surname;
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+        this.user = null;
+        this.patients = null;
+        this.feedbacks = null;
     }
     
     public Doctor(String name, String surname, User user){
@@ -75,11 +79,18 @@ public class Doctor implements Serializable{
         return surname;
     }
     
-    
-
     public User getUser() {
         return user;
     }
+    
+    public List<Patient> getPatients() {
+        return patients;
+    }
+    
+    public List<Feedback> getFeedbacks() {
+            return feedbacks;
+    }
+  
 
     public void setName(String name) {
         this.name = name;
@@ -96,6 +107,14 @@ public class Doctor implements Serializable{
 
     public void setSurname(String surname) {
         this.surname = surname;
+    }
+    
+    public void setPatients(List<Patient> patients) {
+        this.patients = patients;
+    }
+    
+    public void setFeedbacks(List<Feedback> feedbacks) {
+        this.feedbacks = feedbacks;
     }
     
     

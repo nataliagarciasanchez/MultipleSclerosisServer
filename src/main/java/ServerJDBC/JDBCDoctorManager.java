@@ -20,9 +20,7 @@ import java.util.List;
 public class JDBCDoctorManager implements DoctorManager {
 
     private JDBCManager manager;
-    private JDBCUserManager userMan;
-    private JDBCPatientManager patientMan;
-    private JDBCFeedbackManager feedbackMan;
+    
 
     /**
      * Constructor for JDBCDoctorManager.
@@ -31,7 +29,6 @@ public class JDBCDoctorManager implements DoctorManager {
      */
     public JDBCDoctorManager(JDBCManager manager) {
         this.manager = manager;
-        this.userMan = new JDBCUserManager(manager);
 
     }
 
@@ -220,7 +217,7 @@ public class JDBCDoctorManager implements DoctorManager {
                 // Extracting the data from the ResultSet into variables
                 Integer id = rs.getInt("id");
                 String name = rs.getString("name");
-                String surname = rs.getString("specialty");
+                String surname = rs.getString("surname");
 
                 // Using the constructor to create the Doctor object
                 doctor = new Doctor(id, name, surname);
