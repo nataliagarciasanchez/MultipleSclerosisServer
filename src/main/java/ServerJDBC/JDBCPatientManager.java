@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package ServerJDBC;
+import POJOs.Doctor;
 import POJOs.Gender;
 import POJOs.Patient;
 import POJOs.User;
@@ -35,7 +36,14 @@ public class JDBCPatientManager implements PatientManager{
     @Override
     public void registerPatient(Patient p) {
         //before registering the patient, the server assigns a random doc
-        int doc_id=assignDoctor2Patient();
+        List<Integer> docs_ids=doctorMan.getDoctorIds();
+        if (docs_ids == null || docs_ids.isEmpty()) {
+            throw new IllegalArgumentException("The list of doctors must not be null or empty.");
+        }
+        Random random = new Random();
+        int randomIndex = random.nextInt(docs_ids.size());
+        
+        int doc_id = docs_ids.get(randomIndex);;
                 
         try{
             String sql = "INSERT INTO Patients (name, surname, NIF, dob, gender, phone, doctor_id, user_id)"
@@ -56,6 +64,7 @@ public class JDBCPatientManager implements PatientManager{
                 int generatedId = generatedKeys.getInt(1);
                 p.setId(generatedId);  // Asigna el ID generado al objeto Role
             }
+            
             ps.close();
 
         }catch(SQLException e) {
@@ -63,16 +72,16 @@ public class JDBCPatientManager implements PatientManager{
         }   
     }
     
-    @Override
+    /*@Override
     public int assignDoctor2Patient(){ // gets the list of ids from all doctors and randomly selects one id that will be assigned to teh patient
         List<Integer> docs_ids=doctorMan.getDoctorIds();
         if (docs_ids == null || docs_ids.isEmpty()) {
-            throw new IllegalArgumentException("The list must not be null or empty.");
+            throw new IllegalArgumentException("The list of doctors must not be null or empty.");
         }
         Random random = new Random();
         int randomIndex = random.nextInt(docs_ids.size());
         return docs_ids.get(randomIndex);
-    }
+    }*/
     
     @Override
     public void removePatientById(Integer id) {
@@ -100,7 +109,7 @@ public class JDBCPatientManager implements PatientManager{
                 stmt.setString(6, p.getPhone());
 	        stmt.setInt(7, p.getDoctor().getId());
                 stmt.setInt(8, p.getUser().getId());
-                stmt.setInt(8, p.getId());
+                stmt.setInt(9, p.getId());
 
 	        stmt.executeUpdate();
 	    } catch (SQLException ex) {

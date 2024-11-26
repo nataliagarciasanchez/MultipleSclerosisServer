@@ -399,8 +399,9 @@ public class JDBCManager {
             ResultSet rs = statement.executeQuery("SELECT name FROM sqlite_master WHERE type='table';");
             while (rs.next()) {
                 String tableName = rs.getString("name");
+                
                 if (!tableName.equals("sqlite_sequence")) { // Evitar la tabla interna que gestiona los IDs autoincrementales
-                    System.out.println("Clearing table: " + tableName);
+                    //System.out.println("Clearing table: " + tableName);
                     statement.executeUpdate("DELETE FROM " + tableName);
                 }
             }

@@ -22,7 +22,6 @@ public interface PatientManager {
     public Patient getPatientById(Integer id);
     public Patient getPatientByUser(User user);
     public List<Patient> getPatientByName(String name);   
-    public List<Patient> getPatientsFromDoctor(Integer doctorId);   //falta
-    public int assignDoctor2Patient();  //falta
-    public int getDoctorIdFromPatient(Patient p);   //Falta
+    public List<Patient> getPatientsFromDoctor(Integer doctorId);   
+    public int getDoctorIdFromPatient(Patient p);  
 }
