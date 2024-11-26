@@ -96,7 +96,7 @@ public class JDBCDoctorManagerTest {
         System.out.println(d.toString());
         doctorManager.registerDoctor(d);
         Doctor fetchedDoctor = doctorManager.getDoctorById(d.getId());
-        System.out.println(fetchedDoctor.toString());
+        System.out.println("Fetched doctor: " + fetchedDoctor.toString());
         assertNotNull(fetchedDoctor);
         assertEquals(d.getName(), fetchedDoctor.getName());
         assertEquals(d.getId(), fetchedDoctor.getId());
