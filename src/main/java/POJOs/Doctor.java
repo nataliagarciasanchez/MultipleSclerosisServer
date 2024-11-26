@@ -116,13 +116,15 @@ public class Doctor implements Serializable{
     public void setFeedbacks(List<Feedback> feedbacks) {
         this.feedbacks = feedbacks;
     }
-    
-    
 
     @Override
     public String toString() {
-        return "Doctor{" + "name=" + name + ", id=" + id + ", specialty=" + specialty + ", user=" + user + '}';
+        return "Doctor{" + "id=" + id + ", name=" + name + ", surname=" + surname + ", specialty=" + specialty + ", user=" + user + ", patients=" + patients + ", feedbacks=" + feedbacks + '}';
     }
+    
+    
+
+    
 
     @Override
     public int hashCode() {

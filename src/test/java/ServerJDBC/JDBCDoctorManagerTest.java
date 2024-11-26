@@ -70,9 +70,9 @@ public class JDBCDoctorManagerTest {
         jdbcManager.clearAllTables();
         r = new Role ("Doctor");
         roleManager.createRole(r);
-        u1 = new User ("email", "password", r);
+        u1 = new User ("email1", "password", r);
         userManager.registerUser(u1);
-        u2 = new User ("email", "password", r);
+        u2 = new User ("email2", "password", r);
         userManager.registerUser(u2);
         
     }
@@ -91,17 +91,19 @@ public class JDBCDoctorManagerTest {
      */
     @Test
     public void testRegisterDoctor() {
-        System.out.println("createDoctor");
+        System.out.println("\nRegister Doctor");
         Doctor d = new Doctor("TempNameDoc", "TempSurnameDoc", u1);
-        System.out.println(d.toString());
+        System.out.println("Initial doctor: \n" + d.toString());
+        
         doctorManager.registerDoctor(d);
         Doctor fetchedDoctor = doctorManager.getDoctorById(d.getId());
-        System.out.println("Fetched doctor: " + fetchedDoctor.toString());
+        System.out.println("Fetched doctor: \n" + fetchedDoctor.toString());
+        
         assertNotNull(fetchedDoctor);
         assertEquals(d.getName(), fetchedDoctor.getName());
         assertEquals(d.getId(), fetchedDoctor.getId());
         assertEquals(d.getSurname(), fetchedDoctor.getSurname());
-        
+        assertEquals(d.getSpecialty(), fetchedDoctor.getSpecialty());     
         
     }
 
@@ -110,9 +112,9 @@ public class JDBCDoctorManagerTest {
      */
     @Test
     public void testRemoveDoctorById() {      
-        System.out.println("DeleteDoctor");
+        System.out.println("\nRemove Doctor By Id");
         Doctor d = new Doctor ("TempDoctorName","TempDoctorSurname", u1);
-        System.out.println(d.toString());
+        
         doctorManager.registerDoctor(d);
         List<Doctor> DoctorsBefore = doctorManager.getListOfDoctors();
         assertEquals(1, DoctorsBefore.size());
@@ -127,17 +129,22 @@ public class JDBCDoctorManagerTest {
      */
     @Test
     public void testUpdateDoctor() {
-        System.out.println("updateDoctor");
+        System.out.println("\nUpdate Doctor");
         Doctor d = new Doctor ("TempDoctorName","TempDoctorSurname", u1);
-        System.out.println(d.toString());
+        System.out.println("Initial doctor: \n" + d.toString());
+        
         doctorManager.registerDoctor(d);
         d.setName("UpdatedDoctorName");
         d.setSurname("UpdatedDoctorSurname");
         doctorManager.updateDoctor(d);
         Doctor updatedDoctor = doctorManager.getDoctorById(d.getId());
+        System.out.println("updated doctor: \n" + updatedDoctor.toString());
+        
         assertNotNull(updatedDoctor);
-        assertEquals("UpdatedDoctorName", updatedDoctor.getName());
-        assertEquals("UpdatedDoctorSurname", updatedDoctor.getSurname());
+        assertEquals(d.getId(), updatedDoctor.getId());
+        assertEquals(d.getName(), updatedDoctor.getName());
+        assertEquals(d.getSurname(), updatedDoctor.getSurname());
+        assertEquals(d.getSpecialty(), updatedDoctor.getSpecialty());
     }
 
     /**
@@ -148,10 +155,14 @@ public class JDBCDoctorManagerTest {
         System.out.println("getListOfDoctors");
         Doctor d1 = new Doctor ("Doctor1","Surname1",u1);
         Doctor d2 = new Doctor ("Doctor2","Surname2",u2);
-        System.out.println(d1.toString());
-        System.out.println(d2.toString());
+        System.out.println("Initial doctor 1: \n" +d1.toString());
+        System.out.println("Initial doctor 2: \n" +d2.toString());
+        
         doctorManager.registerDoctor(d1);
         doctorManager.registerDoctor(d2);
+        
+        System.out.println("Registered doctor 1: \n" +d1.toString());
+        System.out.println("Registered doctor 2: \n" +d2.toString());
 
         List<Doctor> doctors = doctorManager.getListOfDoctors();
         assertEquals(2, doctors.size());
@@ -171,16 +182,17 @@ public class JDBCDoctorManagerTest {
     public void testGetDoctorById() {
         System.out.println("getDoctorById");
         Doctor d = new Doctor ("Doctor1","NEUROLOGY",u1);
-        System.out.println(d.toString());
+        System.out.println("Initial doctor: \n" + d.toString());
         doctorManager.registerDoctor(d);
         Doctor fetchedDoctor = doctorManager.getDoctorById(d.getId());
+        System.out.println("Fetched doctor: \n" + fetchedDoctor.toString());
+        
         assertNotNull(fetchedDoctor);
         assertEquals(d.getId(), fetchedDoctor.getId());
         assertEquals(d.getName(), fetchedDoctor.getName());
+        assertEquals(d.getSurname(), fetchedDoctor.getSurname());
         assertEquals(d.getSpecialty(), fetchedDoctor.getSpecialty());
-        
-        
-       
+
     }
     
     /**
@@ -197,6 +209,7 @@ public class JDBCDoctorManagerTest {
         assertEquals(d.getId(), fetchedDoctor.getId());
         assertEquals(d.getName(), fetchedDoctor.getName());
         assertEquals(d.getSurname(), fetchedDoctor.getSurname());
+        assertEquals(d.getSpecialty(), fetchedDoctor.getSpecialty());
         
       }
     
