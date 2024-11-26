@@ -214,14 +214,15 @@ public class JDBCBitalinoManager implements BitalinoManager {
             stmt.setInt(1, report_id);
             ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
+            while (rs.next()) {
                 Integer id = rs.getInt("id");
                 Date b_date = rs.getDate("date");
                 String signalTypeString = rs.getString("signal_type");
                 SignalType signal_type = SignalType.valueOf(signalTypeString);
 
                 bitalinos.add(new Bitalino(id, b_date, signal_type));
-            } else {
+            }
+            if (rs.next() == false) {
                 System.out.println("Bitalino with date " + report_id + " not found.");
             }
 

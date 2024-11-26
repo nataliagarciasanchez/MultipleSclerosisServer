@@ -244,22 +244,28 @@ public class JDBCBitalinoManagerTest {
     @Test
     public void testGetBitalinosOfReport() {
         System.out.println("getBitalinosOfReport");
+        
         Date recorded1 = java.sql.Date.valueOf("2024-11-21");
         Bitalino b1 = new Bitalino (recorded1,SignalType.EMG,r);
         bitalinoManager.createBitalino(b1);
+        
         Date recorded2 = java.sql.Date.valueOf("2024-11-21");
         Bitalino b2 = new Bitalino (recorded2,SignalType.ECG,r);
         bitalinoManager.createBitalino(b2);
+        
         System.out.println(b1.toString());
         System.out.println(b2.toString());
+        
         List<Bitalino> bitalinos = bitalinoManager.getBitalinosOfReport(r.getId());
+        
         assertNotNull(bitalinos, "La lista bitalino NO debería ser null.");
         assertEquals(2, bitalinos.size(), "Debería haber exactamente 2 ");
-        assertEquals(b1.getDate(), bitalinos.get(0).getDate());
-        assertEquals(b1.getSignal_type(), bitalinos.get(0).getSignal_type());
-        assertEquals(b2.getDate(), bitalinos.get(1).getDate());
-        assertEquals(b2.getSignal_type(), bitalinos.get(1).getSignal_type());
-
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDate().equals(b1.getDate())));
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDate().equals(b2.getDate())));
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getId().equals(b1.getId())));
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getId().equals(b2.getId())));
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getSignal_type().equals(b1.getSignal_type())));
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getSignal_type().equals(b2.getSignal_type())));
     }
     
 }
