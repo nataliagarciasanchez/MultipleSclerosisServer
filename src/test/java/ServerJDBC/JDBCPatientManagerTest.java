@@ -269,9 +269,12 @@ public class JDBCPatientManagerTest {
         
     }
     
+    /**
+     * Test of getDoctorIdFromPatient method, of class JDBCPatientManager.
+     */
     @Test
-    public void testGetDoctorFromPatient() throws ParseException{
-        System.out.println("testGetPatientsFromDoctor");
+    public void getDoctorIdFromPatient() throws ParseException{
+        System.out.println("testgetDoctorIdFromPatient");
         java.sql.Date dob1=Utilities.convertString2SqlDate("24/04/2003");
         Patient p = new Patient ("TempPatient","Auba","71045623A",dob1, Gender.FEMALE,"678954326",d,u2);
         patientManager.registerPatient(p);
@@ -279,6 +282,23 @@ public class JDBCPatientManagerTest {
         int doctor_id= patientManager.getDoctorIdFromPatient(p);
         assertNotNull(doctor_id);
         assertEquals(p.getDoctor().getId(), doctor_id);
+        
+    }
+   
+        
+    /**
+     * Test of assignDoctor2Patient method, of class JDBCPatientManager.
+     */
+    @Test
+    public void assignDoctor2Patient() throws ParseException{
+        System.out.println("testAssignDoctor2Patient");
+        java.sql.Date dob1=Utilities.convertString2SqlDate("24/04/2003");
+        Patient p = new Patient ("TempPatient","Auba","71045623A",dob1, Gender.FEMALE,"678954326",u2);
+        patientManager.registerPatient(p);
+        System.out.println(p.toString());
+        int assigned_id= patientManager.assignDoctor2Patient();
+        assertNotNull(assigned_id);
+        assertEquals(p.getDoctor().getId(), assigned_id);
         
     }
     

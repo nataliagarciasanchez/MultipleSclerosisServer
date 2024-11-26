@@ -94,7 +94,6 @@ public class JDBCDoctorManagerTest {
         System.out.println("\nRegister Doctor");
         Doctor d = new Doctor("TempNameDoc", "TempSurnameDoc", u1);
         System.out.println("Initial doctor: \n" + d.toString());
-        
         doctorManager.registerDoctor(d);
         Doctor fetchedDoctor = doctorManager.getDoctorById(d.getId());
         System.out.println("Fetched doctor: \n" + fetchedDoctor.toString());
@@ -114,8 +113,8 @@ public class JDBCDoctorManagerTest {
     public void testRemoveDoctorById() {      
         System.out.println("\nRemove Doctor By Id");
         Doctor d = new Doctor ("TempDoctorName","TempDoctorSurname", u1);
-        
         doctorManager.registerDoctor(d);
+        System.out.println(d.toString());
         List<Doctor> DoctorsBefore = doctorManager.getListOfDoctors();
         assertEquals(1, DoctorsBefore.size());
         doctorManager.removeDoctorById(d.getId());
@@ -131,15 +130,13 @@ public class JDBCDoctorManagerTest {
     public void testUpdateDoctor() {
         System.out.println("\nUpdate Doctor");
         Doctor d = new Doctor ("TempDoctorName","TempDoctorSurname", u1);
-        System.out.println("Initial doctor: \n" + d.toString());
-        
         doctorManager.registerDoctor(d);
+        System.out.println("Initial doctor: \n" + d.toString());
         d.setName("UpdatedDoctorName");
         d.setSurname("UpdatedDoctorSurname");
         doctorManager.updateDoctor(d);
         Doctor updatedDoctor = doctorManager.getDoctorById(d.getId());
         System.out.println("updated doctor: \n" + updatedDoctor.toString());
-        
         assertNotNull(updatedDoctor);
         assertEquals(d.getId(), updatedDoctor.getId());
         assertEquals(d.getName(), updatedDoctor.getName());
@@ -154,10 +151,9 @@ public class JDBCDoctorManagerTest {
     public void testGetListOfDoctors() {
         System.out.println("getListOfDoctors");
         Doctor d1 = new Doctor ("Doctor1","Surname1",u1);
-        Doctor d2 = new Doctor ("Doctor2","Surname2",u2);
+        Doctor d2 = new Doctor ("Doctor2","Surname2",u2);    
         System.out.println("Initial doctor 1: \n" +d1.toString());
         System.out.println("Initial doctor 2: \n" +d2.toString());
-        
         doctorManager.registerDoctor(d1);
         doctorManager.registerDoctor(d2);
         
