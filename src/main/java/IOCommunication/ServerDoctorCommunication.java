@@ -113,6 +113,7 @@ public class ServerDoctorCommunication{
                         case "updateInformation":
                             handleUpdateInformation();
                             break;
+                            //case para viewPatient
                         case "sendFeedback":
                             receiveFeedback();
                             break;
