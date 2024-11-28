@@ -21,6 +21,8 @@ public class Role implements Serializable{
 
     public Role() {
         super();
+        this.id = 3;
+        this.name = "administrator";
     }
 
     public Role(String name) {

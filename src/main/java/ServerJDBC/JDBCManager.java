@@ -267,6 +267,7 @@ public class JDBCManager {
                 String insertRole3 = "INSERT INTO Roles (id, name) VALUES (3, 'administrator')";
                 stmt.executeUpdate(insertRole1);
                 stmt.executeUpdate(insertRole2);
+                stmt.executeUpdate(insertRole3);
                 stmt.close();
             }
         } catch (SQLException ex) {
