@@ -140,7 +140,10 @@ public class JDBCPatientManager implements PatientManager{
                                                             
                 Patient patient = new Patient(p_id, name, surname, NIF, dob, gender, phone);
 	        patients.add(patient);
-	        }
+	    }
+            if (patients.isEmpty()){
+                System.out.println("No patients found in the db.");
+            }
 
 	        rs.close();
 	        stmt.close();
