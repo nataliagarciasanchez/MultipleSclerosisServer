@@ -18,7 +18,7 @@ public class ComServerTemporalMenu {
         jdbcManager.connect();
         ServerPatientCommunication comPatient=new ServerPatientCommunication(9000,jdbcManager);
         comPatient.startServer();
-        ServerDoctorCommunication comDoctor= new ServerDoctorCommunication (9000, jdbcManager);
+        ServerDoctorCommunication comDoctor= new ServerDoctorCommunication (9001, jdbcManager);
         comDoctor.startServer ();
     }
 }

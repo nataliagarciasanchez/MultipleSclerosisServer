@@ -9,6 +9,7 @@ import POJOs.Doctor;
 import POJOs.Frame;
 import POJOs.Patient;
 import POJOs.User;
+import ServerJDBC.JDBCBitalinoManager;
 import ServerJDBC.JDBCDoctorManager;
 import ServerJDBC.JDBCManager;
 import ServerJDBC.JDBCPatientManager;
@@ -36,6 +37,7 @@ public class ServerPatientCommunication {
     private JDBCRoleManager roleManager;
     private JDBCPatientManager patientManager;
     private JDBCDoctorManager doctorManager;
+    private JDBCBitalinoManager bitalinoManager;
     
 
     public ServerPatientCommunication(int port, JDBCManager jdbcManager) {
@@ -43,6 +45,7 @@ public class ServerPatientCommunication {
         this.userManager = new JDBCUserManager(jdbcManager, roleManager);
         this.patientManager=new JDBCPatientManager(jdbcManager);
         this.doctorManager=new JDBCDoctorManager(jdbcManager);
+        this.bitalinoManager = new JDBCBitalinoManager(jdbcManager);
         this.port=port;   
     }
     
@@ -221,6 +224,7 @@ public class ServerPatientCommunication {
             try {
                 // Receive ECG frames from the client
                 bitalino = (Bitalino) in.readObject();
+                bitalinoManager.createBitalino(bitalino);
                 System.out.println("Received bitalino");
 
                 // TODO Should send the list to the doctor and then from the ServerDoctor communication receive the diagnostic from the doctor
