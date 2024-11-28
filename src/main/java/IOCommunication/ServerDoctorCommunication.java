@@ -58,7 +58,7 @@ public class ServerDoctorCommunication{
                 new Thread(new ServerDoctorThread(doctorSocket)).start();
             }
         } catch (IOException ex) {
-            Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             releaseResourcesServer(serverSocket);
         }
@@ -97,7 +97,7 @@ public class ServerDoctorCommunication{
             boolean running=true;
             while(running){
                 try {
-                    String action = (String) in.readObject(); // Leer acción del cliente
+                    String action = (String) in.readObject(); // Leer acción
                     
                     switch (action) {
                         case "register":
@@ -113,7 +113,9 @@ public class ServerDoctorCommunication{
                         case "updateInformation":
                             handleUpdateInformation();
                             break;
+                        case "viewPatients":
                             //case para viewPatient
+                            break;
                         case "sendFeedback":
                             receiveFeedback();
                             break;
@@ -122,9 +124,9 @@ public class ServerDoctorCommunication{
                             break; 
                     }
                 } catch (IOException ex) {
-                    Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
@@ -143,19 +145,19 @@ public class ServerDoctorCommunication{
                 out.writeObject("Registered with success");
                 out.flush();
             } catch (IOException | ClassNotFoundException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception exc) {
                 try {
                     out.writeObject("Error during registration: " + exc.getMessage());
                     out.flush();
                 } catch (IOException ex) {
-                    Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
         
         /**
-         * Logs in by retrieving patient info from the registered patient in the database
+         * Logs in by retrieving patient info from the registered doctor in the database
          */
         private void handleLogin() {
             try {
@@ -167,19 +169,19 @@ public class ServerDoctorCommunication{
                 out.writeObject(doctor);
                 
             } catch (IOException | ClassNotFoundException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
         /**
-         * Releases all the resources of the socket established with the patient
+         * Releases all the resources of the socket established with the doctor
          */
         private void handleLogout(){
             try {
                 releaseResourcesDoctor(in,doctorSocket);
                 out.writeObject("Connection closed. ");
             } catch (IOException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
@@ -194,9 +196,11 @@ public class ServerDoctorCommunication{
                 out.writeObject("Information changed correclty");
 
             } catch (IOException | ClassNotFoundException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
+       // private void viewPatients (){}
         
         private void receiveFeedback(){
             //TODO recives report and has to send it to the patient
@@ -210,13 +214,13 @@ public class ServerDoctorCommunication{
             try {
                 inputStream.close();
             } catch (IOException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             try {
                 socket.close();
             } catch (IOException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -225,7 +229,7 @@ public class ServerDoctorCommunication{
         try {
             serverSocket.close();
         } catch (IOException ex) {
-            Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
