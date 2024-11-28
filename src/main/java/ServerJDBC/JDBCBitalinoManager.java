@@ -40,14 +40,15 @@ public class JDBCBitalinoManager implements BitalinoManager {
      */
     @Override
     public void createBitalino(Bitalino b) {
-        String sql = "INSERT INTO Bitalinos (date, signal_type, duration, report_id)"
-                + "values (?,?,?,?)";
+        String sql = "INSERT INTO Bitalinos (date, signal_type, duration, signal_values, report_id)"
+                + "values (?,?,?,?,?)";
         try {
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setDate(1, b.getDate());
             p.setString(2, b.getSignal_type().toString());
             p.setString(3, b.getDuration().toString());
-            p.setInt(4, b.getReport().getId());
+            p.setString(4, b.getSignalValues());
+            p.setInt(5, b.getReport().getId());
 
             p.executeUpdate();
             // Obtener el ID generado por la base de datos
@@ -88,14 +89,15 @@ public class JDBCBitalinoManager implements BitalinoManager {
     @Override
     public void updateBitalino(Bitalino b) {
         String sql = "UPDATE Bitalinos SET date = ?, signal_type = ?,"
-                + " duration = ?, report_id=? WHERE id = ?";
+                + " duration = ?, signal_values = ?, report_id=? WHERE id = ?";
         try {
             PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
             stmt.setDate(1, b.getDate());
             stmt.setString(2, b.getSignal_type().toString());
             stmt.setFloat(3, b.getDuration());
             stmt.setInt(4, b.getReport().getId());
-            stmt.setInt(5, b.getId());
+            stmt.setString(5, b.getSignalValues());
+            stmt.setInt(6, b.getId());
 
             stmt.executeUpdate();
         } catch (SQLException ex) {
@@ -121,8 +123,12 @@ public class JDBCBitalinoManager implements BitalinoManager {
                 Date date = rs.getDate("date");
                 String signalTypeString = rs.getString("signal_type");
                 SignalType signal_type = SignalType.valueOf(signalTypeString);
-                Bitalino b = new Bitalino(id, date, signal_type);
+                String signalValues = rs.getString("signal_values");
+                Bitalino b = new Bitalino(id, date, signal_type, signalValues);
                 bitalinos.add(b);
+            }
+            if (bitalinos.isEmpty()){
+                System.out.println("No bitalinos found in the db");
             }
             rs.close();
             stmt.close();
@@ -152,7 +158,8 @@ public class JDBCBitalinoManager implements BitalinoManager {
                 Date b_date = rs.getDate("date");
                 String signalTypeString = rs.getString("signal_type");
                 SignalType signal_type = SignalType.valueOf(signalTypeString);
-                bitalino = new Bitalino(id, b_date, signal_type);
+                String signalValues = rs.getString("signal_values");
+                bitalino = new Bitalino(id, b_date, signal_type, signalValues);
             } else {
                 System.out.println("Bitalino with ID " + id + " not found.");
             }
@@ -180,14 +187,18 @@ public class JDBCBitalinoManager implements BitalinoManager {
             stmt.setDate(1, d);
             ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
+            while (rs.next()) {
                 Integer id = rs.getInt("id");
                 Date b_date = rs.getDate("date");
                 String signalTypeString = rs.getString("signal_type");
                 SignalType signal_type = SignalType.valueOf(signalTypeString);
-
-                bitalinos.add(new Bitalino(id, b_date, signal_type));
-            } else {
+                String signalValues = rs.getString("signal_values");
+                
+                Bitalino b = new Bitalino(id, b_date, signal_type, signalValues);
+                bitalinos.add(b);
+            }
+            
+            if (bitalinos.isEmpty()){
                 System.out.println("Bitalino with date " + d + " not found.");
             }
 
@@ -219,11 +230,13 @@ public class JDBCBitalinoManager implements BitalinoManager {
                 Date b_date = rs.getDate("date");
                 String signalTypeString = rs.getString("signal_type");
                 SignalType signal_type = SignalType.valueOf(signalTypeString);
-
-                bitalinos.add(new Bitalino(id, b_date, signal_type));
+                String signalValues = rs.getString("signal_values");
+                
+                Bitalino b = new Bitalino(id, b_date, signal_type, signalValues);
+                bitalinos.add(b);
             }
-            if (rs.next() == false) {
-                System.out.println("Bitalino with date " + report_id + " not found.");
+            if (bitalinos.isEmpty()) {
+                System.out.println("Bitalino of report " + report_id + " not found.");
             }
 
             rs.close();

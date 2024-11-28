@@ -164,6 +164,7 @@ public class JDBCManager {
                 + "     date DATE NOT NULL, "
                 + "     signal_type TEXT CHECK (signal_type IN ("+bitValues.toString()+")) NOT NULL, "
                 + "     duration FLOAT NOT NULL, "
+                + "     signal_values TEXT NOT NULL, "
                 + "     report_id INTEGER NOT NULL, "
                 + "     FOREIGN KEY (report_id) REFERENCES Reports(id) ON DELETE CASCADE"
                 + ");";
@@ -409,7 +410,7 @@ public class JDBCManager {
             // Reactiva las restricciones de clave foránea
             statement.execute("PRAGMA foreign_keys = ON");
             statement.close();
-            System.out.println("All tables cleared!");
+            System.out.println("\nAll tables cleared!");
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -123,16 +123,19 @@ public class JDBCBitalinoManagerTest {
     public void testCreateBitalino() {
         System.out.println("createBitalino");
         Date recorded = java.sql.Date.valueOf("2024-11-21");
-        Bitalino b = new Bitalino (recorded,SignalType.EMG,r);
+        String signalValues = "123\n456\n789";
+        Bitalino b = new Bitalino (recorded,SignalType.EMG, signalValues, r);
         bitalinoManager.createBitalino(b);
         System.out.println(b.toString());
         // Verificar si fue creado correctamente
         Bitalino fetchedBitalino = bitalinoManager.getBitalinoById(b.getId());
         assertNotNull(fetchedBitalino);
+        assertEquals(b.getId(), fetchedBitalino.getId());
         assertEquals(b.getDate(), fetchedBitalino.getDate());
         assertEquals(b.getSignal_type(), fetchedBitalino.getSignal_type());
         assertEquals(b.getDuration(), fetchedBitalino.getDuration());
-        assertEquals(b.getId(), fetchedBitalino.getId());
+        assertEquals(b.getSignalValues(), fetchedBitalino.getSignalValues());
+        
     }
 
     /**
@@ -142,7 +145,8 @@ public class JDBCBitalinoManagerTest {
     public void testRemoveBitalinoById() {
         System.out.println("DeleteBitalino");
         Date recorded = java.sql.Date.valueOf("2024-11-21");
-        Bitalino b = new Bitalino (recorded,SignalType.EMG,r);
+        String signalValues = "123\n456\n789";
+        Bitalino b = new Bitalino (recorded,SignalType.EMG, signalValues, r);
         bitalinoManager.createBitalino(b);
         System.out.println(b.toString());
         List<Bitalino> BitalinosBefore = bitalinoManager.getListOfBitalinos();
@@ -160,16 +164,20 @@ public class JDBCBitalinoManagerTest {
     public void testUpdateBitalino() {
         System.out.println("updateBitalino");
         Date recorded = java.sql.Date.valueOf("2024-11-21");
-        Bitalino b = new Bitalino (recorded,SignalType.EMG,r);
+        String signalValues = "123\n456\n789";
+        Bitalino b = new Bitalino (recorded,SignalType.EMG, signalValues, r);
         bitalinoManager.createBitalino(b);
         System.out.println(b.toString());
+        
         b.setSignal_type(SignalType.ECG);
+        b.setSignalValues("987\n654\321");
+        
         bitalinoManager.updateBitalino(b);
         System.out.println(b.toString());
         Bitalino updatedBitalino = bitalinoManager.getBitalinoById(b.getId());
         assertNotNull(updatedBitalino);
         assertEquals(b.getSignal_type(), updatedBitalino.getSignal_type());
-        
+        assertEquals(b.getSignalValues(), updatedBitalino.getSignalValues());
     }
 
     /**
@@ -178,10 +186,15 @@ public class JDBCBitalinoManagerTest {
     @Test
     public void testGetListOfBitalinos() {
         System.out.println("getListOfBitalinos");
+        
         Date recorded1 = java.sql.Date.valueOf("2024-11-21");
-        Bitalino b1 = new Bitalino (recorded1,SignalType.EMG,r);     
+        String signalValues1 = "123\n456\n789";
+        Bitalino b1 = new Bitalino (recorded1,SignalType.EMG, signalValues1, r);
+        
         Date recorded2 = java.sql.Date.valueOf("2024-11-21");
-        Bitalino b2 = new Bitalino (recorded2,SignalType.EMG,r);
+        String signalValues2 = "987\n654\n321";
+        Bitalino b2 = new Bitalino (recorded2,SignalType.EMG, signalValues2, r);
+        
         bitalinoManager.createBitalino(b1);
         bitalinoManager.createBitalino(b2);
         System.out.println(b1.toString());
@@ -189,15 +202,17 @@ public class JDBCBitalinoManagerTest {
         
         List<Bitalino> bitalinos = bitalinoManager.getListOfBitalinos();
         assertEquals(2, bitalinos.size());
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getId().equals(b1.getId())));
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getId().equals(b2.getId())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDate().equals(b1.getDate())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDate().equals(b2.getDate())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getSignal_type().equals(b1.getSignal_type())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getSignal_type().equals(b2.getSignal_type())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDuration().equals(b1.getDuration())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDuration().equals(b2.getDuration())));
-        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getId().equals(b1.getId())));
-        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getId().equals(b2.getId())));
-        
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getSignalValues().equals(b1.getSignalValues())));
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getSignalValues().equals(b2.getSignalValues())));
+    
     }
 
     /**
@@ -207,7 +222,8 @@ public class JDBCBitalinoManagerTest {
     public void testGetBitalinoById() {
         System.out.println("getBitalinoById");
         Date recorded = java.sql.Date.valueOf("2024-11-21");
-        Bitalino b = new Bitalino (recorded,SignalType.EMG,r);
+        String signalValues = "123\n456\n789";
+        Bitalino b = new Bitalino (recorded,SignalType.EMG, signalValues, r);
         bitalinoManager.createBitalino(b);
         System.out.println(b.toString());
         Bitalino fetchedBitalino = bitalinoManager.getBitalinoById(b.getId());
@@ -216,6 +232,7 @@ public class JDBCBitalinoManagerTest {
         assertEquals(b.getDate(), fetchedBitalino.getDate());
         assertEquals(b.getSignal_type(), fetchedBitalino.getSignal_type());
         assertEquals(b.getDuration(), fetchedBitalino.getDuration());
+        assertEquals(b.getSignalValues(), fetchedBitalino.getSignalValues());
        
       }
 
@@ -224,18 +241,21 @@ public class JDBCBitalinoManagerTest {
      */
     @Test
     public void testGetBitalinosByDate() {
+        System.out.println("getBitalinosByDate");
         Date recorded = java.sql.Date.valueOf("2024-11-21");
-        Bitalino b = new Bitalino (recorded,SignalType.EMG,r);
+        String signalValues = "123\n456\n789";
+        Bitalino b = new Bitalino (recorded,SignalType.EMG, signalValues, r);
         bitalinoManager.createBitalino(b);
         System.out.println(b.toString());
         List<Bitalino> bitalinos= bitalinoManager.getBitalinosByDate(recorded);
         assertNotNull(bitalinos);
         assertFalse(bitalinos.isEmpty());
-        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDate().equals(recorded)));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getId().equals(b.getId())));
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDate().equals(recorded)));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getSignal_type().equals(b.getSignal_type())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDuration().equals(b.getDuration())));
-        
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getSignalValues().equals(b.getSignalValues())));
+    
     }
 
     /**
@@ -246,11 +266,13 @@ public class JDBCBitalinoManagerTest {
         System.out.println("getBitalinosOfReport");
         
         Date recorded1 = java.sql.Date.valueOf("2024-11-21");
-        Bitalino b1 = new Bitalino (recorded1,SignalType.EMG,r);
+        String signalValues1 = "123\n456\n789";
+        Bitalino b1 = new Bitalino (recorded1,SignalType.EMG, signalValues1, r);
         bitalinoManager.createBitalino(b1);
         
         Date recorded2 = java.sql.Date.valueOf("2024-11-21");
-        Bitalino b2 = new Bitalino (recorded2,SignalType.ECG,r);
+        String signalValues2 = "987\n654\n321";
+        Bitalino b2 = new Bitalino (recorded2,SignalType.EMG, signalValues2, r);
         bitalinoManager.createBitalino(b2);
         
         System.out.println(b1.toString());
@@ -260,12 +282,14 @@ public class JDBCBitalinoManagerTest {
         
         assertNotNull(bitalinos, "La lista bitalino NO debería ser null.");
         assertEquals(2, bitalinos.size(), "Debería haber exactamente 2 ");
-        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDate().equals(b1.getDate())));
-        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDate().equals(b2.getDate())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getId().equals(b1.getId())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getId().equals(b2.getId())));
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDate().equals(b1.getDate())));
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getDate().equals(b2.getDate())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getSignal_type().equals(b1.getSignal_type())));
         assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getSignal_type().equals(b2.getSignal_type())));
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getSignalValues().equals(b1.getSignalValues())));
+        assertTrue(bitalinos.stream().anyMatch(bitalino -> bitalino.getSignalValues().equals(b2.getSignalValues())));
     }
     
 }

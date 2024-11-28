@@ -6,7 +6,6 @@ package POJOs;
 
 import java.io.Serializable;
 import java.sql.Date;
-import java.util.List;
 import java.util.Objects;
 
 
@@ -24,6 +23,8 @@ public class Bitalino implements Serializable {
     private SignalType signal_type;
     private final Float duration = 60.0F;//seconds-> 1 min
     private String signalValues;
+
+    
     private Report report;
 
     public Bitalino() {
@@ -35,10 +36,11 @@ public class Bitalino implements Serializable {
         this.signal_type = signal_type;
     }
 
-    public Bitalino(Integer id, Date date, SignalType signal_type) {
+    public Bitalino(Integer id, Date date, SignalType signal_type, String signalValues) {
         this.id = id;
         this.date = date;
         this.signal_type = signal_type;
+        this.signalValues = signalValues;
     }
     
     public Bitalino(Integer id, Date date, SignalType signal_type, String signalValues, Report report) {
@@ -56,9 +58,10 @@ public class Bitalino implements Serializable {
         this.report = report;
     }
 
-    public Bitalino(Date date, SignalType signal_type, Report report) {
+    public Bitalino(Date date, SignalType signal_type, String signalValues, Report report) {
         this.date = date;
         this.signal_type = signal_type;
+        this.signalValues = signalValues;
         this.report = report;
     }
 
@@ -81,6 +84,10 @@ public class Bitalino implements Serializable {
     public Float getDuration() {
         return duration;
     }
+    
+    public String getSignalValues() {
+        return signalValues;
+    }
 
     public Report getReport() {
         return report;
@@ -97,6 +104,10 @@ public class Bitalino implements Serializable {
     public void setSignal_type(SignalType signal_type) {
         this.signal_type = signal_type;
     }
+    
+    public void setSignalValues(String signalValues) {
+        this.signalValues = signalValues;
+    }
 
     public void setReport(Report report) {
         this.report = report;
@@ -104,7 +115,7 @@ public class Bitalino implements Serializable {
 
     @Override
     public String toString() {
-        return "Bitalino{" + "id=" + id + ", date=" + date + ", signal_type=" + signal_type + ", duration=" + duration + ", report=" + report + '}';
+        return "Bitalino{" + "id=" + id + ", date=" + date + ", signal_type=" + signal_type + ", duration=" + duration + ", signalValues=" + signalValues +", report=" + report + '}';
     }
 
     @Override

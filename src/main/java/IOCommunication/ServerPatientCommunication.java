@@ -4,6 +4,7 @@
  */
 package IOCommunication;
 
+import POJOs.Bitalino;
 import POJOs.Doctor;
 import POJOs.Frame;
 import POJOs.Patient;
@@ -214,13 +215,13 @@ public class ServerPatientCommunication {
          * Receives all signals and sends them to a doctor
          * @return list of all frames recorded in the ECG
          */
-        private List<Frame> handleECGSignals() {
-             List<Frame> ecgFrames=null;
+        private Bitalino handleECGSignals() {
+            Bitalino bitalino=null;
             
             try {
                 // Receive ECG frames from the client
-                ecgFrames = (List<Frame>) in.readObject();
-                System.out.println("Received ECG Frames: " + ecgFrames.size() + " frames");
+                bitalino = (Bitalino) in.readObject();
+                System.out.println("Received bitalino");
 
                 // TODO Should send the list to the doctor and then from the ServerDoctor communication receive the diagnostic from the doctor
 
@@ -236,21 +237,21 @@ public class ServerPatientCommunication {
                     e.printStackTrace();
                 }
             }
-            return ecgFrames;
+            return bitalino;
         }
         
         /**
          * Receives all signals and sends them to a doctor
          * @return list of all frames recorded in the ECG
          */
-        private List<Frame> handleEMGSignals() {
+        private Bitalino handleEMGSignals() {
             
-            List<Frame> emgFrames = null;
-
+            Bitalino bitalino=null;
+            
             try {
                 // Receive ECG frames from the client
-                emgFrames = (List<Frame>) in.readObject();
-                System.out.println("Received EMG Frames: " + emgFrames.size() + " frames");
+                bitalino = (Bitalino) in.readObject();
+                System.out.println("Received bitalino");
 
                 // Should send the list to the doctor and then return the diagnostic from the doctor
                 // Send the acknowledgment back to the client
@@ -265,7 +266,7 @@ public class ServerPatientCommunication {
                     e.printStackTrace();
                 }
             }
-            return emgFrames;
+            return bitalino;
         }
 
         private static void releaseResourcesPatient(InputStream inputStream, Socket socket) {
