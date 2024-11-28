@@ -92,6 +92,9 @@ public class JDBCReportManager implements ReportManager{
                 Report report = new Report(id, date);
                 reports.add(report);
             }
+            if(reports.isEmpty()) {
+	            System.out.println("No reports found in the db");
+	        }
 	            
             rs.close();
 	    stmt.close();
@@ -164,13 +167,14 @@ public class JDBCReportManager implements ReportManager{
 	    stmt.setDate(1, date);
 	    ResultSet rs = stmt.executeQuery();
             
-            if (rs.next()) {
+            while (rs.next()) {
 	        
                 Integer id = rs.getInt("id");             
                 Report report = new Report(id, date);
                                 
                 reports.add(report);
-	        }else {
+	    }
+            if (reports.isEmpty()) {
 	            System.out.println("Report with date " + date + " not found.");
 	        }
 
