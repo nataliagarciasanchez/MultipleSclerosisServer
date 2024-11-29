@@ -98,12 +98,12 @@ public class ServerAdminInterface {
     
     // Se permiten 3 intentos para el inicio de sesión
     for (int attempts = 3; attempts > 0; attempts--) {
-        //System.out.print("Email: ");
-        //String username = scanner.nextLine();
-        String username = "administrator@multipleSclerosis.com";
-        //System.out.print("Password: ");
-        //String password = scanner.nextLine();
-        String password = "Password123";
+        System.out.print("Email: ");
+        String username = scanner.nextLine();
+        
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+        
         
         
         User user = userMan.login(username, password);
