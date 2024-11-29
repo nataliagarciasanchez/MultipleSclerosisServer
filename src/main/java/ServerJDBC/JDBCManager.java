@@ -38,6 +38,7 @@ public class JDBCManager {
                 this.insertSymptoms();
                 this.insertRoles();
                 this.insertDoctor();//TODO to make sure there is a doctor in order to register a patient
+                this.insertAdministrator();
             }			
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -276,95 +277,117 @@ public class JDBCManager {
         
     }
     
-    public void insertDoctor() {
-    try {
-        Statement s1 = c.createStatement();
-        ResultSet rs = s1.executeQuery("SELECT COUNT(*) FROM Doctors");
-        rs.next();
-        int rowCount = rs.getInt(1);
-        rs.close();
-        s1.close();
+    public void insertAdministrator(){
+        try{
+            Statement s = c.createStatement();
+            ResultSet rs = s.executeQuery("SELECT COUNT(*) FROM Administrators");
+            rs.next();
+            int rowCount = rs.getInt(1);
+            System.out.println("Number of administrators: " + rowCount);
+            rs.close();
+            s.close();
+            
+            if (rowCount == 0) {
+                // Inserción del primer usuario
+                String insertUserDoc1 = "INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
+                PreparedStatement p = c.prepareStatement(insertUserDoc1, Statement.RETURN_GENERATED_KEYS);
+                p.setString(1, "administrator@multipleSclerosis.com");
+                String hashedPassword = PasswordEncryption.hashPassword("Password123");
+                p.setString(2, hashedPassword);
+                p.setInt(3, 3);
+                p.executeUpdate();
 
-        if (rowCount == 0) {
-            // Inserción del primer usuario
-            String insertUserDoc1 = "INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
-            PreparedStatement p1 = c.prepareStatement(insertUserDoc1, Statement.RETURN_GENERATED_KEYS);
-            p1.setString(1, "doctor.garcia@multipleSclerosis.com");
-            String hashedPassword1 = PasswordEncryption.hashPassword("Password456");
-            p1.setString(2, hashedPassword1);
-            p1.setInt(3, 2);
-            p1.executeUpdate();
-
-            // Obtener el ID generado para el primer usuario
-            ResultSet generatedKeys1 = p1.getGeneratedKeys();
-            int userId1 = -1;
-            if (generatedKeys1.next()) {
-                userId1 = generatedKeys1.getInt(1);
+                // Obtener el ID generado para el primer usuario
+                ResultSet generatedKeys1 = p.getGeneratedKeys();
+                int userId1 = -1;
+                    if (generatedKeys1.next()) {
+                        userId1 = generatedKeys1.getInt(1);
+                    }
+                p.close();
+                
+                
+                String insertAdmin = "INSERT INTO Administrators (name, user_id) VALUES (?, ?)";
+                PreparedStatement pstmt = c.prepareStatement(insertAdmin);
+                pstmt.setString(1, "Andrea");
+                pstmt.setInt(2, userId1); // Usar el ID generado
+                pstmt.executeUpdate();
+                pstmt.close();
             }
-            p1.close();
-
-            // Inserción del segundo usuario
-            String insertUserDoc2 = "INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
-            PreparedStatement p2 = c.prepareStatement(insertUserDoc2, Statement.RETURN_GENERATED_KEYS);
-            p2.setString(1, "doctor.perales@multipleSclerosis.com");
-            String hashedPassword2 = PasswordEncryption.hashPassword("Password678");
-            p2.setString(2, hashedPassword2);
-            p2.setInt(3, 2);
-            p2.executeUpdate();
-
-            // Obtener el ID generado para el segundo usuario
-            ResultSet generatedKeys2 = p2.getGeneratedKeys();
-            int userId2 = -1;
-            if (generatedKeys2.next()) {
-                userId2 = generatedKeys2.getInt(1);
-            }
-            p2.close();
-
-            // Inserción del primer doctor
-            String insertDoc1 = "INSERT INTO Doctors (name, surname, specialty, user_id) VALUES (?, ?, ?, ?)";
-            PreparedStatement pstmt = c.prepareStatement(insertDoc1);
-            pstmt.setString(1, "DR.Maria");
-            pstmt.setString(2, "Garcia");
-            pstmt.setString(3, "NEUROLOGY");
-            pstmt.setInt(4, userId1); // Usar el ID generado
-            pstmt.executeUpdate();
-            pstmt.close();
-
-            // Inserción del segundo doctor
-            String insertDoc2 = "INSERT INTO Doctors (name, surname, specialty, user_id) VALUES (?,?, ?, ?)";
-            PreparedStatement pstmt2 = c.prepareStatement(insertDoc2);
-            pstmt2.setString(1, "DR.Marcos");
-            pstmt2.setString(2, "Perales");
-            pstmt2.setString(3, "NEUROLOGY");
-            pstmt2.setInt(4, userId2); // Usar el ID generado
-            pstmt2.executeUpdate();
-            pstmt2.close();
-        }
-    } catch (SQLException ex) {
+        }catch (SQLException ex) {
         Logger.getLogger(JDBCManager.class.getName()).log(Level.SEVERE, null, ex);
     }
-}
-
+    }
     
-    /**
-     * Method used to count the number of doctors that are currently registered in 
-     * the database to assign them to the patient
-     * @return number of doctors registered
-     */
-    public int countDoctors(){
-        int count = 0;
+    public void insertDoctor() {
         try {
             Statement s1 = c.createStatement();
             ResultSet rs = s1.executeQuery("SELECT COUNT(*) FROM Doctors");
             rs.next();
-            count = rs.getInt(1);
+            int rowCount = rs.getInt(1);
             rs.close();
             s1.close();
+
+            if (rowCount == 0) {
+                // Inserción del primer usuario
+                String insertUserDoc1 = "INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
+                PreparedStatement p1 = c.prepareStatement(insertUserDoc1, Statement.RETURN_GENERATED_KEYS);
+                p1.setString(1, "doctor.garcia@multipleSclerosis.com");
+                String hashedPassword1 = PasswordEncryption.hashPassword("Password456");
+                p1.setString(2, hashedPassword1);
+                p1.setInt(3, 2);
+                p1.executeUpdate();
+
+                // Obtener el ID generado para el primer usuario
+                ResultSet generatedKeys1 = p1.getGeneratedKeys();
+                int userId1 = -1;
+                    if (generatedKeys1.next()) {
+                        userId1 = generatedKeys1.getInt(1);
+                    }
+                p1.close();
+
+                // Inserción del segundo usuario
+                String insertUserDoc2 = "INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
+                PreparedStatement p2 = c.prepareStatement(insertUserDoc2, Statement.RETURN_GENERATED_KEYS);
+                p2.setString(1, "doctor.perales@multipleSclerosis.com");
+                String hashedPassword2 = PasswordEncryption.hashPassword("Password678");
+                p2.setString(2, hashedPassword2);
+                p2.setInt(3, 2);
+                p2.executeUpdate();
+
+                // Obtener el ID generado para el segundo usuario
+                ResultSet generatedKeys2 = p2.getGeneratedKeys();
+                int userId2 = -1;
+                    if (generatedKeys2.next()) {
+                        userId2 = generatedKeys2.getInt(1);
+                    }
+                p2.close();
+
+                // Inserción del primer doctor
+                String insertDoc1 = "INSERT INTO Doctors (name, surname, specialty, user_id) VALUES (?, ?, ?, ?)";
+                PreparedStatement pstmt = c.prepareStatement(insertDoc1);
+                pstmt.setString(1, "DR.Maria");
+                pstmt.setString(2, "Garcia");
+                pstmt.setString(3, "NEUROLOGY");
+                pstmt.setInt(4, userId1); // Usar el ID generado
+                pstmt.executeUpdate();
+                pstmt.close();
+
+                // Inserción del segundo doctor
+                String insertDoc2 = "INSERT INTO Doctors (name, surname, specialty, user_id) VALUES (?,?, ?, ?)";
+                PreparedStatement pstmt2 = c.prepareStatement(insertDoc2);
+                pstmt2.setString(1, "DR.Marcos");
+                pstmt2.setString(2, "Perales");
+                pstmt2.setString(3, "NEUROLOGY");
+                pstmt2.setInt(4, userId2); // Usar el ID generado
+                pstmt2.executeUpdate();
+                pstmt2.close();
+            }
         } catch (SQLException ex) {
             Logger.getLogger(JDBCManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return count;
     }
+
+    
     
     public Connection getConnection() {
         try {

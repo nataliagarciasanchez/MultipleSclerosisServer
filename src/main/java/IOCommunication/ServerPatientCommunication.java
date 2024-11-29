@@ -38,6 +38,8 @@ public class ServerPatientCommunication {
     private JDBCPatientManager patientManager;
     private JDBCDoctorManager doctorManager;
     private JDBCBitalinoManager bitalinoManager;
+    private int connectedPatients = 0;
+    private boolean isRunning = true;
     
 
     public ServerPatientCommunication(int port, JDBCManager jdbcManager) {
@@ -60,17 +62,51 @@ public class ServerPatientCommunication {
             this.serverSocket = new ServerSocket(port);
             System.out.println("Server started. ");
 
-            while (true) {
+            while (isRunning) {
+                try{
                 Socket patientSocket = serverSocket.accept();
                 System.out.println("New client connected.");
 
                 //we start a new thread for each connection made
                 new Thread(new ServerPatientThread(patientSocket)).start();
+                } catch (IOException ex){
+                    if (isRunning) { // Solo registra el error si el servidor está activo
+                    Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                }
             }
         } catch (IOException ex) {
             Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             releaseResourcesServer(serverSocket);
+            System.out.println("Server stopped.");
+        }
+    }
+    
+    public synchronized void clientConnected() {
+        connectedPatients++;
+    }
+
+    public synchronized void clientDisconnected() {
+        if (connectedPatients > 0) {
+            connectedPatients--;
+        }
+    }
+
+    public synchronized int getConnectedClients() {
+        return connectedPatients;
+    }
+
+    public void stopServer() {
+        System.out.println("Stopping server....");
+        isRunning = false;
+        
+        try {
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                serverSocket.close(); // Cierra el ServerSocket para liberar el puerto
+            }
+        } catch (IOException ex) {
+        Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error closing the server socket", ex);
         }
     }
     
@@ -225,7 +261,7 @@ public class ServerPatientCommunication {
                 // Receive ECG frames from the client
                 bitalino = (Bitalino) in.readObject();
                 bitalinoManager.createBitalino(bitalino);
-                System.out.println("Received bitalino");
+                //System.out.println("Received bitalino");
 
                 // TODO Should send the list to the doctor and then from the ServerDoctor communication receive the diagnostic from the doctor
 
@@ -255,7 +291,7 @@ public class ServerPatientCommunication {
             try {
                 // Receive ECG frames from the client
                 bitalino = (Bitalino) in.readObject();
-                System.out.println("Received bitalino");
+                //System.out.println("Received bitalino");
 
                 // Should send the list to the doctor and then return the diagnostic from the doctor
                 // Send the acknowledgment back to the client
