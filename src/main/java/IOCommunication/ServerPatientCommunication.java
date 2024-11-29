@@ -8,6 +8,7 @@ import POJOs.Bitalino;
 import POJOs.Doctor;
 import POJOs.Frame;
 import POJOs.Patient;
+import POJOs.Report;
 import POJOs.User;
 import ServerJDBC.JDBCBitalinoManager;
 import ServerJDBC.JDBCDoctorManager;
@@ -77,10 +78,7 @@ public class ServerPatientCommunication {
             }
         } catch (IOException ex) {
             Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            releaseResourcesServer(serverSocket);
-            System.out.println("Server stopped.");
-        }
+        } 
     }
     
     public synchronized void clientConnected() {
@@ -141,12 +139,12 @@ public class ServerPatientCommunication {
         /**
          * Handles all requests from patient
          */
-        private void handlePatientsRequest(){
-            boolean running=true;
-            while(running){
+        private void handlePatientsRequest() {
+            boolean running = true;
+            while (running) {
                 try {
                     String action = (String) in.readObject(); // Leer acción del cliente
-                    
+
                     switch (action) {
                         case "register":
                             handleRegister();
@@ -155,7 +153,7 @@ public class ServerPatientCommunication {
                             handleLogin();
                             break;
                         case "logout":
-                            running=false;
+                            running = false;
                             handleLogout();
                             break;
                         case "updateInformation":
@@ -167,16 +165,21 @@ public class ServerPatientCommunication {
                         case "sendEMGSignals":
                             handleEMGSignals();
                             break;
+                        case "sendReport":   
+                            handleReport();
+                            break;
                         default:
                             out.writeObject("Not recognized action");
-                            break; 
+                            break;
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                    running = false;
                 }
             }
+            releaseResourcesPatient(in, patientSocket);
 
         }
         
@@ -291,10 +294,7 @@ public class ServerPatientCommunication {
             try {
                 // Receive ECG frames from the client
                 bitalino = (Bitalino) in.readObject();
-                //System.out.println("Received bitalino");
-
-                // Should send the list to the doctor and then return the diagnostic from the doctor
-                // Send the acknowledgment back to the client
+                
                 out.writeObject("Signals sent to doctor for diagnostic. This might take a few minutes. Please wait.");
                 out.flush();
             } catch (IOException | ClassNotFoundException ex) {
@@ -307,6 +307,25 @@ public class ServerPatientCommunication {
                 }
             }
             return bitalino;
+        }
+        /**
+         * Receives the report sent from the patient and returns it so it is used in the ServerDoctorCommunication 
+         * to process it and create a feedback
+         * @return report 
+         */
+        private Report handleReport(){
+            Report report = null;
+            try {
+                report=(Report) in.readObject();
+                out.writeObject("Report received correctly.");
+                
+                //TODO it has to send the report to the doctor so it gives feedback
+            } catch (IOException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return report;
         }
 
         private static void releaseResourcesPatient(InputStream inputStream, Socket socket) {
