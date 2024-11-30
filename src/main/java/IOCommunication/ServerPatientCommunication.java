@@ -6,7 +6,6 @@ package IOCommunication;
 
 import POJOs.Bitalino;
 import POJOs.Doctor;
-import POJOs.Frame;
 import POJOs.Patient;
 import POJOs.Report;
 import POJOs.User;
@@ -22,7 +21,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,7 +31,7 @@ import java.util.logging.Logger;
 public class ServerPatientCommunication {
     
     private ServerSocket serverSocket;
-    private int port;
+    private final int port;
     private JDBCUserManager userManager;
     private JDBCRoleManager roleManager;
     private JDBCPatientManager patientManager;
@@ -57,28 +55,31 @@ public class ServerPatientCommunication {
      * 
      * startServer is called from the menu when the Server is executed
      */
-    public void startServer(){
-         try {
-            
+    public void startServer() {
+        try {
+
             this.serverSocket = new ServerSocket(port);
             System.out.println("Server started. ");
 
             while (isRunning) {
-                try{
-                Socket patientSocket = serverSocket.accept();
-                System.out.println("New client connected.");
+                try {
+                    Socket patientSocket = serverSocket.accept();
+                    System.out.println("New patient connected.");
 
-                //we start a new thread for each connection made
-                new Thread(new ServerPatientThread(patientSocket)).start();
-                } catch (IOException ex){
+                    //we start a new thread for each connection made
+                    new Thread(new ServerPatientThread(patientSocket)).start();
+
+                } catch (IOException ex) {
                     if (isRunning) { // Solo registra el error si el servidor está activo
-                    Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                        Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         } catch (IOException ex) {
             Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        } finally {
+            releaseServerResources(serverSocket);
+        }
     }
     
     public synchronized void clientConnected() {
@@ -108,11 +109,19 @@ public class ServerPatientCommunication {
         }
     }
     
+    private static void releaseServerResources(ServerSocket serverSocket) {
+        try {
+            serverSocket.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     
     class ServerPatientThread implements Runnable {
         
         
-        private Socket patientSocket;
+        private final Socket patientSocket;
         private ObjectInputStream in;
         private ObjectOutputStream out;
 
@@ -123,23 +132,68 @@ public class ServerPatientCommunication {
         
         @Override
         public void run() {
-            try{
-                in = new ObjectInputStream(patientSocket.getInputStream());
+            try {
                 out = new ObjectOutputStream(patientSocket.getOutputStream());
                 out.flush();
-                handlePatientsRequest();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                releaseResourcesPatient(in,patientSocket);
+                in = new ObjectInputStream(patientSocket.getInputStream());
 
+                //handlePatientsRequest();
+                boolean running = true;
+                while (running) {
+                    try {
+                        String action = (String) in.readObject(); // Leer acción del cliente
+
+                        switch (action) {
+                            case "register":
+                                handleRegister();
+                                break;
+                            case "login":
+                                handleLogin();
+                                break;
+                            case "logout":
+                                running = false;
+                                handleLogout();
+                                break;
+                            case "updateInformation":
+                                handleUpdateInformation();
+                                break;
+                            case "sendECGSignals":
+                                handleECGSignals();
+                                break;
+                            case "sendEMGSignals":
+                                handleEMGSignals();
+                                break;
+                            case "sendReport":
+                                handleReport();
+                                break;
+                            default:
+                                out.writeObject("Not recognized action");
+                                break;
+                        }
+                    } catch (IOException | ClassNotFoundException ex) {
+                        Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error with patient communication", ex);
+                        running = false;
+
+                    }
+                }
+            } catch (IOException e) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error initializing streams", e);
+            } finally {
+                try {
+                    if (patientSocket != null && !patientSocket.isClosed()) {
+                        patientSocket.close();
+                    }
+                    System.out.println("Connection with client closed.");
+                } catch (IOException e) {
+                    Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error closing socket", e);
+                }
             }
         }
         
         /**
          * Handles all requests from patient
          */
-        private void handlePatientsRequest() {
+        /*private void handlePatientsRequest() {
             boolean running = true;
             while (running) {
                 try {
@@ -181,7 +235,7 @@ public class ServerPatientCommunication {
             }
             releaseResourcesPatient(in, patientSocket);
 
-        }
+        }*/
         
         /**
          * Registers into database the patient
@@ -231,7 +285,7 @@ public class ServerPatientCommunication {
          */
         private void handleLogout(){
             try {
-                releaseResourcesPatient(in,patientSocket);
+                releaseResourcesPatient(in, out,patientSocket);
                 out.writeObject("Connection closed. ");
             } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
@@ -328,10 +382,11 @@ public class ServerPatientCommunication {
             return report;
         }
 
-        private static void releaseResourcesPatient(InputStream inputStream, Socket socket) {
+        private static void releaseResourcesPatient(ObjectInputStream in,ObjectOutputStream out, Socket socket) {
 
             try {
-                inputStream.close();
+                out.close();
+                in.close();
             } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -340,15 +395,8 @@ public class ServerPatientCommunication {
                 socket.close();
             } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("Error while closing socket.");
             }
-        }
-    }
-    
-    private static void releaseResourcesServer(ServerSocket serverSocket) {
-        try {
-            serverSocket.close();
-        } catch (IOException ex) {
-            Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
