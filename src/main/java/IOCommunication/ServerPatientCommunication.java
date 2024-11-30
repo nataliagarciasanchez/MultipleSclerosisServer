@@ -14,6 +14,7 @@ import ServerJDBC.JDBCDoctorManager;
 import ServerJDBC.JDBCManager;
 import ServerJDBC.JDBCPatientManager;
 import ServerJDBC.JDBCRoleManager;
+import ServerJDBC.JDBCSymptomManager;
 import ServerJDBC.JDBCUserManager;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +38,7 @@ public class ServerPatientCommunication {
     private JDBCPatientManager patientManager;
     private JDBCDoctorManager doctorManager;
     private JDBCBitalinoManager bitalinoManager;
+    private JDBCSymptomManager symptomManager;
     private int connectedPatients = 0;
     private boolean isRunning = true;
     
@@ -157,6 +159,8 @@ public class ServerPatientCommunication {
                             case "updateInformation":
                                 handleUpdateInformation();
                                 break;
+                            case"viewSymptoms":
+                                handleViewSymptoms();    
                             case "sendECGSignals":
                                 handleECGSignals();
                                 break;
@@ -190,52 +194,6 @@ public class ServerPatientCommunication {
             }
         }
         
-        /**
-         * Handles all requests from patient
-         */
-        /*private void handlePatientsRequest() {
-            boolean running = true;
-            while (running) {
-                try {
-                    String action = (String) in.readObject(); // Leer acción del cliente
-
-                    switch (action) {
-                        case "register":
-                            handleRegister();
-                            break;
-                        case "login":
-                            handleLogin();
-                            break;
-                        case "logout":
-                            running = false;
-                            handleLogout();
-                            break;
-                        case "updateInformation":
-                            handleUpdateInformation();
-                            break;
-                        case "sendECGSignals":
-                            handleECGSignals();
-                            break;
-                        case "sendEMGSignals":
-                            handleEMGSignals();
-                            break;
-                        case "sendReport":   
-                            handleReport();
-                            break;
-                        default:
-                            out.writeObject("Not recognized action");
-                            break;
-                    }
-                } catch (IOException ex) {
-                    Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-                    running = false;
-                }
-            }
-            releaseResourcesPatient(in, patientSocket);
-
-        }*/
         
         /**
          * Registers into database the patient
@@ -303,6 +261,18 @@ public class ServerPatientCommunication {
                 out.writeObject("Information changed correclty");
 
             } catch (IOException | ClassNotFoundException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        /**
+         * Sends all the symptoms saved in the database
+         */
+        private void handleViewSymptoms(){
+            
+            try {
+                out.writeObject(symptomManager.getListOfSymptoms());
+            } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
