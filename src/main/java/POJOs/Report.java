@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.*;
+
 
 /**
  *
@@ -19,7 +19,6 @@ public class Report implements Serializable{
     private static final long serialVersionUID = 1L;
     private Integer id;
     private Date date;
-
     private Patient patient;
     private List<Bitalino> bitalinos;
     private List<Symptom> symptoms;

@@ -123,8 +123,8 @@ public class JDBCManager {
             //System.out.println("\nPatients created");
             
             String create_table_reports="CREATE TABLE IF NOT EXISTS Reports ("
-                + "      id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + "     date DATE NOT NULL, "
+                + "     id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "     date DATE NOT NULL, "   
                 + "     patient_id INTEGER NOT NULL, "
                 + "     FOREIGN KEY (patient_id) REFERENCES Patients(id) ON DELETE CASCADE"
                 + ");";
