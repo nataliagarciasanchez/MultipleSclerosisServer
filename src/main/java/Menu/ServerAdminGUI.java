@@ -6,7 +6,9 @@ package Menu;
 
 
 import IOCommunication.ServerPatientCommunication;
+import POJOs.Administrator;
 import POJOs.User;
+import ServerJDBC.JDBCAdministratorManager;
 import ServerJDBC.JDBCManager;
 import ServerJDBC.JDBCUserManager;
 import java.awt.BorderLayout;
@@ -28,12 +30,15 @@ import javax.swing.JTextField;
 public class ServerAdminGUI {
     private final ServerPatientCommunication serverCommunication;
     private JDBCUserManager userMan;
+    private JDBCAdministratorManager adminMan;
     private boolean isRunning = true; 
+    private final String admin_password = "stop";
     private final int MAX_ATTEMPS=3; //max attemps for the admin to login
 
     public ServerAdminGUI(ServerPatientCommunication serverCommunication,JDBCManager jdbcManager) {
         this.serverCommunication = serverCommunication;
         this.userMan = new JDBCUserManager(jdbcManager);
+        this.adminMan = new JDBCAdministratorManager(jdbcManager);
         
         // Perform login before showing admin options
         if (showLoginPanel()) {
@@ -69,7 +74,7 @@ public class ServerAdminGUI {
             loginPanel.add(new JLabel());
 
             // Displays the login panel in a dialog box
-            int result = JOptionPane.showConfirmDialog(null, loginPanel, "Inicio de Sesión",
+            int result = JOptionPane.showConfirmDialog(null, loginPanel, "Log in",
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
             // If the user clicks OK, validate the credentials
@@ -78,7 +83,8 @@ public class ServerAdminGUI {
                 String username = userField.getText();
                 String password = new String(passField.getPassword());
                 User user = userMan.login(username, password);
-                if (user != null) {
+                Administrator admin = adminMan.getAdministratorByUser(user);
+                if (admin != null) {
                     return true;
                     
                 } else {
@@ -154,15 +160,36 @@ public class ServerAdminGUI {
     }
 
     private void stopServer(JFrame frame) {
-       
-        int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure you want to stop the server?",
-                "Confirmation", JOptionPane.YES_NO_OPTION);
+        // Solicitar la contraseña al usuario
+        String password = JOptionPane.showInputDialog(frame, 
+                "Please enter the password to stop the server:", 
+                "Authentication", 
+                JOptionPane.PLAIN_MESSAGE);
 
-        if (confirm == JOptionPane.YES_OPTION) {
-            serverCommunication.stopServer();
-            JOptionPane.showMessageDialog(frame, "Server stopped with success.",
-                    "Stopped server", JOptionPane.INFORMATION_MESSAGE);
-            frame.dispose(); 
+        // Verificar si la contraseña es correcta
+        if (password != null && password.equals(admin_password)) { // Cambia "yourPasswordHere" por la contraseña real
+            // Mostrar el cuadro de diálogo de confirmación
+            int confirm = JOptionPane.showConfirmDialog(frame, 
+                    "Are you sure you want to stop the server?", 
+                    "Confirmation", 
+                    JOptionPane.YES_NO_OPTION);
+
+            // Si el usuario confirma, detener el servidor
+            if (confirm == JOptionPane.YES_OPTION) {
+                serverCommunication.stopServer();
+                JOptionPane.showMessageDialog(frame, 
+                        "Server stopped with success.", 
+                        "Stopped server", 
+                        JOptionPane.INFORMATION_MESSAGE);
+                frame.dispose(); 
+            }
+        } else if (password != null) {
+            // Si la contraseña es incorrecta
+            JOptionPane.showMessageDialog(frame, 
+                    "Incorrect password. The server will not be stopped.", 
+                    "Authentication Failed", 
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
+
 }

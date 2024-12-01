@@ -166,6 +166,35 @@ public class JDBCAdministratorManager implements AdministratorManager {
 
 	    return administrator;
 	}
+    
+    @Override
+    public Administrator getAdministratorByUser(User user) {
+        Administrator administrator = null;
+        String sql = "SELECT * FROM Administrators WHERE user_id = ?";
+
+        try {
+            PreparedStatement p = manager.getConnection().prepareStatement(sql);
+            p.setInt(1, user.getId());
+            ResultSet rs = p.executeQuery();
+
+            if (rs.next()) {
+                // Extracting the data from the ResultSet into variables
+                Integer id = rs.getInt("id");
+                String name = rs.getString("name");
+
+                // Using the constructor to create the Doctor object
+                administrator = new Administrator(id, name);
+
+                p.close();
+                rs.close();
+            } else {
+                System.out.println("Administrator with user_id " + user.getId() + " not found.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return administrator;
+    }
 
     /**
      * Retrieves a list of Administrators from the database by their name.

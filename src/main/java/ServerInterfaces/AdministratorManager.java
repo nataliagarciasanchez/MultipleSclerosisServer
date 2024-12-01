@@ -5,6 +5,7 @@
 package ServerInterfaces;
 
 import POJOs.Administrator;
+import POJOs.User;
 import java.util.List;
 
 /**
@@ -17,6 +18,7 @@ public interface AdministratorManager {
     public void updateAdministrator(Administrator a);
     public List<Administrator> getListOfAdministrators();
     public Administrator getAdministratorById(Integer id);
+    public Administrator getAdministratorByUser(User user);
     public List<Administrator> getAdministratorByName(String name);//es una lista porque puede haber doctores con el mismo nombre
        
 }
