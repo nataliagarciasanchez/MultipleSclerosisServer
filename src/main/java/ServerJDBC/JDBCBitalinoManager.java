@@ -39,7 +39,7 @@ public class JDBCBitalinoManager implements BitalinoManager {
      * @param b the {@link Bitalino} object containing the data to be inserted.
      */
     @Override
-    public void createBitalino(Bitalino b) {
+    public void saveBitalino(Bitalino b) {
         String sql = "INSERT INTO Bitalinos (date, signal_type, duration, signal_values, report_id)"
                 + "values (?,?,?,?,?)";
         try {

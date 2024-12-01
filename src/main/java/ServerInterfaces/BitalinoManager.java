@@ -13,7 +13,7 @@ import java.util.List;
  * @author Andreoti
  */
 public interface BitalinoManager {
-    public void createBitalino(Bitalino b);
+    public void saveBitalino(Bitalino b);
     public void removeBitalinoById(Integer id);
     public void updateBitalino(Bitalino b);
     public List<Bitalino> getListOfBitalinos();

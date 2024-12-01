@@ -125,7 +125,7 @@ public class JDBCBitalinoManagerTest {
         Date recorded = java.sql.Date.valueOf("2024-11-21");
         String signalValues = "123\n456\n789";
         Bitalino b = new Bitalino (recorded,SignalType.EMG, signalValues, r);
-        bitalinoManager.createBitalino(b);
+        bitalinoManager.saveBitalino(b);
         System.out.println(b.toString());
         // Verificar si fue creado correctamente
         Bitalino fetchedBitalino = bitalinoManager.getBitalinoById(b.getId());
@@ -147,7 +147,7 @@ public class JDBCBitalinoManagerTest {
         Date recorded = java.sql.Date.valueOf("2024-11-21");
         String signalValues = "123\n456\n789";
         Bitalino b = new Bitalino (recorded,SignalType.EMG, signalValues, r);
-        bitalinoManager.createBitalino(b);
+        bitalinoManager.saveBitalino(b);
         System.out.println(b.toString());
         List<Bitalino> BitalinosBefore = bitalinoManager.getListOfBitalinos();
         assertEquals(1, BitalinosBefore.size());
@@ -166,7 +166,7 @@ public class JDBCBitalinoManagerTest {
         Date recorded = java.sql.Date.valueOf("2024-11-21");
         String signalValues = "123\n456\n789";
         Bitalino b = new Bitalino (recorded,SignalType.EMG, signalValues, r);
-        bitalinoManager.createBitalino(b);
+        bitalinoManager.saveBitalino(b);
         System.out.println(b.toString());
         
         b.setSignal_type(SignalType.ECG);
@@ -195,8 +195,8 @@ public class JDBCBitalinoManagerTest {
         String signalValues2 = "987\n654\n321";
         Bitalino b2 = new Bitalino (recorded2,SignalType.EMG, signalValues2, r);
         
-        bitalinoManager.createBitalino(b1);
-        bitalinoManager.createBitalino(b2);
+        bitalinoManager.saveBitalino(b1);
+        bitalinoManager.saveBitalino(b2);
         System.out.println(b1.toString());
         System.out.println(b2.toString());
         
@@ -224,7 +224,7 @@ public class JDBCBitalinoManagerTest {
         Date recorded = java.sql.Date.valueOf("2024-11-21");
         String signalValues = "123\n456\n789";
         Bitalino b = new Bitalino (recorded,SignalType.EMG, signalValues, r);
-        bitalinoManager.createBitalino(b);
+        bitalinoManager.saveBitalino(b);
         System.out.println(b.toString());
         Bitalino fetchedBitalino = bitalinoManager.getBitalinoById(b.getId());
         assertNotNull(fetchedBitalino);
@@ -245,7 +245,7 @@ public class JDBCBitalinoManagerTest {
         Date recorded = java.sql.Date.valueOf("2024-11-21");
         String signalValues = "123\n456\n789";
         Bitalino b = new Bitalino (recorded,SignalType.EMG, signalValues, r);
-        bitalinoManager.createBitalino(b);
+        bitalinoManager.saveBitalino(b);
         System.out.println(b.toString());
         List<Bitalino> bitalinos= bitalinoManager.getBitalinosByDate(recorded);
         assertNotNull(bitalinos);
@@ -268,12 +268,12 @@ public class JDBCBitalinoManagerTest {
         Date recorded1 = java.sql.Date.valueOf("2024-11-21");
         String signalValues1 = "123\n456\n789";
         Bitalino b1 = new Bitalino (recorded1,SignalType.EMG, signalValues1, r);
-        bitalinoManager.createBitalino(b1);
+        bitalinoManager.saveBitalino(b1);
         
         Date recorded2 = java.sql.Date.valueOf("2024-11-21");
         String signalValues2 = "987\n654\n321";
         Bitalino b2 = new Bitalino (recorded2,SignalType.EMG, signalValues2, r);
-        bitalinoManager.createBitalino(b2);
+        bitalinoManager.saveBitalino(b2);
         
         System.out.println(b1.toString());
         System.out.println(b2.toString());

@@ -22,6 +22,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -161,11 +163,6 @@ public class ServerPatientCommunication {
                                 break;
                             case"viewSymptoms":
                                 handleViewSymptoms();    
-                            case "sendECGSignals":
-                                handleECGSignals();
-                                break;
-                            case "sendEMGSignals":
-                                handleEMGSignals();
                                 break;
                             case "sendReport":
                                 handleReport();
@@ -276,62 +273,7 @@ public class ServerPatientCommunication {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
-        /**
-         * Receives all signals and sends them to a doctor
-         * @return list of all frames recorded in the ECG
-         */
-        private Bitalino handleECGSignals() {
-            Bitalino bitalino=null;
-            
-            try {
-                // Receive ECG frames from the client
-                bitalino = (Bitalino) in.readObject();
-                bitalinoManager.createBitalino(bitalino);
-                //System.out.println("Received bitalino");
 
-                // TODO Should send the list to the doctor and then from the ServerDoctor communication receive the diagnostic from the doctor
-
-                // Send the acknowledgment back to the client
-                out.writeObject("Signals sent to doctor for diagnostic. This might take a few minutes. Please wait.");
-                out.flush();
-            } catch (IOException | ClassNotFoundException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-                try {
-                    out.writeObject("Error processing ECG signals: " + ex.getMessage());
-                    out.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            return bitalino;
-        }
-        
-        /**
-         * Receives all signals and sends them to a doctor
-         * @return list of all frames recorded in the ECG
-         */
-        private Bitalino handleEMGSignals() {
-            
-            Bitalino bitalino=null;
-            
-            try {
-                // Receive ECG frames from the client
-                bitalino = (Bitalino) in.readObject();
-                
-                out.writeObject("Signals sent to doctor for diagnostic. This might take a few minutes. Please wait.");
-                out.flush();
-            } catch (IOException | ClassNotFoundException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-                try {
-                    out.writeObject("Error processing EMG signals: " + ex.getMessage());
-                    out.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            return bitalino;
-        }
         /**
          * Receives the report sent from the patient and returns it so it is used in the ServerDoctorCommunication 
          * to process it and create a feedback
@@ -342,6 +284,7 @@ public class ServerPatientCommunication {
             try {
                 report=(Report) in.readObject();
                 out.writeObject("Report received correctly.");
+                saveBitalinos(report);
                 
                 //TODO it has to send the report to the doctor so it gives feedback
             } catch (IOException ex) {
@@ -350,6 +293,18 @@ public class ServerPatientCommunication {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
             return report;
+        }
+        
+        /**
+         * Saves the bitalinos with the signal_values in the database
+         * @param report 
+         */
+        private void saveBitalinos(Report report){
+            ArrayList<Bitalino> bitalinos=(ArrayList<Bitalino>) report.getBitalinos();
+            Bitalino bitalinoEMG=bitalinos.get(0);
+            Bitalino bitalinoECG=bitalinos.get(1);
+            bitalinoManager.saveBitalino(bitalinoEMG);
+            bitalinoManager.saveBitalino(bitalinoECG);
         }
 
         private static void releaseResourcesPatient(ObjectInputStream in,ObjectOutputStream out, Socket socket) {
