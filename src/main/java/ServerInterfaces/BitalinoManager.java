@@ -5,6 +5,7 @@
 package ServerInterfaces;
 
 import POJOs.Bitalino;
+import POJOs.Report;
 import java.sql.Date;
 import java.util.List;
 

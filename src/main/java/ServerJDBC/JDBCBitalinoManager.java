@@ -5,6 +5,7 @@
 package ServerJDBC;
 
 import POJOs.Bitalino;
+import POJOs.Report;
 import POJOs.SignalType;
 import ServerInterfaces.BitalinoManager;
 import java.sql.Date;

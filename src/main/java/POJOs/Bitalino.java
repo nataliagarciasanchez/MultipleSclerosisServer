@@ -23,8 +23,6 @@ public class Bitalino implements Serializable {
     private SignalType signal_type;
     private final Float duration = 60.0F;//seconds-> 1 min
     private String signalValues;
-
-    
     private Report report;
 
     public Bitalino() {

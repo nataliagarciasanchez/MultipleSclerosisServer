@@ -14,6 +14,7 @@ import ServerJDBC.JDBCBitalinoManager;
 import ServerJDBC.JDBCDoctorManager;
 import ServerJDBC.JDBCManager;
 import ServerJDBC.JDBCPatientManager;
+import ServerJDBC.JDBCReportManager;
 import ServerJDBC.JDBCRoleManager;
 import ServerJDBC.JDBCSymptomManager;
 import ServerJDBC.JDBCUserManager;
@@ -42,6 +43,7 @@ public class ServerPatientCommunication {
     private JDBCPatientManager patientManager;
     private JDBCDoctorManager doctorManager;
     private JDBCBitalinoManager bitalinoManager;
+    private JDBCReportManager reportManager;
     private JDBCSymptomManager symptomManager;
     private int connectedPatients = 0;
     private boolean isRunning = true;
@@ -53,6 +55,7 @@ public class ServerPatientCommunication {
         this.patientManager=new JDBCPatientManager(jdbcManager);
         this.doctorManager=new JDBCDoctorManager(jdbcManager);
         this.bitalinoManager = new JDBCBitalinoManager(jdbcManager);
+        this.reportManager = new JDBCReportManager(jdbcManager);
         this.symptomManager = new JDBCSymptomManager(jdbcManager);
         this.port=port;   
     }
@@ -291,10 +294,12 @@ public class ServerPatientCommunication {
          * to process it and create a feedback
          * @return report 
          */
-        private Report handleReport(){
-            Report report = null;
+        private void handleReport(){
+            
             try {
-                report=(Report) in.readObject();
+                Report report=(Report) in.readObject();
+                //System.out.println("Report: "+report);
+                reportManager.createReport(report);
                 out.writeObject("Report received correctly.");
                 saveBitalinos(report);
                 
@@ -304,7 +309,7 @@ public class ServerPatientCommunication {
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
-            return report;
+            
         }
         
         /**
@@ -313,6 +318,11 @@ public class ServerPatientCommunication {
          */
         private void saveBitalinos(Report report){
             ArrayList<Bitalino> bitalinos=(ArrayList<Bitalino>) report.getBitalinos();
+            for (Bitalino bitalino : bitalinos) {
+                if (bitalino.getReport() == null) {
+                    bitalino.setReport(report); // Link the report to the Bitalino
+                }
+            }
             Bitalino bitalinoEMG=bitalinos.get(0);
             Bitalino bitalinoECG=bitalinos.get(1);
             bitalinoManager.saveBitalino(bitalinoEMG);
