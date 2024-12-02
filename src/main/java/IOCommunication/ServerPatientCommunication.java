@@ -8,6 +8,7 @@ import POJOs.Bitalino;
 import POJOs.Doctor;
 import POJOs.Patient;
 import POJOs.Report;
+import POJOs.Symptom;
 import POJOs.User;
 import ServerJDBC.JDBCBitalinoManager;
 import ServerJDBC.JDBCDoctorManager;
@@ -24,6 +25,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,6 +53,7 @@ public class ServerPatientCommunication {
         this.patientManager=new JDBCPatientManager(jdbcManager);
         this.doctorManager=new JDBCDoctorManager(jdbcManager);
         this.bitalinoManager = new JDBCBitalinoManager(jdbcManager);
+        this.symptomManager = new JDBCSymptomManager(jdbcManager);
         this.port=port;   
     }
     
@@ -162,6 +165,7 @@ public class ServerPatientCommunication {
                                 handleUpdateInformation();
                                 break;
                             case"viewSymptoms":
+                                System.out.println("he llegado al case de view symptoms");
                                 handleViewSymptoms();    
                                 break;
                             case "sendReport":
@@ -268,7 +272,15 @@ public class ServerPatientCommunication {
         private void handleViewSymptoms(){
             
             try {
-                out.writeObject(symptomManager.getListOfSymptoms());
+                System.out.println("i am here bitch");
+                List <Symptom> listOfsymptoms = new ArrayList<>();
+                listOfsymptoms = symptomManager.getListOfSymptoms();
+                ListIterator it=listOfsymptoms.listIterator();
+                while(it.hasNext()){
+                    System.out.println(it.next());
+                }
+                
+                out.writeObject(listOfsymptoms);
             } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
