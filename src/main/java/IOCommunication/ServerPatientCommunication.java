@@ -168,7 +168,6 @@ public class ServerPatientCommunication {
                                 handleUpdateInformation();
                                 break;
                             case"viewSymptoms":
-                                System.out.println("he llegado al case de view symptoms");
                                 handleViewSymptoms();    
                                 break;
                             case "sendReport":

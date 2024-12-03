@@ -25,16 +25,16 @@ public class ServerMenu {
         ServerDoctorCommunication comDoctor= new ServerDoctorCommunication (9001, jdbcManager);
 
         //Runs the admin graphic interface in a separate thread
-        /*Thread adminThread = new Thread(() -> {
+        Thread adminThread = new Thread(() -> {
             SwingUtilities.invokeLater(() -> {
                 new ServerAdminGUI(comPatient, jdbcManager); 
             });
         });
         
-        adminThread.start();*/
+        adminThread.start();
         
         //calls the main thread for handling connection of patients
-        //comPatient.startServer();
+        comPatient.startServer();
         //calls the main thread for handling connection of doctors
         comDoctor.startServer ();
     }
