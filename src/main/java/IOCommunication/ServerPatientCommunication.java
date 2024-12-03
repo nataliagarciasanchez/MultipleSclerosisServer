@@ -230,12 +230,16 @@ public class ServerPatientCommunication {
                 String username = (String) in.readObject();
                 String password = (String) in.readObject();
                 User user = userManager.login(username, password);
-                Patient patient = patientManager.getPatientByUser(user);
-                Doctor doctor = doctorManager.getDoctorById(patientManager.getDoctorIdFromPatient(patient));
-                patient.setDoctor(doctor);
-                patient.setUser(user);
-                out.writeObject(patient);
-                
+                if (user == null) {
+                    out.writeObject("Invalid username or password.");
+                } else {
+                    Patient patient = patientManager.getPatientByUser(user);
+                    Doctor doctor = doctorManager.getDoctorById(patientManager.getDoctorIdFromPatient(patient));
+                    patient.setDoctor(doctor);
+                    patient.setUser(user);
+                    out.writeObject(patient);
+                }
+
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
