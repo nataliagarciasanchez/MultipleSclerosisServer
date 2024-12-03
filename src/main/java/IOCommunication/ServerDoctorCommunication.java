@@ -20,6 +20,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  *
@@ -32,12 +34,16 @@ public class ServerDoctorCommunication{
     private JDBCUserManager userManager;
     private JDBCRoleManager roleManager;
     private JDBCDoctorManager doctorManager;
+    private JDBCPatientManager patientManager;
+    private int connectedDoctors = 0;
+    private boolean isRunning = true;
 
     public ServerDoctorCommunication(int port, JDBCManager jdbcManager) {
         this.port=port;
         this.roleManager=new JDBCRoleManager(jdbcManager);
         this.userManager = new JDBCUserManager(jdbcManager, roleManager);
         this.doctorManager=new JDBCDoctorManager(jdbcManager);
+        this.patientManager = new JDBCPatientManager(jdbcManager);
     }
     
     /**
@@ -50,12 +56,18 @@ public class ServerDoctorCommunication{
             this.serverSocket = new ServerSocket(port);
             System.out.println("Server started. ");
 
-            while (true) {
+            while (isRunning) {
+                try{
                 Socket doctorSocket = serverSocket.accept();
-                System.out.println("New client connected.");
+                System.out.println("New doctor connected.");
 
                 //we start a new thread for each connection made
                 new Thread(new ServerDoctorThread(doctorSocket)).start();
+                } catch (IOException ex) {
+                    if (isRunning) { // Solo registra el error si el servidor está activo
+                        Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
             }
         } catch (IOException ex) {
             Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
@@ -64,9 +76,46 @@ public class ServerDoctorCommunication{
         }
     }
     
+    public synchronized void doctorConnected() {
+        connectedDoctors++;
+    }
+
+    public synchronized void doctorDisconnected() {
+        if (connectedDoctors > 0) {
+            connectedDoctors--;
+        }
+    }
+
+    public synchronized int getConnectedDoctors() {
+        return connectedDoctors;
+    }
+
+    public void stopServer() {
+        System.out.println("Stopping server....");
+        isRunning = false;
+        
+        try {
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                serverSocket.close(); // Cierra el ServerSocket para liberar el puerto
+            }
+        } catch (IOException ex) {
+        Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error closing the server socket", ex);
+        }
+    }
+    
+    private static void releaseResourcesServer(ServerSocket serverSocket) {
+        try {
+            serverSocket.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
+    
     class ServerDoctorThread implements Runnable {
         
-        private Socket doctorSocket;
+        private final Socket doctorSocket;
         private ObjectInputStream in;
         private ObjectOutputStream out;
 
@@ -82,10 +131,19 @@ public class ServerDoctorCommunication{
                 out = new ObjectOutputStream(doctorSocket.getOutputStream());
                 out.flush();
                 handleDoctorsRequest();
+                
             } catch (IOException e) {
-                e.printStackTrace();
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error initializing streams", e);             
             } finally {
-                releaseResourcesDoctor(in,doctorSocket);
+                try {
+                    if (doctorSocket != null && !doctorSocket.isClosed()) {
+                        doctorSocket.close();
+                    }
+                    System.out.println("Connection with doctor closed.");
+                } catch (IOException e) {
+                    Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error closing socket", e);
+                }
+                releaseResourcesDoctor(in, out, doctorSocket);
 
             }
         }
@@ -94,7 +152,7 @@ public class ServerDoctorCommunication{
          * Handles all requests from patient
          */
         private void handleDoctorsRequest(){
-            boolean running=true;
+            boolean running = true;
             while(running){
                 try {
                     String action = (String) in.readObject(); // Leer acción
@@ -114,7 +172,7 @@ public class ServerDoctorCommunication{
                             handleUpdateInformation();
                             break;
                         case "viewPatients":
-                            //case para viewPatient
+                            handleViewPatients();
                             break;
                         case "sendFeedback":
                             receiveFeedback();
@@ -125,8 +183,10 @@ public class ServerDoctorCommunication{
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                    running = false;
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                    running = false;
                 }
             }
 
@@ -164,7 +224,15 @@ public class ServerDoctorCommunication{
                 String username = (String) in.readObject();
                 String password = (String) in.readObject();
                 User user = userManager.login(username, password);
+                if(user == null){
+                    System.out.println("user not found");
+                }else{
+                    System.out.println("Login of user successfull");}
                 Doctor doctor= doctorManager.getDoctorByUser(user);
+                if(doctor == null){
+                    System.out.println("doctor not found");
+                }else{
+                    System.out.println("Login of doctor successfull");}
                 doctor.setUser(user);
                 out.writeObject(doctor);
                 
@@ -178,7 +246,7 @@ public class ServerDoctorCommunication{
          */
         private void handleLogout(){
             try {
-                releaseResourcesDoctor(in,doctorSocket);
+                releaseResourcesDoctor(in, out, doctorSocket);
                 out.writeObject("Connection closed. ");
             } catch (IOException ex) {
                 Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
@@ -200,7 +268,25 @@ public class ServerDoctorCommunication{
             }
         }
         
-       // private void viewPatients (){}
+        private void handleViewPatients (){
+            try{
+                System.out.println("Doctor is trying to viewPatients");
+                Doctor doctor =  (Doctor) in.readObject();
+                System.out.println("I have read the doctor.");
+                List <Patient> patientsFromDoctor = patientManager.getPatientsFromDoctor(doctor.getId());
+                
+                System.out.println("Patients retrieved from manager: \n" + patientsFromDoctor);
+                ListIterator it = patientsFromDoctor.listIterator();
+                while(it.hasNext()){
+                    System.out.println(it.next());
+                }
+                out.writeObject(patientsFromDoctor);
+                out.flush();
+            }catch (IOException | ClassNotFoundException ex) {
+                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
+        }
         
         private void receiveFeedback(){
             //TODO recives report and has to send it to the patient
@@ -209,10 +295,12 @@ public class ServerDoctorCommunication{
         
         
         
-        private static void releaseResourcesDoctor(InputStream inputStream, Socket socket) {
+        private static void releaseResourcesDoctor(ObjectInputStream in, ObjectOutputStream out,Socket socket) {
 
             try {
-                inputStream.close();
+                in.close();
+                out.close();
+                
             } catch (IOException ex) {
                 Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -221,17 +309,12 @@ public class ServerDoctorCommunication{
                 socket.close();
             } catch (IOException ex) {
                 Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("Error while closing socket.");
             }
         }
     }
     
-    private static void releaseResourcesServer(ServerSocket serverSocket) {
-        try {
-            serverSocket.close();
-        } catch (IOException ex) {
-            Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+    
     
     
 }

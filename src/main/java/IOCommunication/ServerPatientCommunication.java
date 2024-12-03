@@ -275,9 +275,8 @@ public class ServerPatientCommunication {
         private void handleViewSymptoms(){
             
             try {
-                System.out.println("i am here bitch");
-                List <Symptom> listOfsymptoms = new ArrayList<>();
-                listOfsymptoms = symptomManager.getListOfSymptoms();
+                
+                List <Symptom> listOfsymptoms = symptomManager.getListOfSymptoms();
                 ListIterator it=listOfsymptoms.listIterator();
                 while(it.hasNext()){
                     System.out.println(it.next());
