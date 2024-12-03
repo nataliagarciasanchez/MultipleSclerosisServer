@@ -261,6 +261,8 @@ public class ServerPatientCommunication {
                
                 User user=(User) in.readObject();
                 userManager.updateUser(user);
+                Patient patient=(Patient) in.readObject();
+                patientManager.updatePatient(patient);
                 out.writeObject("Information changed correclty");
 
             } catch (IOException | ClassNotFoundException ex) {
