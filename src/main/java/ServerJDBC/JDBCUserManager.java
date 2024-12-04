@@ -55,6 +55,32 @@ public class JDBCUserManager implements UserManager {
         this.manager = manager;
         this.roleMan = roleManager;
     }
+    
+    @Override
+    public boolean verifyValidUsername(User user){
+        boolean isValid = true; //por defecto el email es valido
+        
+        try {
+            String sql = "SELECT COUNT(*) FROM Users WHERE email = ?";
+            PreparedStatement p = manager.getConnection().prepareStatement(sql);
+            p.setString(1, user.getEmail());
+
+            ResultSet rs = p.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                if(count != 0){
+                isValid = false;
+                }
+            }
+
+            rs.close();
+            p.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+    return isValid;
+    }
 
     /**
      * Registers a new user in the database.

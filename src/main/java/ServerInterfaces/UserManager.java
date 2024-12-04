@@ -15,7 +15,7 @@ import java.util.List;
  * @author maipa
  */
 public interface UserManager {
-    
+    public boolean verifyValidUsername(User user);
     public void registerUser(User user);
     public User login(String email, String password);
     public void removeUserById(Integer id);
