@@ -276,12 +276,13 @@ public class ServerPatientCommunication {
          */
         private void handleUpdateInformation() {
             try {
-         
+                
                 User user=(User) in.readObject();
                 userManager.updateUser(user);
                 Patient patient=(Patient) in.readObject();
                 patientManager.updatePatient(patient);
                 out.writeObject("Information changed correclty");
+                
             }catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
