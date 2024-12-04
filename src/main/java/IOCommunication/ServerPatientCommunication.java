@@ -211,12 +211,18 @@ public class ServerPatientCommunication {
         private void handleRegister() {
             try {
                 User user = (User) in.readObject();
-                userManager.registerUser(user);
-                Patient patient = (Patient) in.readObject();
-                patientManager.registerPatient(patient);
+                boolean isValid = userManager.verifyValidUsername(user);
+                if (isValid == true){ //the email is valid, there are no users using that email
+                    userManager.registerUser(user);
+                    Patient patient = (Patient) in.readObject();
+                    patientManager.registerPatient(patient);
 
-                out.writeObject("Registered with success");
-                out.flush();
+                    out.writeObject("Registered with success");
+                    out.flush();
+                } else{
+                    out.writeObject("Username already in use. ");
+                    out.flush();
+                }
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception exc) {
