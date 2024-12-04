@@ -295,19 +295,6 @@ public class ServerDoctorCommunication{
         }
         
         
-        
-        private void sendReport2Doctor(Report report, Patient patient){
-            try {
-                out.writeObject(patient);
-                out.writeObject(report);
-                out.flush();
-                System.out.println("Report sent to doctor");
-                //aquí recibe el report de patient y así se lo manda al doctor
-            } catch (IOException ex) {
-                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        
         private void receiveFeedbackFromDoctor(){
             boolean sent=false;
             try {
