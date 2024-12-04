@@ -251,6 +251,7 @@ public class ServerPatientCommunication {
                     patient.setDoctor(doctor);
                     patient.setUser(user);
                     out.writeObject(patient);
+                    System.out.println("Succesful log in");
                 }
 
             } catch (IOException | ClassNotFoundException ex) {
@@ -275,14 +276,13 @@ public class ServerPatientCommunication {
          */
         private void handleUpdateInformation() {
             try {
-               
+         
                 User user=(User) in.readObject();
                 userManager.updateUser(user);
                 Patient patient=(Patient) in.readObject();
                 patientManager.updatePatient(patient);
                 out.writeObject("Information changed correclty");
-
-            } catch (IOException | ClassNotFoundException ex) {
+            }catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
