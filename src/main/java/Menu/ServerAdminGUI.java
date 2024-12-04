@@ -5,6 +5,7 @@
 package Menu;
 
 
+import IOCommunication.ServerDoctorCommunication;
 import IOCommunication.ServerPatientCommunication;
 import POJOs.Administrator;
 import POJOs.User;
@@ -28,15 +29,17 @@ import javax.swing.JTextField;
  * @author maipa
  */
 public class ServerAdminGUI {
-    private final ServerPatientCommunication serverCommunication;
+    private final ServerPatientCommunication serverPatientCommunication;
+    private final ServerDoctorCommunication serverDoctorCommunication;
     private JDBCUserManager userMan;
     private JDBCAdministratorManager adminMan;
     private boolean isRunning = true; 
     private final String admin_password = "stop";
     private final int MAX_ATTEMPS=3; //max attemps for the admin to login
 
-    public ServerAdminGUI(ServerPatientCommunication serverCommunication,JDBCManager jdbcManager) {
-        this.serverCommunication = serverCommunication;
+    public ServerAdminGUI(ServerPatientCommunication serverPatientCommunication, ServerDoctorCommunication serverDoctorCommunication, JDBCManager jdbcManager) {
+        this.serverPatientCommunication = serverPatientCommunication;
+        this.serverDoctorCommunication = serverDoctorCommunication;
         this.userMan = new JDBCUserManager(jdbcManager);
         this.adminMan = new JDBCAdministratorManager(jdbcManager);
         
@@ -154,7 +157,7 @@ public class ServerAdminGUI {
 
     private void checkConnectedClients() {
         
-        int connectedClients = serverCommunication.getConnectedClients(); // Supongamos que este método existe
+        int connectedClients = serverPatientCommunication.getConnectedClients() + serverDoctorCommunication.getConnectedDoctors(); // Supongamos que este método existe
         JOptionPane.showMessageDialog(null, "Connected clients: " + connectedClients,
                 "Connected clients", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -176,7 +179,7 @@ public class ServerAdminGUI {
 
             // Si el usuario confirma, detener el servidor
             if (confirm == JOptionPane.YES_OPTION) {
-                serverCommunication.stopServer();
+                serverPatientCommunication.stopServer();
                 JOptionPane.showMessageDialog(frame, 
                         "Server stopped with success.", 
                         "Stopped server", 

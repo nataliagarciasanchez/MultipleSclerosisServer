@@ -27,7 +27,7 @@ public class ServerMenu {
         //Runs the admin graphic interface in a separate thread
         Thread adminThread = new Thread(() -> {
             SwingUtilities.invokeLater(() -> {
-                new ServerAdminGUI(comPatient, jdbcManager); 
+                new ServerAdminGUI(comPatient, comDoctor, jdbcManager); 
             });
         });
         
