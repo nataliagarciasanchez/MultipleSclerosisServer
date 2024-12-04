@@ -4,10 +4,14 @@
  */
 package IOCommunication;
 
+import IOCommunication.ServerPatientCommunication.ServerPatientThread;
 import POJOs.Doctor;
+import POJOs.Feedback;
 import POJOs.Patient;
+import POJOs.Report;
 import POJOs.User;
 import ServerJDBC.JDBCDoctorManager;
+import ServerJDBC.JDBCFeedbackManager;
 import ServerJDBC.JDBCManager;
 import ServerJDBC.JDBCPatientManager;
 import ServerJDBC.JDBCRoleManager;
@@ -35,6 +39,7 @@ public class ServerDoctorCommunication{
     private JDBCRoleManager roleManager;
     private JDBCDoctorManager doctorManager;
     private JDBCPatientManager patientManager;
+    private JDBCFeedbackManager feedbackManager;
     private int connectedDoctors = 0;
     private boolean isRunning = true;
 
@@ -44,6 +49,8 @@ public class ServerDoctorCommunication{
         this.userManager = new JDBCUserManager(jdbcManager, roleManager);
         this.doctorManager=new JDBCDoctorManager(jdbcManager);
         this.patientManager = new JDBCPatientManager(jdbcManager);
+        this.feedbackManager=new JDBCFeedbackManager(jdbcManager);
+        
     }
     
     /**
@@ -175,8 +182,7 @@ public class ServerDoctorCommunication{
                             handleViewPatients();
                             break;
                         case "sendFeedback":
-                            receiveFeedback();
-                            break;
+                            receiveFeedbackFromDoctor();    
                         default:
                             out.writeObject("Not recognized action");
                             break; 
@@ -288,11 +294,38 @@ public class ServerDoctorCommunication{
         
         }
         
-        private void receiveFeedback(){
-            //TODO recives report and has to send it to the patient
+        
+        
+        private void sendReport2Doctor(Report report, Patient patient){
+            try {
+                out.writeObject(patient);
+                out.writeObject(report);
+                out.flush();
+                System.out.println("Report sent to doctor");
+                //aquí recibe el report de patient y así se lo manda al doctor
+            } catch (IOException ex) {
+                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
-        
+        private void receiveFeedbackFromDoctor(){
+            boolean sent=false;
+            try {
+                Feedback feedback=(Feedback) in.readObject();
+                out.writeObject("Server has received feedback");
+                out.flush();
+                feedbackManager.createFeedback(feedback);
+                if (sent) {
+                    out.writeObject("Feedback enviado al paciente con éxito.");
+                } else {
+                out.writeObject("El paciente no está conectado.");
+                }
+                out.flush();
+            } catch (IOException | ClassNotFoundException ex) {
+                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            }
+        }
         
         
         private static void releaseResourcesDoctor(ObjectInputStream in, ObjectOutputStream out,Socket socket) {
@@ -312,9 +345,9 @@ public class ServerDoctorCommunication{
                 System.out.println("Error while closing socket.");
             }
         }
-    }
-    
-    
-    
-    
 }
+    
+    
+    
+    
+

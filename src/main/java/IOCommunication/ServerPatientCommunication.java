@@ -6,12 +6,14 @@ package IOCommunication;
 
 import POJOs.Bitalino;
 import POJOs.Doctor;
+import POJOs.Feedback;
 import POJOs.Patient;
 import POJOs.Report;
 import POJOs.Symptom;
 import POJOs.User;
 import ServerJDBC.JDBCBitalinoManager;
 import ServerJDBC.JDBCDoctorManager;
+import ServerJDBC.JDBCFeedbackManager;
 import ServerJDBC.JDBCManager;
 import ServerJDBC.JDBCPatientManager;
 import ServerJDBC.JDBCReportManager;
@@ -45,6 +47,7 @@ public class ServerPatientCommunication {
     private JDBCBitalinoManager bitalinoManager;
     private JDBCReportManager reportManager;
     private JDBCSymptomManager symptomManager;
+    private JDBCFeedbackManager feedbackManager;
     private int connectedPatients = 0;
     private boolean isRunning = true;
     
@@ -148,6 +151,7 @@ public class ServerPatientCommunication {
                 in = new ObjectInputStream(patientSocket.getInputStream());
 
                 //handlePatientsRequest();
+                //handleDocsRequest();
                 boolean running = true;
                 while (running) {
                     try {
@@ -172,6 +176,9 @@ public class ServerPatientCommunication {
                                 break;
                             case "sendReport":
                                 handleReport();
+                                break;
+                            case "receiveFeedbacks":
+                                sendFeedback2Patient();
                                 break;
                             default:
                                 out.writeObject("Not recognized action");
@@ -307,7 +314,7 @@ public class ServerPatientCommunication {
                 out.writeObject("Report received correctly.");
                 saveBitalinos(report);
                 
-                //TODO it has to send the report to the doctor so it gives feedback
+                //TODO it has to send the report to the SERVERdoctor 
             } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ClassNotFoundException ex) {
@@ -332,6 +339,21 @@ public class ServerPatientCommunication {
             bitalinoManager.saveBitalino(bitalinoEMG);
             bitalinoManager.saveBitalino(bitalinoECG);
         }
+        
+        
+        public void sendFeedback2Patient(){
+            try {
+                int patient_id=(int) in.readObject();
+                List <Feedback> feedbacks=feedbackManager.getListOfFeedbacksOfPatient(patient_id);
+                out.writeObject(feedbacks);
+                System.out.println(in.readObject());//confirmation from patient that the feedback has been sent
+            } catch (IOException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
 
         private static void releaseResourcesPatient(ObjectInputStream in,ObjectOutputStream out, Socket socket) {
 
