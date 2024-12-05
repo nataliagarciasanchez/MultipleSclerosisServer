@@ -132,34 +132,13 @@ public class ServerDoctorCommunication{
         }
         
         @Override
-        public void run() {
+         public void run() {
             try{
                 in = new ObjectInputStream(doctorSocket.getInputStream());
                 out = new ObjectOutputStream(doctorSocket.getOutputStream());
                 out.flush();
-                handleDoctorsRequest();
-                
-            } catch (IOException e) {
-                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, "Error initializing streams", e);             
-            } finally {
-                try {
-                    if (doctorSocket != null && !doctorSocket.isClosed()) {
-                        doctorSocket.close();
-                    }
-                    System.out.println("Connection with doctor closed.");
-                } catch (IOException e) {
-                    Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, "Error closing socket", e);
-                }
-                releaseResourcesDoctor(in, out, doctorSocket);
-
-            }
-        }
-        
-        /**
-         * Handles all requests from patient
-         */
-        private void handleDoctorsRequest(){
-            boolean running = true;
+                //handleDoctorsRequest();
+                boolean running = true;
             while(running){
                 try {
                     String action = (String) in.readObject(); // Leer acción
@@ -187,15 +166,25 @@ public class ServerDoctorCommunication{
                             out.writeObject("Not recognized action");
                             break; 
                     }
-                } catch (IOException ex) {
-                    Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
-                    running = false;
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
-                    running = false;
+                 } catch (IOException | ClassNotFoundException ex) {
+                        Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, "Error with doctor communication", ex);
+                        running = false;
+
+                    }
+            }
+            } catch (IOException e) {
+                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, "Error initializing streams", e);             
+            } finally {
+                try {
+                    if (doctorSocket != null && !doctorSocket.isClosed()) {
+                        doctorSocket.close();
+                        System.out.println("Connection with doctor closed.");
+                    }
+                    
+                } catch (IOException e) {
+                    Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, "Error closing socket", e);
                 }
             }
-
         }
         
         /**
