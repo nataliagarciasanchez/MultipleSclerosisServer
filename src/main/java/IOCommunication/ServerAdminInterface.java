@@ -10,6 +10,7 @@ import ServerJDBC.JDBCManager;
 import ServerJDBC.JDBCUserManager;
 import java.util.Scanner;
 
+
 /**
  *
  * @author Andreoti
