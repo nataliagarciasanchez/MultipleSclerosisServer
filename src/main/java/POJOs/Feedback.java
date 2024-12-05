@@ -6,7 +6,7 @@ package POJOs;
 
 import java.sql.Date;
 import java.util.Objects;
-import javax.persistence.*;
+
 
 /**
  *
