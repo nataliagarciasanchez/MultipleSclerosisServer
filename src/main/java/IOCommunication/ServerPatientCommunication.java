@@ -9,6 +9,7 @@ import POJOs.Doctor;
 import POJOs.Feedback;
 import POJOs.Patient;
 import POJOs.Report;
+import POJOs.Role;
 import POJOs.Symptom;
 import POJOs.User;
 import ServerJDBC.JDBCBitalinoManager;
@@ -249,11 +250,14 @@ public class ServerPatientCommunication {
                 String username = (String) in.readObject();
                 String password = (String) in.readObject();
                 User user = userManager.login(username, password);
+                System.out.println("user.getPassword(): " + user.getPassword());
                 if (user == null) {
                     out.writeObject("Invalid username or password.");
-                } else {
+                } else { //TODO gestionar si no es un paciente, hasta ahora solo comprobamos si el usuario existe
                     Patient patient = patientManager.getPatientByUser(user);
                     Doctor doctor = doctorManager.getDoctorById(patientManager.getDoctorIdFromPatient(patient));
+                    Role role = roleManager.getRoleByName("patient");
+                    user.setRole(role);
                     patient.setDoctor(doctor);
                     patient.setUser(user);
                     out.writeObject(patient);
@@ -284,6 +288,7 @@ public class ServerPatientCommunication {
             try {
                 
                 User user=(User) in.readObject();
+                System.out.println("user.getPassword: " + user.getPassword());
                 userManager.updateUser(user);
                 Patient patient=(Patient) in.readObject();
                 patientManager.updatePatient(patient);
