@@ -78,6 +78,9 @@ public class ServerPatientCommunication {
                 try {
                     Socket patientSocket = serverSocket.accept();
                     System.out.println("New patient connected.");
+                    System.out.println("Before client connected");
+                    clientConnected();
+                    System.out.println("After client connected");
 
                     //we start a new thread for each connection made
                     new Thread(new ServerPatientThread(patientSocket)).start();
@@ -97,11 +100,13 @@ public class ServerPatientCommunication {
     
     public synchronized void clientConnected() {
         connectedPatients++;
+        System.out.println("Client connected executed: " + connectedPatients);
     }
 
     public synchronized void clientDisconnected() {
         if (connectedPatients > 0) {
             connectedPatients--;
+            System.out.println("Client connected executed: " + connectedPatients);
         }
     }
 
@@ -198,6 +203,7 @@ public class ServerPatientCommunication {
                         patientSocket.close();
                     }
                     System.out.println("Connection with client closed.");
+                    clientDisconnected();
                 } catch (IOException e) {
                     Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error closing socket", e);
                 }

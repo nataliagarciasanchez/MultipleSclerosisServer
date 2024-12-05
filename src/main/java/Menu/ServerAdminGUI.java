@@ -160,42 +160,59 @@ public class ServerAdminGUI {
 
     private void checkConnectedClients() {
         
-        int connectedClients = serverPatientCommunication.getConnectedClients() + serverDoctorCommunication.getConnectedDoctors(); // Supongamos que este método existe
-        JOptionPane.showMessageDialog(null, "Connected clients: " + connectedClients,
-                "Connected clients", JOptionPane.INFORMATION_MESSAGE);
+        int patientClients = serverPatientCommunication.getConnectedClients();
+        int doctorClients = serverDoctorCommunication.getConnectedDoctors(); // Asegúrate de que esté implementado
+        System.out.println("Patient clients: " + patientClients);
+        System.out.println("Doctor clients: " + doctorClients);
+        int connectedClients = patientClients + doctorClients;
+
+        JOptionPane.showMessageDialog(null, 
+        "Patient clients: " + patientClients + "\nDoctor clients: " + doctorClients,
+        "\nConnected Clients: " + connectedClients, 
+        JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void stopServer(JFrame frame) {
-        // Solicitar la contraseña al usuario
-        String password = JOptionPane.showInputDialog(frame, 
-                "Please enter the password to stop the server:", 
-                "Authentication", 
-                JOptionPane.PLAIN_MESSAGE);
+        int connectedClients = serverPatientCommunication.getConnectedClients() + serverDoctorCommunication.getConnectedDoctors(); // Supongamos que este método existe
 
-        // Verificar si la contraseña es correcta
-        if (password != null && password.equals(admin_password)) { // Cambia "yourPasswordHere" por la contraseña real
-            // Mostrar el cuadro de diálogo de confirmación
-            int confirm = JOptionPane.showConfirmDialog(frame, 
-                    "Are you sure you want to stop the server?", 
-                    "Confirmation", 
-                    JOptionPane.YES_NO_OPTION);
-
-            // Si el usuario confirma, detener el servidor
-            if (confirm == JOptionPane.YES_OPTION) {
-                serverPatientCommunication.stopServer();
-                serverDoctorCommunication.stopServer();
-                JOptionPane.showMessageDialog(frame, 
-                        "Server stopped with success.", 
-                        "Stopped server", 
-                        JOptionPane.INFORMATION_MESSAGE);
-                frame.dispose(); 
-            }
-        } else if (password != null) {
-            // Si la contraseña es incorrecta
+        if (connectedClients != 0){
             JOptionPane.showMessageDialog(frame, 
-                    "Incorrect password. The server will not be stopped.", 
-                    "Authentication Failed", 
-                    JOptionPane.ERROR_MESSAGE);
+                "Cannot stop the server while there are connected clients.\n" +
+                "Please disconnect all clients before stopping the server.", 
+                "Error: Connected Clients", 
+                JOptionPane.ERROR_MESSAGE);
+        }else{
+            // Solicitar la contraseña al usuario
+            String password = JOptionPane.showInputDialog(frame, 
+                    "Please enter the password to stop the server:", 
+                    "Authentication", 
+                    JOptionPane.PLAIN_MESSAGE);
+
+            // Verificar si la contraseña es correcta
+            if (password != null && password.equals(admin_password)) { // Cambia "yourPasswordHere" por la contraseña real
+                // Mostrar el cuadro de diálogo de confirmación
+                int confirm = JOptionPane.showConfirmDialog(frame, 
+                        "Are you sure you want to stop the server?", 
+                        "Confirmation", 
+                        JOptionPane.YES_NO_OPTION);
+
+                // Si el usuario confirma, detener el servidor
+                if (confirm == JOptionPane.YES_OPTION) {
+                    serverPatientCommunication.stopServer();
+                    serverDoctorCommunication.stopServer();
+                    JOptionPane.showMessageDialog(frame, 
+                            "Server stopped with success.", 
+                            "Stopped server", 
+                            JOptionPane.INFORMATION_MESSAGE);
+                    frame.dispose(); 
+                }
+            } else if (password != null) {
+                // Si la contraseña es incorrecta
+                JOptionPane.showMessageDialog(frame, 
+                        "Incorrect password. The server will not be stopped.", 
+                        "Authentication Failed", 
+                        JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
