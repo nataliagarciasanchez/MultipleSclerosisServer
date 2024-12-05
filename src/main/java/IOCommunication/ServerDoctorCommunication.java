@@ -72,7 +72,7 @@ public class ServerDoctorCommunication{
                 new Thread(new ServerDoctorThread(doctorSocket)).start();
                 } catch (IOException ex) {
                     if (isRunning) { // Solo registra el error si el servidor está activo
-                        Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
@@ -106,7 +106,7 @@ public class ServerDoctorCommunication{
                 serverSocket.close(); // Cierra el ServerSocket para liberar el puerto
             }
         } catch (IOException ex) {
-        Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error closing the server socket", ex);
+        Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, "Error closing the server socket", ex);
         }
     }
     
@@ -140,7 +140,7 @@ public class ServerDoctorCommunication{
                 handleDoctorsRequest();
                 
             } catch (IOException e) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error initializing streams", e);             
+                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, "Error initializing streams", e);             
             } finally {
                 try {
                     if (doctorSocket != null && !doctorSocket.isClosed()) {
@@ -148,7 +148,7 @@ public class ServerDoctorCommunication{
                     }
                     System.out.println("Connection with doctor closed.");
                 } catch (IOException e) {
-                    Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error closing socket", e);
+                    Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, "Error closing socket", e);
                 }
                 releaseResourcesDoctor(in, out, doctorSocket);
 
