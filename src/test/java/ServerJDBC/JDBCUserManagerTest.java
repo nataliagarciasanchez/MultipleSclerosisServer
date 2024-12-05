@@ -4,7 +4,7 @@
  */
 package ServerJDBC;
 
-import Security.PasswordEncryption;
+
 import POJOs.Role;
 import POJOs.User;
 import java.sql.SQLException;
@@ -90,9 +90,7 @@ public class JDBCUserManagerTest {
         assertNotNull(fetchedUser, "El usuario debería haberse registrado correctamente.");
         assertEquals(user.getId(), fetchedUser.getId());
         assertEquals(user.getEmail(), fetchedUser.getEmail());
-        
-        boolean passwordMatches = PasswordEncryption.verifyPassword(user.getPassword(), fetchedUser.getPassword());
-        assertTrue(passwordMatches, "La contraseña debería coincidir con el hash almacenado.");
+        assertEquals(user.getPassword(), fetchedUser.getPassword());
     }   
 
     /**
@@ -148,9 +146,8 @@ public class JDBCUserManagerTest {
         assertNotNull(updatedUser);
         assertEquals(user.getId(), updatedUser.getId());
         assertEquals(user.getEmail(), updatedUser.getEmail());
-        
-        boolean passwordMatches = PasswordEncryption.verifyPassword(user.getPassword(), updatedUser.getPassword());
-        assertTrue(passwordMatches, "La contraseña debería coincidir con el hash almacenado.");
+        assertEquals(user.getPassword(), updatedUser.getPassword());
+
     }
 
     /**
@@ -173,8 +170,8 @@ public class JDBCUserManagerTest {
         assertTrue(users.stream().anyMatch(user -> user.getEmail().equals(u2.getEmail())));
         
         // Verificar las contraseñas utilizando PasswordEncryption.verifyPassword
-        assertTrue(users.stream().anyMatch(user -> PasswordEncryption.verifyPassword(u1.getPassword(), user.getPassword())));
-        assertTrue(users.stream().anyMatch(user -> PasswordEncryption.verifyPassword(u2.getPassword(), user.getPassword())));
+        assertTrue(users.stream().anyMatch(user -> u1.getPassword().equals(user.getPassword())));
+        assertTrue(users.stream().anyMatch(user -> u2.getPassword().equals(user.getPassword())));
 
     }
 
@@ -192,9 +189,8 @@ public class JDBCUserManagerTest {
         assertNotNull(fetchedUser);
         assertEquals(user.getId(), fetchedUser.getId());
         assertEquals(user.getEmail(), fetchedUser.getEmail());
-        
-        boolean passwordMatches = PasswordEncryption.verifyPassword(user.getPassword(), fetchedUser.getPassword());
-        assertTrue(passwordMatches, "La contraseña debería coincidir con el hash almacenado.");
+        assertEquals(user.getPassword(), fetchedUser.getPassword());
+       
     }
 
     /**
@@ -211,9 +207,8 @@ public class JDBCUserManagerTest {
         assertNotNull(fetchedUser);
         assertEquals(user.getId(), fetchedUser.getId());
         assertEquals(user.getEmail(), fetchedUser.getEmail());
+        assertEquals(user.getPassword(), fetchedUser.getPassword());
         
-        boolean passwordMatches = PasswordEncryption.verifyPassword(user.getPassword(), fetchedUser.getPassword());
-        assertTrue(passwordMatches, "La contraseña debería coincidir con el hash almacenado.");
     }
 
     /**
@@ -237,8 +232,8 @@ public class JDBCUserManagerTest {
         assertTrue(users.stream().anyMatch(user -> user.getEmail().equals(u2.getEmail())));
        
         // Verificar las contraseñas utilizando PasswordEncryption.verifyPassword
-        assertTrue(users.stream().anyMatch(user -> PasswordEncryption.verifyPassword(u1.getPassword(), user.getPassword())));
-        assertTrue(users.stream().anyMatch(user -> PasswordEncryption.verifyPassword(u2.getPassword(), user.getPassword())));
+        assertTrue(users.stream().anyMatch(user -> u1.getPassword().equals(user.getPassword())));
+        assertTrue(users.stream().anyMatch(user -> u2.getPassword().equals(user.getPassword())));
 
     }
 

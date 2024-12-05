@@ -5,7 +5,7 @@
 package ServerJDBC;
 
 import POJOs.*;
-import Security.PasswordEncryption;
+
 import ServerInterfaces.UserManager;
 
 import java.sql.PreparedStatement;
@@ -90,12 +90,11 @@ public class JDBCUserManager implements UserManager {
     @Override
     public void registerUser(User user) {
         try {
-            String hashedPassword = PasswordEncryption.hashPassword(user.getPassword());
             
             String sql = "INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
             p.setString(1, user.getEmail());
-            p.setString(2, hashedPassword); //  metemos la contraseña ya encriptada
+            p.setString(2, user.getPassword()); //  metemos la contraseña ya encriptada
             p.setInt(3, user.getRole().getId());
             p.executeUpdate();
             // Obtener el ID generado por la base de datos
@@ -132,7 +131,7 @@ public class JDBCUserManager implements UserManager {
                 String storedHashedPassword = rs.getString("password");
                 Integer id = rs.getInt("id");
                 
-                if (PasswordEncryption.verifyPassword(password, storedHashedPassword)) {
+                if (password.equals(storedHashedPassword)) {
                 // Creamos el objeto User solo si la contraseña es válida
                 user = new User(id, email, password);
             }
@@ -171,7 +170,7 @@ public class JDBCUserManager implements UserManager {
     @Override
     public void updateUser(User user) {
         
-        String hashedPassword = PasswordEncryption.hashPassword(user.getPassword());
+        
         
         String sql = "UPDATE Users SET email = ?, password = ?, role_id = ? WHERE id = ?";
 
@@ -179,7 +178,7 @@ public class JDBCUserManager implements UserManager {
             PreparedStatement p = manager.getConnection().prepareStatement(sql);
 
             p.setString(1, user.getEmail());
-            p.setString(2, hashedPassword); // Puedes aplicar el hash aquí si es necesario
+            p.setString(2, user.getPassword()); // Puedes aplicar el hash aquí si es necesario
             p.setInt(3, user.getRole().getId());
             p.setInt(4, user.getId());
 
