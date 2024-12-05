@@ -6,6 +6,7 @@ package IOCommunication;
 
 import POJOs.Administrator;
 import POJOs.User;
+import Security.PasswordEncryption;
 import ServerJDBC.JDBCManager;
 import ServerJDBC.JDBCUserManager;
 import java.util.Scanner;
@@ -103,7 +104,7 @@ public class ServerAdminInterface {
         String username = scanner.nextLine();
         
         System.out.print("Password: ");
-        String password = scanner.nextLine();
+        String password = PasswordEncryption.hashPassword(scanner.nextLine());
         
         
         

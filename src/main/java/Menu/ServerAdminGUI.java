@@ -9,6 +9,7 @@ import IOCommunication.ServerDoctorCommunication;
 import IOCommunication.ServerPatientCommunication;
 import POJOs.Administrator;
 import POJOs.User;
+import Security.PasswordEncryption;
 import ServerJDBC.JDBCAdministratorManager;
 import ServerJDBC.JDBCManager;
 import ServerJDBC.JDBCUserManager;
@@ -85,7 +86,9 @@ public class ServerAdminGUI {
                 
                 String username = userField.getText();
                 String password = new String(passField.getPassword());
+                password = PasswordEncryption.hashPassword(password);
                 User user = userMan.login(username, password);
+                
                 Administrator admin = adminMan.getAdministratorByUser(user);
                 if (admin != null) {
                     return true;
@@ -180,6 +183,7 @@ public class ServerAdminGUI {
             // Si el usuario confirma, detener el servidor
             if (confirm == JOptionPane.YES_OPTION) {
                 serverPatientCommunication.stopServer();
+                serverDoctorCommunication.stopServer();
                 JOptionPane.showMessageDialog(frame, 
                         "Server stopped with success.", 
                         "Stopped server", 
