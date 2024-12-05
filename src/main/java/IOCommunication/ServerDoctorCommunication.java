@@ -67,7 +67,7 @@ public class ServerDoctorCommunication{
                 try{
                 Socket doctorSocket = serverSocket.accept();
                 System.out.println("New doctor connected.");
-
+                doctorConnected();
                 //we start a new thread for each connection made
                 new Thread(new ServerDoctorThread(doctorSocket)).start();
                 } catch (IOException ex) {
@@ -179,6 +179,7 @@ public class ServerDoctorCommunication{
                     if (doctorSocket != null && !doctorSocket.isClosed()) {
                         doctorSocket.close();
                         System.out.println("Connection with doctor closed.");
+                        doctorDisconnected();
                     }
                     
                 } catch (IOException e) {
@@ -219,18 +220,20 @@ public class ServerDoctorCommunication{
                 String username = (String) in.readObject();
                 String password = (String) in.readObject();
                 User user = userManager.login(username, password);
-                if(user == null){
+                if (user == null) {
                     System.out.println("user not found");
-                }else{
-                    System.out.println("Login of user successfull");}
-                Doctor doctor= doctorManager.getDoctorByUser(user);
-                if(doctor == null){
+                } else {
+                    System.out.println("Login of user successfull");
+                }
+                Doctor doctor = doctorManager.getDoctorByUser(user);
+                if (doctor == null) {
                     System.out.println("doctor not found");
-                }else{
-                    System.out.println("Login of doctor successfull");}
+                } else {
+                    System.out.println("Login of doctor successfull");
+                }
                 doctor.setUser(user);
                 out.writeObject(doctor);
-                
+
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
