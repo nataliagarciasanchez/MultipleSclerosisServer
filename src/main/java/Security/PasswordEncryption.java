@@ -3,7 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Security;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 
 /**
@@ -12,15 +13,29 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  */
 public class PasswordEncryption {
     
-    private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-    
     //method for hashing password
     public static String hashPassword(String plainPassword){
-        return encoder.encode(plainPassword);
-    }
-    
-    //method to verify that password introduced matches the hashedpassword
-    public static boolean verifyPassword(String plainPassword, String hashedPassword) {
-        return encoder.matches(plainPassword, hashedPassword);
+        try {
+            // Crear instancia de MessageDigest para MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            
+            // Convertir la contraseña en bytes
+            byte[] passwordBytes = plainPassword.getBytes();
+            
+            // Generar el hash
+            byte[] hashBytes = md.digest(passwordBytes);
+            
+            // Convertir el hash a una representación hexadecimal
+            StringBuilder hashString = new StringBuilder();
+            for (byte b : hashBytes) {
+                // Convertir cada byte en un valor hexadecimal
+                hashString.append(String.format("%02x", b));
+            }
+            
+            // Devolver el hash como cadena
+            return hashString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error when initializing MD5", e);
+        }
     }
 }
