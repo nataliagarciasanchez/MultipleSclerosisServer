@@ -151,7 +151,7 @@ public class ServerPatientCommunication {
                 in = new ObjectInputStream(patientSocket.getInputStream());
 
                 //handlePatientsRequest();
-                //handleDocsRequest();
+                
                 boolean running = true;
                 while (running) {
                     try {
@@ -308,8 +308,7 @@ public class ServerPatientCommunication {
         }
 
         /**
-         * Receives the report sent from the patient and returns it so it is used in the ServerDoctorCommunication 
-         * to process it and create a feedback
+         * Receives the report sent from the patient and creates to save it in the database
          * @return report 
          */
         private void handleReport(){
@@ -320,8 +319,7 @@ public class ServerPatientCommunication {
                 reportManager.createReport(report);
                 out.writeObject("Report received correctly.");
                 saveBitalinos(report);
-                
-                //TODO it has to send the report to the SERVERdoctor 
+       
             } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ClassNotFoundException ex) {
@@ -347,7 +345,7 @@ public class ServerPatientCommunication {
             bitalinoManager.saveBitalino(bitalinoECG);
         }
         
-        
+        //sends all the feedbacks to the patient
         public void sendFeedback2Patient(){
             try {
                 int patient_id=(int) in.readObject();
