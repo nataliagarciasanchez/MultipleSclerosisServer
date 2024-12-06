@@ -49,7 +49,7 @@ public class TXTUtils {
     }
     
     
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         
         String patientName = "Andrea Martinez Palacios";
         String physiologicalData = "123/456/789";
@@ -57,7 +57,7 @@ public class TXTUtils {
         Date date = java.sql.Date.valueOf("2024-12-06");
         TXTUtils.saveDataToTXT(patientName, date, physiologicalData);
     
-    }
+    }*/
     
 }
 
