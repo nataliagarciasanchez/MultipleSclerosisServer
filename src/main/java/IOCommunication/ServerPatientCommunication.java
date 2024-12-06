@@ -33,6 +33,7 @@ import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import TXT.TXTUtils;
+import java.sql.Date;
 
 /**
  * Class used to test all the method in the communication
@@ -335,11 +336,23 @@ public class ServerPatientCommunication {
                 out.writeObject("Report received correctly.");
                 
                 String patientName = report.getPatient().getName();
-                String signalValues = report.getBitalinos().get(0).getSignalValues(); // Ejemplo con el primer Bitalino
-                String signalValuesECG = report.getBitalinos().get(1).getSignalValues();
+                Date date = report.getDate();
+                List <Bitalino> bitalinos = report.getBitalinos();
+                
+                StringBuilder allSignalValues = new StringBuilder();
+                allSignalValues.append("Bitalino Signal Values:\n");
+                
+                for (Bitalino bitalino : bitalinos) {
+                    String signalValues = bitalino.getSignalValues();
+                    allSignalValues.append("Signal ").append(bitalino.getSignal_type().toString()).append(": ").append(signalValues).append("\n");
+                    allSignalValues.append("-------------------------------");
+                }
+                
+                //String signalValues = report.getBitalinos().get(0).getSignalValues(); // Ejemplo con el primer Bitalino
+                //String signalValuesECG = report.getBitalinos().get(1).getSignalValues();
                 // Guardar los datos en un archivo TXT
-                TXTUtils.saveDataToTXT(patientName, signalValues);
-                TXTUtils.saveDataToTXT(patientName, signalValuesECG);
+                TXTUtils.saveDataToTXT(patientName, date, allSignalValues.toString());
+                //TXTUtils.saveDataToTXT(patientName, date, signalValuesECG);
 
             } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);

@@ -8,6 +8,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Date;
 
 
 /**
@@ -17,23 +18,22 @@ import java.io.IOException;
 public class TXTUtils {
     private static final String FOLDER_PATH = "TXT"; // Carpeta donde se guardarán los archivos
 
-    public static void saveDataToTXT(String patientName, String physiologicalData) {
+    public static void saveDataToTXT(String patientName, Date date,  String physiologicalData) {
         // Crear el directorio si no existe
         createDirectoryIfNotExists(FOLDER_PATH);
-
+        String patientNoSpaces = patientName.replaceAll("\\s+", "");
         // Nombre del archivo TXT
-        String fileName = FOLDER_PATH + "/" + patientName + "_monitoring.txt";
+        String fileName = FOLDER_PATH + "/" + patientNoSpaces + "_" + date.toString() + "_monitoring.txt";
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
             // Escribir los datos como una línea nueva
             writer.write("Patient Name: " + patientName);
             writer.newLine();
-            writer.write("Data: " + physiologicalData);
-            writer.newLine();
-            writer.write("Date and Time: " + new java.util.Date());
+            writer.write("Date and Time: " + date.toString());
             writer.newLine();
             writer.write("-------------------------------");
             writer.newLine();
+            writer.write(physiologicalData);
 
             System.out.println("Data saved to file: " + fileName);
         } catch (IOException e) {
@@ -47,4 +47,18 @@ public class TXTUtils {
             directory.mkdirs();
         }
     }
+    
+    
+    public static void main(String[] args) {
+        
+        String patientName = "Andrea Martinez Palacios";
+        String physiologicalData = "123/456/789";
+        
+        Date date = java.sql.Date.valueOf("2024-12-06");
+        TXTUtils.saveDataToTXT(patientName, date, physiologicalData);
+    
+    }
+    
 }
+
+
