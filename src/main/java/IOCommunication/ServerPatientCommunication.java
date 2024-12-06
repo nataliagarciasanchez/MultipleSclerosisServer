@@ -251,10 +251,10 @@ public class ServerPatientCommunication {
                 String password = (String) in.readObject();
                 User user = userManager.login(username, password);
                 
-                if (user == null) {
+                if (user == null) { //check that user exists
                     out.writeObject("Invalid username or password.");
-                } else { //TODO gestionar si no es un paciente, hasta ahora solo comprobamos si el usuario existe
-                    Patient patient = patientManager.getPatientByUser(user);
+                } else { 
+                    Patient patient = patientManager.getPatientByUser(user); //check that user is a patient
                     if(patient == null){
                         out.writeObject("Invalid username or password."); //user trying to log in without being a patient
                     }else{
