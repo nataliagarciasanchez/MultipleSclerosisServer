@@ -18,9 +18,11 @@ import ServerJDBC.JDBCManager;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.Assertions;
 
 /**
  *
@@ -30,12 +32,15 @@ public class ServerPatientCommunicationTest {
      private ServerPatientCommunication serverInstance;
     private Thread serverThread;
     private int port = 9000; // Example port
+    private final String testPatientName = "TestPatient";
+    private final String testPhysiologicalData = "ECG: 120, EMG: 45";
     
     public ServerPatientCommunicationTest() {
     }
     
     @BeforeAll
     public static void setUpClass() {
+        
     }
     
     @AfterAll
@@ -44,6 +49,15 @@ public class ServerPatientCommunicationTest {
     
     @BeforeEach
     public void setUp() {
+         // Inicializa el JDBCManager si es necesario
+        JDBCManager jdbcManager = new JDBCManager();
+        
+        // Inicializa la instancia del servidor
+        serverInstance = new ServerPatientCommunication(port, jdbcManager);
+        
+        // Inicia el servidor en un hilo separado
+        serverThread = new Thread(() -> serverInstance.startServer());
+        serverThread.start();
     }
     
     @AfterEach
@@ -54,6 +68,11 @@ public class ServerPatientCommunicationTest {
 
         if (serverThread != null && serverThread.isAlive()) {
             serverThread.join(); // Espera a que el hilo termine
+        }
+         // Clean up the created TXT file
+        File file = new File("TXT/" + testPatientName + "_monitoring.txt");
+        if (file.exists()) {
+            file.delete();
         }
     }
 
@@ -70,46 +89,39 @@ public class ServerPatientCommunicationTest {
     }
     
     @Test
-    public void testSaveDataToCSV() {
-        System.out.println("Testing saving data to CSV...");
-
-        // Simulate client sending a report to the server
+    public void testSaveDataToTXT() throws IOException{
+        // Simulate a client sending data to the server
         try (Socket clientSocket = new Socket("localhost", port);
              ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
              ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream())) {
 
-            // Simulate client sending "sendReport" action
-            out.writeObject("sendReport");
+            // Send mock report to the server
+            out.writeObject("sendReport"); // Specify the action
+            out.writeObject(testPatientName); // Send patient name
+            out.writeObject(testPhysiologicalData); // Send physiological data
 
-            // Create and send a sample report
-            Report report = new Report();
-            report.setPatient(new Patient("Doe"));
-            Bitalino emgData = new Bitalino(new Date(24,12,20), SignalType.EMG, "ECG: 120, EMG: 45", report);
-            Bitalino ecgData = new Bitalino(new Date(24,12,20),SignalType.ECG, "Temp: 36.5, SpO2: 98", report);
-            report.setBitalinos(new ArrayList<>(List.of(emgData, ecgData)));
+            // Wait for server confirmation
+            String response = (String) in.readObject();
+            Assertions.assertEquals("Report received and data saved.", response);
 
-            out.writeObject(report); // Send the report to the server
+            // Verify that the TXT file is created and contains the correct data
+            File txtFile = new File("TXT/" + testPatientName + "_monitoring.txt");
+            assertTrue(txtFile.exists(), "TXT file should exist");
 
-            // Wait briefly to ensure the server processes the report
-            Thread.sleep(2000);
-
-            // Check if the CSV file is created
-            File csvFile = new File("CSV/TestPatient_monitoring.csv");
-            assertTrue(csvFile.exists(), "The CSV file should have been created.");
-
-            // Verify the content of the CSV file
-            try (BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
-                String header = reader.readLine();
-                assertEquals("Patient Name,Date Time,Physiological Data", header, "CSV header is incorrect.");
-
-                String dataLine = reader.readLine();
-                assertTrue(dataLine.contains("TestPatient"), "CSV should contain the patient's name.");
-                assertTrue(dataLine.contains("ECG: 120, EMG: 45"), "CSV should contain the EMG data.");
-                assertTrue(dataLine.contains("Temp: 36.5, SpO2: 98"), "CSV should contain the ECG data.");
+            // Verify the content of the file
+            try (BufferedReader reader = new BufferedReader(new FileReader(txtFile))) {
+                String line;
+                boolean dataFound = false;
+                while ((line = reader.readLine()) != null) {
+                    if (line.contains(testPatientName) && line.contains(testPhysiologicalData)) {
+                        dataFound = true;
+                        break;
+                    }
+                }
+                assertTrue(dataFound, "File content should contain patient name and physiological data");
             }
-
         } catch (Exception e) {
-            fail("Exception during test: " + e.getMessage());
+            Assertions.fail("An error occurred during the test: " + e.getMessage());
         }
     }
 }

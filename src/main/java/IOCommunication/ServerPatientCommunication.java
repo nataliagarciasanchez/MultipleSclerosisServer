@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import CSV.CSVUtils;
+import TXT.TXTUtils;
 
 /**
  * Class used to test all the method in the communication
@@ -333,18 +333,13 @@ public class ServerPatientCommunication {
                 //System.out.println("Report: "+report);
                 reportManager.createReport(report);
                 out.writeObject("Report received correctly.");
-                saveBitalinos(report);
-
-                //Guardar los datos en el archivo CSV
-                ArrayList<Bitalino> bitalinos = (ArrayList<Bitalino>) report.getBitalinos();
-                if (!bitalinos.isEmpty()) {
-                    String patientName = report.getPatient().getName(); // Obtiene el nombre del paciente
-                    for (Bitalino bitalino : bitalinos) {
-                        String signalValues = bitalino.getSignalValues(); // Obtiene los valores de la señal
-                        // Guarda en el archivo CSV
-                        CSVUtils.saveDataToCSV(patientName, signalValues);
-                    }
-                }
+                
+                String patientName = report.getPatient().getName();
+                String signalValues = report.getBitalinos().get(0).getSignalValues(); // Ejemplo con el primer Bitalino
+                String signalValuesECG = report.getBitalinos().get(1).getSignalValues();
+                // Guardar los datos en un archivo TXT
+                TXTUtils.saveDataToTXT(patientName, signalValues);
+                TXTUtils.saveDataToTXT(patientName, signalValuesECG);
 
             } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
@@ -353,7 +348,6 @@ public class ServerPatientCommunication {
             }
 
         }
-       
 
         /**
          * Saves the bitalinos with the signal_values in the database
