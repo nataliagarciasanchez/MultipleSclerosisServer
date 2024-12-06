@@ -32,13 +32,15 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import CSV.CSVUtils;
 
 /**
  * Class used to test all the method in the communication
+ *
  * @author maipa
  */
 public class ServerPatientCommunication {
-    
+
     private ServerSocket serverSocket;
     private final int port;
     private JDBCUserManager userManager;
@@ -51,22 +53,20 @@ public class ServerPatientCommunication {
     private JDBCFeedbackManager feedbackManager;
     private int connectedPatients = 0;
     private boolean isRunning = true;
-    
 
     public ServerPatientCommunication(int port, JDBCManager jdbcManager) {
-        this.roleManager=new JDBCRoleManager(jdbcManager);
+        this.roleManager = new JDBCRoleManager(jdbcManager);
         this.userManager = new JDBCUserManager(jdbcManager, roleManager);
-        this.patientManager=new JDBCPatientManager(jdbcManager);
-        this.doctorManager=new JDBCDoctorManager(jdbcManager);
+        this.patientManager = new JDBCPatientManager(jdbcManager);
+        this.doctorManager = new JDBCDoctorManager(jdbcManager);
         this.bitalinoManager = new JDBCBitalinoManager(jdbcManager);
         this.reportManager = new JDBCReportManager(jdbcManager);
         this.symptomManager = new JDBCSymptomManager(jdbcManager);
-        this.port=port;   
+        this.port = port;
     }
-    
-    
+
     /**
-     * 
+     *
      * startServer is called from the menu when the Server is executed
      */
     public void startServer() {
@@ -98,7 +98,7 @@ public class ServerPatientCommunication {
             releaseServerResources(serverSocket);
         }
     }
-    
+
     public synchronized void clientConnected() {
         connectedPatients++;
         System.out.println("Client connected executed: " + connectedPatients);
@@ -118,16 +118,16 @@ public class ServerPatientCommunication {
     public void stopServer() {
         System.out.println("Stopping server....");
         isRunning = false;
-        
+
         try {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close(); // Cierra el ServerSocket para liberar el puerto
             }
         } catch (IOException ex) {
-        Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error closing the server socket", ex);
+            Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error closing the server socket", ex);
         }
     }
-    
+
     private static void releaseServerResources(ServerSocket serverSocket) {
         try {
             serverSocket.close();
@@ -135,20 +135,18 @@ public class ServerPatientCommunication {
             Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
+
     class ServerPatientThread implements Runnable {
-        
-        
+
         private final Socket patientSocket;
         private ObjectInputStream in;
         private ObjectOutputStream out;
 
         public ServerPatientThread(Socket patientSocket) {
             this.patientSocket = patientSocket;
-            
+
         }
-        
+
         @Override
         public void run() {
             try {
@@ -157,7 +155,6 @@ public class ServerPatientCommunication {
                 in = new ObjectInputStream(patientSocket.getInputStream());
 
                 //handlePatientsRequest();
-                
                 boolean running = true;
                 while (running) {
                     try {
@@ -177,8 +174,8 @@ public class ServerPatientCommunication {
                             case "updateInformation":
                                 handleUpdateInformation();
                                 break;
-                            case"viewSymptoms":
-                                handleViewSymptoms();    
+                            case "viewSymptoms":
+                                handleViewSymptoms();
                                 break;
                             case "sendReport":
                                 handleReport();
@@ -211,8 +208,7 @@ public class ServerPatientCommunication {
                 }
             }
         }
-        
-        
+
         /**
          * Registers into database the patient
          */
@@ -220,14 +216,14 @@ public class ServerPatientCommunication {
             try {
                 User user = (User) in.readObject();
                 boolean isValid = userManager.verifyValidUsername(user);
-                if (isValid == true){ //the email is valid, there are no users using that email
+                if (isValid == true) { //the email is valid, there are no users using that email
                     userManager.registerUser(user);
                     Patient patient = (Patient) in.readObject();
                     patientManager.registerPatient(patient);
 
                     out.writeObject("Registered with success");
                     out.flush();
-                } else{
+                } else {
                     out.writeObject("Username already in use. ");
                     out.flush();
                 }
@@ -242,23 +238,24 @@ public class ServerPatientCommunication {
                 }
             }
         }
-        
+
         /**
-         * Logs in by retrieving patient info from the registered patient in the database
+         * Logs in by retrieving patient info from the registered patient in the
+         * database
          */
         private void handleLogin() {
             try {
                 String username = (String) in.readObject();
                 String password = (String) in.readObject();
                 User user = userManager.login(username, password);
-                
+
                 if (user == null) { //check that user exists
                     out.writeObject("Invalid username or password.");
-                } else { 
+                } else {
                     Patient patient = patientManager.getPatientByUser(user); //check that user is a patient
-                    if(patient == null){
+                    if (patient == null) {
                         out.writeObject("Invalid username or password."); //user trying to log in without being a patient
-                    }else{
+                    } else {
                         Doctor doctor = doctorManager.getDoctorById(patientManager.getDoctorIdFromPatient(patient));
                         Role role = roleManager.getRoleByName("patient");
                         user.setRole(role);
@@ -273,50 +270,50 @@ public class ServerPatientCommunication {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         /**
          * Releases all the resources of the socket established with the patient
          */
-        private void handleLogout(){
+        private void handleLogout() {
             try {
-                releaseResourcesPatient(in, out,patientSocket);
+                releaseResourcesPatient(in, out, patientSocket);
                 out.writeObject("Connection closed. ");
             } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         /**
          * Changes password in the database
          */
         private void handleUpdateInformation() {
             try {
-                
-                User user=(User) in.readObject();
+
+                User user = (User) in.readObject();
                 System.out.println("user.getPassword: " + user.getPassword());
                 userManager.updateUser(user);
-                Patient patient=(Patient) in.readObject();
+                Patient patient = (Patient) in.readObject();
                 patientManager.updatePatient(patient);
                 out.writeObject("Information changed correclty");
-                
-            }catch (IOException | ClassNotFoundException ex) {
+
+            } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         /**
          * Sends all the symptoms saved in the database
          */
-        private void handleViewSymptoms(){
-            
+        private void handleViewSymptoms() {
+
             try {
-                
-                List <Symptom> listOfsymptoms = symptomManager.getListOfSymptoms();
-                ListIterator it=listOfsymptoms.listIterator();
-                while(it.hasNext()){
+
+                List<Symptom> listOfsymptoms = symptomManager.getListOfSymptoms();
+                ListIterator it = listOfsymptoms.listIterator();
+                while (it.hasNext()) {
                     System.out.println(it.next());
                 }
-                
+
                 out.writeObject(listOfsymptoms);
             } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
@@ -324,48 +321,63 @@ public class ServerPatientCommunication {
         }
 
         /**
-         * Receives the report sent from the patient and creates to save it in the database
-         * @return report 
+         * Receives the report sent from the patient and creates to save it in
+         * the database
+         *
+         * @return report
          */
-        private void handleReport(){
-            
+        private void handleReport() {
+
             try {
-                Report report=(Report) in.readObject();
+                Report report = (Report) in.readObject();
                 //System.out.println("Report: "+report);
                 reportManager.createReport(report);
                 out.writeObject("Report received correctly.");
                 saveBitalinos(report);
-       
+
+                //Guardar los datos en el archivo CSV
+                ArrayList<Bitalino> bitalinos = (ArrayList<Bitalino>) report.getBitalinos();
+                if (!bitalinos.isEmpty()) {
+                    String patientName = report.getPatient().getName(); // Obtiene el nombre del paciente
+                    for (Bitalino bitalino : bitalinos) {
+                        String signalValues = bitalino.getSignalValues(); // Obtiene los valores de la señal
+                        // Guarda en el archivo CSV
+                        CSVUtils.saveDataToCSV(patientName, signalValues);
+                    }
+                }
+
             } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
         }
-        
+       
+
         /**
          * Saves the bitalinos with the signal_values in the database
-         * @param report 
+         *
+         * @param report
          */
-        private void saveBitalinos(Report report){
-            ArrayList<Bitalino> bitalinos=(ArrayList<Bitalino>) report.getBitalinos();
+        private void saveBitalinos(Report report) {
+            ArrayList<Bitalino> bitalinos = (ArrayList<Bitalino>) report.getBitalinos();
             for (Bitalino bitalino : bitalinos) {
                 if (bitalino.getReport() == null) {
                     bitalino.setReport(report); // Link the report to the Bitalino
                 }
             }
-            Bitalino bitalinoEMG=bitalinos.get(0);
-            Bitalino bitalinoECG=bitalinos.get(1);
+            Bitalino bitalinoEMG = bitalinos.get(0);
+            Bitalino bitalinoECG = bitalinos.get(1);
             bitalinoManager.saveBitalino(bitalinoEMG);
             bitalinoManager.saveBitalino(bitalinoECG);
         }
-        
+
         //sends all the feedbacks to the patient
-        public void sendFeedback2Patient(){
+        public void sendFeedback2Patient() {
             try {
-                int patient_id=(int) in.readObject();
-                List <Feedback> feedbacks=feedbackManager.getListOfFeedbacksOfPatient(patient_id);
+                int patient_id = (int) in.readObject();
+                List<Feedback> feedbacks = feedbackManager.getListOfFeedbacksOfPatient(patient_id);
                 out.writeObject(feedbacks);
                 System.out.println(in.readObject());//confirmation from patient that the feedback has been sent
             } catch (IOException ex) {
@@ -375,8 +387,7 @@ public class ServerPatientCommunication {
             }
         }
 
-
-        private static void releaseResourcesPatient(ObjectInputStream in,ObjectOutputStream out, Socket socket) {
+        private static void releaseResourcesPatient(ObjectInputStream in, ObjectOutputStream out, Socket socket) {
 
             try {
                 out.close();
@@ -393,5 +404,5 @@ public class ServerPatientCommunication {
             }
         }
     }
-    
+
 }
