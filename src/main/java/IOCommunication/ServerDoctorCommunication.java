@@ -4,11 +4,11 @@
  */
 package IOCommunication;
 
-import IOCommunication.ServerPatientCommunication.ServerPatientThread;
 import POJOs.Doctor;
 import POJOs.Feedback;
 import POJOs.Patient;
 import POJOs.Report;
+import POJOs.Role;
 import POJOs.User;
 import ServerJDBC.JDBCDoctorManager;
 import ServerJDBC.JDBCFeedbackManager;
@@ -17,7 +17,6 @@ import ServerJDBC.JDBCPatientManager;
 import ServerJDBC.JDBCRoleManager;
 import ServerJDBC.JDBCUserManager;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -220,20 +219,25 @@ public class ServerDoctorCommunication{
                 String username = (String) in.readObject();
                 String password = (String) in.readObject();
                 User user = userManager.login(username, password);
+                
                 if (user == null) {
+                    out.writeObject("Invalid username or password.");
                     System.out.println("user not found");
                 } else {
                     System.out.println("Login of user successfull");
+                    Doctor doctor = doctorManager.getDoctorByUser(user);
+                    if (doctor == null) {
+                        out.writeObject("Invalid username or password.");
+                        System.out.println("doctor not found");
+                    } else {
+                        System.out.println("Login of doctor successfull");
+                        Role role = roleManager.getRoleByName("doctor");
+                        user.setRole(role);
+                        doctor.setUser(user);
+                         out.writeObject(doctor);
+                    }
                 }
-                Doctor doctor = doctorManager.getDoctorByUser(user);
-                if (doctor == null) {
-                    System.out.println("doctor not found");
-                } else {
-                    System.out.println("Login of doctor successfull");
-                }
-                doctor.setUser(user);
-                out.writeObject(doctor);
-
+                
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
