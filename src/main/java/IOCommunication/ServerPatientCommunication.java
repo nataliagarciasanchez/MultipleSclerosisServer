@@ -250,18 +250,22 @@ public class ServerPatientCommunication {
                 String username = (String) in.readObject();
                 String password = (String) in.readObject();
                 User user = userManager.login(username, password);
-                System.out.println("user.getPassword(): " + user.getPassword());
+                
                 if (user == null) {
                     out.writeObject("Invalid username or password.");
                 } else { //TODO gestionar si no es un paciente, hasta ahora solo comprobamos si el usuario existe
                     Patient patient = patientManager.getPatientByUser(user);
-                    Doctor doctor = doctorManager.getDoctorById(patientManager.getDoctorIdFromPatient(patient));
-                    Role role = roleManager.getRoleByName("patient");
-                    user.setRole(role);
-                    patient.setDoctor(doctor);
-                    patient.setUser(user);
-                    out.writeObject(patient);
-                    System.out.println("Succesful log in");
+                    if(patient == null){
+                        out.writeObject("Invalid username or password."); //user trying to log in without being a patient
+                    }else{
+                        Doctor doctor = doctorManager.getDoctorById(patientManager.getDoctorIdFromPatient(patient));
+                        Role role = roleManager.getRoleByName("patient");
+                        user.setRole(role);
+                        patient.setDoctor(doctor);
+                        patient.setUser(user);
+                        out.writeObject(patient);
+                        System.out.println("Succesful log in");
+                    }
                 }
 
             } catch (IOException | ClassNotFoundException ex) {
