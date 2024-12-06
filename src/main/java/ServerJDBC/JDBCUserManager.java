@@ -135,6 +135,8 @@ public class JDBCUserManager implements UserManager {
                 // Creamos el objeto User solo si la contraseña es válida
                 user = new User(id, email, password);
             }
+            }else{
+                System.out.println("Invalid credentials. User not found.");
             }
             rs.close();
             p.close();

@@ -50,16 +50,18 @@ public class ServerAdminGUI {
         } else {
             JOptionPane.showMessageDialog(null, "Access denied. App closing.",
                     "Autification Error", JOptionPane.ERROR_MESSAGE);
-            System.exit(0); // Exit the program if login fails
+            //System.exit(0); // Exit the program if login fails commented so the server keeps running
         }
         
     }
     
     private boolean showLoginPanel() {
         int attemps = 0;
+        User user = null; 
+        Administrator admin = null; 
         
         // Panel for login form
-        while (attemps < MAX_ATTEMPS) {
+        while ((user == null || admin == null) && attemps < MAX_ATTEMPS) {
             JPanel loginPanel = new JPanel(new GridLayout(3, 2, 10, 10));
 
             // Username field
@@ -87,16 +89,19 @@ public class ServerAdminGUI {
                 String username = userField.getText();
                 String password = new String(passField.getPassword());
                 password = PasswordEncryption.hashPassword(password);
-                User user = userMan.login(username, password);
+                user = userMan.login(username, password);
                 
-                Administrator admin = adminMan.getAdministratorByUser(user);
-                if (admin != null) {
+                if (user != null){
+                admin = adminMan.getAdministratorByUser(user);
+                }               
+                
+                if (admin != null) { // si no son nulos --> usuario válido y es administrador
                     return true;
                     
                 } else {
                     attemps++;
-                    int left_attemps=3-attemps;
-                    JOptionPane.showMessageDialog(null, "Incorrect credentials." ,
+                    int left_attemps = 3-attemps;
+                    JOptionPane.showMessageDialog(null, "Incorrect credentials.\nYou have " + left_attemps + " attemps left." ,
                             "Autentification Error", JOptionPane.WARNING_MESSAGE);
                 }
 
