@@ -258,7 +258,7 @@ public class ServerDoctorCommunication{
         /**
          * Changes password in the database
          */
-        private void handleUpdateInformation() {
+        private void handleUpdateInformation() { //solo puede cambiar la contraseña
             try {
                
                 User user=(User) in.readObject();
