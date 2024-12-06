@@ -191,7 +191,8 @@ public class ServerPatientCommunication {
                                 break;
                         }
                     } catch (IOException | ClassNotFoundException ex) {
-                        Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error with patient communication", ex);
+                        //Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error with patient communication", ex);
+                        System.out.println("\nClient disconnected unexpectedly: " + ex.getMessage());
                         running = false;
 
                     }
