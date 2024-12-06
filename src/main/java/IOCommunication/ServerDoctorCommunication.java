@@ -262,7 +262,10 @@ public class ServerDoctorCommunication{
             try {
                
                 User user=(User) in.readObject();
+                System.out.println("user.getPassword: " + user.getPassword());
                 userManager.updateUser(user);
+                Doctor doctor = (Doctor) in.readObject();
+                doctorManager.updateDoctor(doctor);
                 out.writeObject("Information changed correclty");
 
             } catch (IOException | ClassNotFoundException ex) {
