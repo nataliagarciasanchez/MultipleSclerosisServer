@@ -234,7 +234,7 @@ public class ServerDoctorCommunication{
                         Role role = roleManager.getRoleByName("doctor");
                         user.setRole(role);
                         doctor.setUser(user);
-                         out.writeObject(doctor);
+                        out.writeObject(doctor);
                     }
                 }
                 
