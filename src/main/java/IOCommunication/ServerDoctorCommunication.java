@@ -193,12 +193,18 @@ public class ServerDoctorCommunication{
         private void handleRegister() {
             try {
                 User user = (User) in.readObject();
-                userManager.registerUser(user);
-                Doctor doctor = (Doctor) in.readObject();
-                doctorManager.registerDoctor(doctor);
+                boolean isValid = userManager.verifyValidUsername(user);
+                if (isValid == true) { //the email is valid, there are no users using that email
+                    userManager.registerUser(user);
+                    Doctor doctor = (Doctor) in.readObject();
+                    doctorManager.registerDoctor(doctor);
 
-                out.writeObject("Registered with success");
-                out.flush();
+                    out.writeObject("Registered with success");
+                    out.flush();
+                } else {
+                    out.writeObject("Username already in use. ");
+                    out.flush();
+                }
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception exc) {
