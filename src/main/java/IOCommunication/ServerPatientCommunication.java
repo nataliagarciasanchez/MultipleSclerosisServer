@@ -364,6 +364,7 @@ public class ServerPatientCommunication {
                 out.writeObject("Report received correctly.");
                 
                 String patientName = report.getPatient().getName();
+                int report_id = report.getId();
                 Date date = report.getDate();
                 List <Bitalino> bitalinos = report.getBitalinos();
                 
@@ -379,7 +380,7 @@ public class ServerPatientCommunication {
                 //String signalValues = report.getBitalinos().get(0).getSignalValues(); // Ejemplo con el primer Bitalino
                 //String signalValuesECG = report.getBitalinos().get(1).getSignalValues();
                 // Guardar los datos en un archivo TXT
-                TXTUtils.saveDataToTXT(patientName, date, allSignalValues.toString());
+                TXTUtils.saveDataToTXT(report_id, patientName, date, allSignalValues.toString());
                 //TXTUtils.saveDataToTXT(patientName, date, signalValuesECG);
 
             } catch (IOException ex) {

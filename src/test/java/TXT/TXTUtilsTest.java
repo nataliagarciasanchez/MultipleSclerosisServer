@@ -7,7 +7,8 @@ package TXT;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,19 +47,28 @@ public class TXTUtilsTest {
     @Test
     public void testSaveDataToTXT() {
         System.out.println("saveDataToTXT");
+        
+        int report_id = 1;
         String patientName = "Andrea Martinez Palacios";
         String physiologicalData = "123/456/789";
+        Date date = new Date();
+        SimpleDateFormat fileDateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        SimpleDateFormat monitoringDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDateForFile = fileDateFormat.format(date);
+        String formattedDateForMonitoring = monitoringDateFormat.format(date);
         
-        Date date = java.sql.Date.valueOf("2024-12-06");
-        TXTUtils.saveDataToTXT(patientName, date, physiologicalData);
         
-        // Crear el nombre esperado del archivo
+        TXTUtils.saveDataToTXT(report_id, patientName, date, physiologicalData);
+        
+        //expected name
         String patientNoSpaces = patientName.replaceAll("\\s+", "");
-        String expectedFileName = "TXT/" + patientNoSpaces + "_" + date.toString() + "_monitoring.txt";
+        String expectedFileName = "TXT/" + report_id + "_" + patientNoSpaces + "_" + formattedDateForFile + "_monitoring.txt";
         System.out.println(expectedFileName);
         File file = new File(expectedFileName);
+        System.out.println("Ruta: " + file.getAbsolutePath());
+        System.out.println("Existe: " + file.exists());
         
-        // Verificar que el archivo fue creado
+        // verify that the file was created
         assertTrue(() -> file.exists(), "El archivo no fue creado");
 
         // Verificar el contenido del archivo
@@ -69,14 +79,14 @@ public class TXTUtilsTest {
             String line4 = reader.readLine();
 
             assertEquals("Patient Name: " + patientName, line1);
-            assertEquals("Date and Time: " + date, line2);
-            assertEquals(physiologicalData, line4);
+            assertEquals("Date and Time of Monitoring: " + formattedDateForMonitoring, line2);
+            assertEquals("Physiological Data: " + physiologicalData, line4);
         } catch (Exception e) {
             e.printStackTrace();
             throw new AssertionError("Error al leer el archivo");
         }
 
-        // Limpieza: eliminar el archivo después de la prueba (opcional)
+        //deleting file after test
         file.delete();
         
     }
