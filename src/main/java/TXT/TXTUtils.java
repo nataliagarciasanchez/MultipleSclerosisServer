@@ -8,7 +8,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Date;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 
 /**
@@ -22,18 +23,25 @@ public class TXTUtils {
         // Crear el directorio si no existe
         createDirectoryIfNotExists(FOLDER_PATH);
         String patientNoSpaces = patientName.replaceAll("\\s+", "");
+        
+        // Format the date and time for the file name and monitoring
+        SimpleDateFormat fileDateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        SimpleDateFormat monitoringDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDateForFile = fileDateFormat.format(date);
+        String formattedDateForMonitoring = monitoringDateFormat.format(date);
+        
         // Nombre del archivo TXT
-        String fileName = FOLDER_PATH + "/" + patientNoSpaces + "_" + date.toString() + "_monitoring.txt";
+        String fileName = FOLDER_PATH + "/" + patientNoSpaces + "_" + formattedDateForFile + "_monitoring.txt";
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
             // Escribir los datos como una línea nueva
             writer.write("Patient Name: " + patientName);
             writer.newLine();
-            writer.write("Date and Time: " + date.toString());
+            writer.write("Date and Time of Monitoring: " + formattedDateForMonitoring);
             writer.newLine();
             writer.write("-------------------------------");
             writer.newLine();
-            writer.write(physiologicalData);
+            writer.write("Physiological Data: " + physiologicalData);
 
             System.out.println("Data saved to file: " + fileName);
         } catch (IOException e) {
@@ -49,15 +57,16 @@ public class TXTUtils {
     }
     
     
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
         
         String patientName = "Andrea Martinez Palacios";
         String physiologicalData = "123/456/789";
         
-        Date date = java.sql.Date.valueOf("2024-12-06");
+        // Example date and time of monitoring
+        Date date = new Date(); // Current date and time
         TXTUtils.saveDataToTXT(patientName, date, physiologicalData);
     
-    }*/
+    }
     
 }
 
