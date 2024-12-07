@@ -39,8 +39,10 @@ public class ServerDoctorCommunication{
     private JDBCDoctorManager doctorManager;
     private JDBCPatientManager patientManager;
     private JDBCFeedbackManager feedbackManager;
+    private final String confirmation = "DoctorServerCommunication";
     private int connectedDoctors = 0;
     private boolean isRunning = true;
+     private boolean authorization;
 
     public ServerDoctorCommunication(int port, JDBCManager jdbcManager) {
         this.port=port;
@@ -186,7 +188,25 @@ public class ServerDoctorCommunication{
                 }
             }
         }
-        
+         
+        private boolean checkAuthorizedConnection(){
+             boolean authorization = false;
+            try{
+                String message = (String) in.readObject();
+                if (!message.equals(confirmation)){ // confirmation message not valid - the one connected is not Doctor
+                    System.out.println("Unauthorized connection.");
+                    System.out.println("Closing connection...");
+                    doctorSocket.close();
+                }else{
+                    System.out.println("Authorized connection.");
+                    authorization = true;
+                }
+            
+            } catch (IOException | ClassNotFoundException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return authorization;
+        }
         /**
          * Registers into database the doctor
          */
