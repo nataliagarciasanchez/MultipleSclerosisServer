@@ -53,8 +53,10 @@ public class ServerPatientCommunication {
     private JDBCReportManager reportManager;
     private JDBCSymptomManager symptomManager;
     private JDBCFeedbackManager feedbackManager;
+    private final String confirmation = "PatientServerCommunication";
     private int connectedPatients = 0;
     private boolean isRunning = true;
+    private boolean authorization;
 
     public ServerPatientCommunication(int port, JDBCManager jdbcManager) {
         this.roleManager = new JDBCRoleManager(jdbcManager);
@@ -80,6 +82,7 @@ public class ServerPatientCommunication {
             while (isRunning) {
                 try {
                     Socket patientSocket = serverSocket.accept();
+                    
                     System.out.println("New patient connected.");
                     System.out.println("Before client connected");
                     clientConnected();
@@ -155,10 +158,12 @@ public class ServerPatientCommunication {
                 out = new ObjectOutputStream(patientSocket.getOutputStream());
                 out.flush();
                 in = new ObjectInputStream(patientSocket.getInputStream());
+                
+                authorization = checkAuthorizedConnection();
 
                 //handlePatientsRequest();
                 boolean running = true;
-                while (running) {
+                while (running && authorization) {
                     try {
                         String action = (String) in.readObject(); // Leer acción del cliente
 
@@ -185,9 +190,7 @@ public class ServerPatientCommunication {
                             case "receiveFeedbacks":
                                 sendFeedback2Patient();
                                 break;
-                            case "obtainAddressandPort":
-                                handleObtainAddressandPort();
-                                break;
+                         
                             default:
                                 out.writeObject("Not recognized action");
                                 break;
@@ -214,25 +217,27 @@ public class ServerPatientCommunication {
             }
         }
         
-        /**
-         * Obtain the address and port of the serverSocket 
-         */
-        private void handleObtainAddressandPort() {
+        
+        private boolean checkAuthorizedConnection(){
+             boolean authorization = false;
             try{
-            //NO ESTOY SEGURA DEL IPADDRESS
-            String IpAddress=serverSocket.getInetAddress().getHostAddress();
-            int portServer=serverSocket.getLocalPort();
-            System.out.println("The server Address is:" +IpAddress+ "The sever Port is:"+port);
-            out.writeObject(IpAddress);
-            out.flush();
-            out.writeObject(portServer);
-            out.flush();
-            }catch (IOException ex) {
+                String message = (String) in.readObject();
+                if (!message.equals(confirmation)){ // confirmation message not valid - the one connected is not Patient
+                    System.out.println("Unauthorized connection.");
+                    System.out.println("Closing connection...");
+                    patientSocket.close();
+                }else{
+                    System.out.println("Authorized connection.");
+                    authorization = true;
+                }
+            
+            } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
         
-
+        return authorization;
+        }
+         
         /**
          * Registers into database the patient
          */
