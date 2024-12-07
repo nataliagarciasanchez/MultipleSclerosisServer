@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -92,9 +94,9 @@ public class JDBCManagerTest {
         
         //Verify disconnected
         try {
-            assertTrue(connection.isClosed(), "La conexión debería estar cerrada.");
+            assertTrue(connection.isClosed(), "Connection should be closed.");
         } catch (SQLException e) {
-            fail("Error al verificar si la conexión está cerrada: " + e.getMessage());
+            fail("Error while verifying if connection is closed: " + e.getMessage());
         }
     }
     
@@ -108,18 +110,34 @@ public class JDBCManagerTest {
         try (Statement stmt = jdbcManager.getConnection().createStatement();
              ResultSet rs = stmt.executeQuery("SELECT name FROM sqlite_master WHERE type='table'")) {
 
-            boolean hasRoles = false, hasUsers = false, hasDoctors = false;
+            boolean hasRoles = false, hasUsers = false, hasPatients = false,  hasDoctors = false;
+            boolean hasAdministrators = false, hasReports = false, hasSymptoms = false;
+            boolean hasBitalinos = false, hasReport_Bitalinos = false, hasFeedbacks = false;
 
             while (rs.next()) {
                 String tableName = rs.getString("name");
                 if ("Roles".equalsIgnoreCase(tableName)) hasRoles = true;
                 if ("Users".equalsIgnoreCase(tableName)) hasUsers = true;
+                if ("Patients".equalsIgnoreCase(tableName)) hasPatients = true;
                 if ("Doctors".equalsIgnoreCase(tableName)) hasDoctors = true;
+                if ("Administrators".equalsIgnoreCase(tableName)) hasAdministrators = true;
+                if ("Reports".equalsIgnoreCase(tableName)) hasReports = true;
+                if ("Symptoms".equalsIgnoreCase(tableName)) hasSymptoms = true;
+                if ("Bitalinos".equalsIgnoreCase(tableName)) hasBitalinos = true;
+                if ("Report_Symptoms".equalsIgnoreCase(tableName)) hasReport_Bitalinos = true;
+                if ("Feedbacks".equalsIgnoreCase(tableName)) hasFeedbacks = true;
             }
 
-            assertTrue(hasRoles, "La tabla Roles debería existir.");
-            assertTrue(hasUsers, "La tabla Users debería existir.");
-            assertTrue(hasDoctors, "La tabla Doctors debería existir.");
+            assertTrue(hasRoles, "The table Roles should exist.");
+            assertTrue(hasUsers, "The table Users should exist.");
+            assertTrue(hasPatients, "The table Patients should exist.");
+            assertTrue(hasDoctors, "The table Doctors should exist.");
+            assertTrue(hasAdministrators, "The table Administrators should exist.");
+            assertTrue(hasReports, "The table Reports should exist.");
+            assertTrue(hasSymptoms, "The table Symptoms should exist.");
+            assertTrue(hasBitalinos, "The table Bitalinos should exist.");
+            assertTrue(hasReport_Bitalinos, "The table Report_Symptoms should exist.");
+            assertTrue(hasFeedbacks, "The table Feedbacks should exist.");
 
         } catch (SQLException e) {
             fail("Error al verificar las tablas: " + e.getMessage());
@@ -142,11 +160,11 @@ public class JDBCManagerTest {
             while (rs.next()) {
                 count++;
                 String roleName = rs.getString("name");
-                assertTrue(roleName.equals("patient") || roleName.equals("doctor"),
-                           "El rol debería ser 'patient' o 'doctor'.");
+                assertTrue(roleName.equals("patient") || roleName.equals("doctor") || roleName.equals("administrator"),
+                           "Role should be 'administor', 'doctor' or 'patient'," );
             }
 
-            assertEquals(2, count, "Debería haber exactamente 2 roles insertados.");
+            assertEquals(3, count, "Debería haber exactamente 2 roles insertados.");
 
         } catch (SQLException e) {
             fail("Error al verificar los roles: " + e.getMessage());
@@ -156,31 +174,37 @@ public class JDBCManagerTest {
     /**
      * Test del método clearAllTables de la clase JDBCManager.
      */
-   /* @Test
-    public void testClearAllTables() {
-        System.out.println("clearAllTables");
+    @Test
+public void testClearAllTables() {
+    System.out.println("clearAllTables");
 
-        // Insertar roles y doctores para probar la limpieza
-        jdbcManager.insertRoles();
-        jdbcManager.insertDoctor();
+    // Insertar roles y doctores para probar la limpieza
+    jdbcManager.insertRoles();
+    jdbcManager.insertDoctor();
+    jdbcManager.insertAdministrator();
+    jdbcManager.insertSymptoms();
 
-        // Limpiar las tablas
-        jdbcManager.clearAllTables();
+    // Limpiar las tablas
+    jdbcManager.clearAllTables();
 
-        try (Statement stmt = jdbcManager.getConnection().createStatement();
-             ResultSet rsRoles = stmt.executeQuery("SELECT COUNT(*) AS count FROM Roles");
-             ResultSet rsDoctors = stmt.executeQuery("SELECT COUNT(*) AS count FROM Doctors")) {
+    // Lista de tablas a verificar
+    List<String> tables = Arrays.asList("Roles", "Users", "Doctors", "Patients", "Administrators", "Reports", "Symptoms", "Bitalinos", "Report_Symptoms", "Feedbacks");
 
-            rsRoles.next();
-            int rolesCount = rsRoles.getInt("count");
-            assertEquals(0, rolesCount, "La tabla Roles debería estar vacía.");
-
-            rsDoctors.next();
-            int doctorsCount = rsDoctors.getInt("count");
-            assertEquals(0, doctorsCount, "La tabla Doctors debería estar vacía.");
-
-        } catch (SQLException e) {
-            fail("Error al verificar el estado de las tablas: " + e.getMessage());
+    try (Connection connection = jdbcManager.getConnection();
+         Statement stmt = connection.createStatement()) {
+        
+        // Iterar sobre cada tabla y verificar que esté vacía
+        for (String table : tables) {
+            String query = "SELECT COUNT(*) AS count FROM " + table;
+            try (ResultSet rs = stmt.executeQuery(query)) {
+                rs.next();
+                int count = rs.getInt("count");
+                assertEquals(0, count, "The " + table + " table should be empty after clearing.");
+            }
         }
-    }*/
+    } catch (SQLException e) {
+        fail("Error while verifying the state of the tables: " + e.getMessage());
+    }
+}
+
 }
