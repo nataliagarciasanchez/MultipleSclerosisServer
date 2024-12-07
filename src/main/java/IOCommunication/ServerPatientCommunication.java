@@ -33,6 +33,7 @@ import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import TXT.TXTUtils;
+import java.net.InetAddress;
 import java.sql.Date;
 
 /**
@@ -184,6 +185,9 @@ public class ServerPatientCommunication {
                             case "receiveFeedbacks":
                                 sendFeedback2Patient();
                                 break;
+                            case "obtainAddressandPort":
+                                handleObtainAddressandPort();
+                                break;
                             default:
                                 out.writeObject("Not recognized action");
                                 break;
@@ -209,6 +213,23 @@ public class ServerPatientCommunication {
                 }
             }
         }
+        
+        /**
+         * Obtain the address and port of the serverSocket 
+         */
+        private void handleObtainAddressandPort() {
+            try{
+            //NO ESTOY SEGURA DEL IPADDRESS
+            String IpAddress=serverSocket.getInetAddress().getHostAddress();
+            int portServer=serverSocket.getLocalPort();
+            System.out.println("The server Address is:" +IpAddress+ "The sever Port is:"+port);
+            out.writeObject(IpAddress);
+            out.writeObject(portServer);
+            }catch (IOException ex) {
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
 
         /**
          * Registers into database the patient
