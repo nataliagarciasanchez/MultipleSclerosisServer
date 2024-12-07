@@ -224,7 +224,9 @@ public class ServerPatientCommunication {
             int portServer=serverSocket.getLocalPort();
             System.out.println("The server Address is:" +IpAddress+ "The sever Port is:"+port);
             out.writeObject(IpAddress);
+            out.flush();
             out.writeObject(portServer);
+            out.flush();
             }catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
