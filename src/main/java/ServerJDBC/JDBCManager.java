@@ -289,8 +289,8 @@ public class JDBCManager {
             
             if (rowCount == 0) {
                 // Inserción del primer usuario
-                String insertUserDoc1 = "INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
-                PreparedStatement p = c.prepareStatement(insertUserDoc1, Statement.RETURN_GENERATED_KEYS);
+                String insertUserAdmin = "INSERT INTO Users (email, password, role_id) VALUES (?, ?, ?)";
+                PreparedStatement p = c.prepareStatement(insertUserAdmin, Statement.RETURN_GENERATED_KEYS);
                 p.setString(1, "administrator@multipleSclerosis.com");
                 String hashedPassword = PasswordEncryption.hashPassword("Password123");
                 p.setString(2, hashedPassword);
@@ -416,27 +416,28 @@ public class JDBCManager {
     
     public void clearAllTables() {
         try {
-            Statement statement = c.createStatement();
-            // Desactiva las restricciones de clave foránea temporalmente
-            statement.execute("PRAGMA foreign_keys = OFF");
+            
+            try (Statement statement = c.createStatement();
+                 Statement deleteStatement = c.createStatement()) {
+                 statement.execute("PRAGMA foreign_keys = OFF");
 
-            // Obtiene una lista de todas las tablas en la base de datos
-            ResultSet rs = statement.executeQuery("SELECT name FROM sqlite_master WHERE type='table';");
-            while (rs.next()) {
-                String tableName = rs.getString("name");
-                
-                if (!tableName.equals("sqlite_sequence")) { // Evitar la tabla interna que gestiona los IDs autoincrementales
-                    //System.out.println("Clearing table: " + tableName);
-                    statement.executeUpdate("DELETE FROM " + tableName);
+                // Obtiene todas las tablas excepto las internas
+                ResultSet rs = statement.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name != 'sqlite_sequence';");
+                while (rs.next()) {
+                    String tableName = rs.getString("name");
+                    
+                    System.out.println("Clearing table: " + tableName);
+                    deleteStatement.executeUpdate("DELETE FROM \"" + tableName + "\"");
                 }
+                
+                statement.executeUpdate("DELETE FROM sqlite_sequence");
+  
+                statement.execute("PRAGMA foreign_keys = ON");
             }
-
-            // Reactiva las restricciones de clave foránea
-            statement.execute("PRAGMA foreign_keys = ON");
-            statement.close();
             System.out.println("\nAll tables cleared!");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 }
