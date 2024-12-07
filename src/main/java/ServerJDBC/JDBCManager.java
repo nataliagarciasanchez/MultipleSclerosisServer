@@ -185,6 +185,18 @@ public class JDBCManager {
                 + ");";
             
             stmt.executeUpdate(create_table_feedbacks);
+            
+            String create_table_files = "CREATE TABLE IF NOT EXISTS Files ("
+                + "     id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "     file_name TEXT NOT NULL, "
+                + "     file_data BLOB NOT NULL, "
+                + "     date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+                + "     bitalino_id INTEGER NOT NULL, "
+                + "     FOREIGN KEY (bitalino_id) REFERENCES Bitalinos(id) ON DELETE CASCADE"
+                + ");";
+            
+            stmt.executeUpdate(create_table_files);
+            
             //System.out.println("\nFeedbacks table created");
             stmt.close();
             System.out.println("\nTables created!");

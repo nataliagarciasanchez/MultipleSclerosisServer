@@ -1,0 +1,4 @@
+Patient Name: Andrea Martinez Palacios
+Date and Time of Monitoring: 2024-12-07 15:02:20
+-------------------------------
+Physiological Data: 123/456/789

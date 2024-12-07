@@ -34,7 +34,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import TXT.TXTUtils;
 import java.net.InetAddress;
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.SQLException;
 
 /**
  * Class used to test all the method in the communication
@@ -82,7 +84,7 @@ public class ServerPatientCommunication {
             while (isRunning) {
                 try {
                     Socket patientSocket = serverSocket.accept();
-                    
+
                     System.out.println("New patient connected.");
                     System.out.println("Before client connected");
                     clientConnected();
@@ -158,7 +160,7 @@ public class ServerPatientCommunication {
                 out = new ObjectOutputStream(patientSocket.getOutputStream());
                 out.flush();
                 in = new ObjectInputStream(patientSocket.getInputStream());
-                
+
                 authorization = checkAuthorizedConnection();
 
                 //handlePatientsRequest();
@@ -190,7 +192,7 @@ public class ServerPatientCommunication {
                             case "receiveFeedbacks":
                                 sendFeedback2Patient();
                                 break;
-                         
+
                             default:
                                 out.writeObject("Not recognized action");
                                 break;
@@ -216,28 +218,27 @@ public class ServerPatientCommunication {
                 }
             }
         }
-        
-        
-        private boolean checkAuthorizedConnection(){
-             boolean authorization = false;
-            try{
+
+        private boolean checkAuthorizedConnection() {
+            boolean authorization = false;
+            try {
                 String message = (String) in.readObject();
-                if (!message.equals(confirmation)){ // confirmation message not valid - the one connected is not Patient
+                if (!message.equals(confirmation)) { // confirmation message not valid - the one connected is not Patient
                     System.out.println("Unauthorized connection.");
                     System.out.println("Closing connection...");
                     patientSocket.close();
-                }else{
+                } else {
                     System.out.println("Authorized connection.");
                     authorization = true;
                 }
-            
+
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
-        
-        return authorization;
+
+            return authorization;
         }
-         
+
         /**
          * Registers into database the patient
          */
@@ -355,33 +356,37 @@ public class ServerPatientCommunication {
          *
          * @return report
          */
-        private void handleReport() {
+        private void handleReport() throws SQLException {
 
             try {
                 Report report = (Report) in.readObject();
                 //System.out.println("Report: "+report);
                 reportManager.createReport(report);
                 out.writeObject("Report received correctly.");
-                
+
                 String patientName = report.getPatient().getName();
                 int report_id = report.getId();
                 Date date = report.getDate();
-                List <Bitalino> bitalinos = report.getBitalinos();
-                
+                List<Bitalino> bitalinos = report.getBitalinos();
+
                 StringBuilder allSignalValues = new StringBuilder();
                 allSignalValues.append("Bitalino Signal Values:\n");
-                
+
                 for (Bitalino bitalino : bitalinos) {
                     String signalValues = bitalino.getSignalValues();
                     allSignalValues.append("Signal ").append(bitalino.getSignal_type().toString()).append(": ").append(signalValues).append("\n");
                     allSignalValues.append("-------------------------------");
                 }
-                
+
                 //String signalValues = report.getBitalinos().get(0).getSignalValues(); // Ejemplo con el primer Bitalino
                 //String signalValuesECG = report.getBitalinos().get(1).getSignalValues();
                 // Guardar los datos en un archivo TXT
-                TXTUtils.saveDataToTXT(report_id, patientName, date, allSignalValues.toString());
+                String filePath = TXTUtils.saveDataToTXT(report_id, patientName, date, allSignalValues.toString());
                 //TXTUtils.saveDataToTXT(patientName, date, signalValuesECG);
+
+                // Insertar el archivo TXT en la base de datos como BLOB
+                Connection connection =reportManager.; // Obtén la conexión a la base de datos
+                TXTUtils.saveFileToDatabase(report_id, filePath, connection);
 
             } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
