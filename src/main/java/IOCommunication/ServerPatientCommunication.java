@@ -300,8 +300,8 @@ public class ServerPatientCommunication {
          */
         private void handleLogout() {
             try {
-                releaseResourcesPatient(in, out, patientSocket);
                 out.writeObject("Connection closed. ");
+                releaseResourcesPatient(in, out, patientSocket);
             } catch (IOException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
