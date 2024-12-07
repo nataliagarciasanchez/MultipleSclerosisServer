@@ -138,6 +138,7 @@ public class ServerDoctorCommunication{
                 in = new ObjectInputStream(doctorSocket.getInputStream());
                 out = new ObjectOutputStream(doctorSocket.getOutputStream());
                 out.flush();
+                authorization = checkAuthorizedConnection();
                 //handleDoctorsRequest();
                 boolean running = true;
             while(running){
@@ -203,7 +204,7 @@ public class ServerDoctorCommunication{
                 }
             
             } catch (IOException | ClassNotFoundException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
             return authorization;
         }
