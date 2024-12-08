@@ -50,16 +50,16 @@ public class ServerPatientCommunication {
 
     private ServerSocket serverSocket;
     private final int port;
-    private JDBCUserManager userManager;
-    private JDBCRoleManager roleManager;
-    private JDBCPatientManager patientManager;
-    private JDBCDoctorManager doctorManager;
-    private JDBCBitalinoManager bitalinoManager;
-    private JDBCReportManager reportManager;
-    private JDBCSymptomManager symptomManager;
+    private final JDBCUserManager userManager;
+    private final JDBCRoleManager roleManager;
+    private final JDBCPatientManager patientManager;
+    private final JDBCDoctorManager doctorManager;
+    private final JDBCBitalinoManager bitalinoManager;
+    private final JDBCReportManager reportManager;
+    private final JDBCSymptomManager symptomManager;
     private JDBCFeedbackManager feedbackManager;
-    private JDBCReport_SymptomsManager reportSymptomsManager;
-    private JDBCFilesManager fileManager;
+    private final JDBCReport_SymptomsManager reportSymptomsManager;
+    private final JDBCFilesManager fileManager;
     private final String confirmation = "PatientServerCommunication";
     private int connectedPatients = 0;
     private boolean isRunning = true;
