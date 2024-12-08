@@ -6,6 +6,7 @@ package ServerJDBC;
 import POJOs.Gender;
 import POJOs.SignalType;
 import Security.PasswordEncryption;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -30,7 +31,8 @@ public class JDBCManager {
         try {
             if (c == null || c.isClosed()) {
                 Class.forName("org.sqlite.JDBC");
-                String dbPath = "db/MultipleSclerosisServer.db"; 
+                //String dbPath = "db/MultipleSclerosisServer.db"; 
+                String dbPath=Paths.get("db", "MultipleSclerosisServer.db").toAbsolutePath().toString();
                 c = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
                 c.createStatement().execute("PRAGMA foreign_keys=ON");
                 System.out.println("Database connection opened.");
