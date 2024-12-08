@@ -6,9 +6,11 @@ package ServerJDBC;
 
 import POJOs.*;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.sql.Blob;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -20,6 +22,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
 
 /**
  *
@@ -44,6 +48,7 @@ public class JDBCFilesManagerTest {
     private static Doctor d;
     private static Patient p;
     private static Report r;
+    private static int bemg_id;
 
     @BeforeAll
     public static void setUpClass() {
@@ -123,6 +128,7 @@ public class JDBCFilesManagerTest {
         String signalValues = "123\n456\n789";
         bemg = new Bitalino(recorded,SignalType.EMG, signalValues, r);
         bitalinoManager.saveBitalino(bemg);
+        bemg_id = bemg.getId();
         System.out.println(bemg.toString());
 
         becg = new Bitalino(recorded, SignalType.ECG, signalValues, r);
@@ -141,60 +147,28 @@ public class JDBCFilesManagerTest {
     @Test
     public void testCreateFile() {
         System.out.println("createFile");
-        try {
-            // Crear un archivo temporal de prueba
-            java.io.File tempFile = java.io.File.createTempFile("test_file", ".txt");
-            try (FileWriter writer = new FileWriter(tempFile)) {
-                writer.write("This is a test file content.");
+        
+        File testFile = new File("test_file.txt");
+        try{
+            String fileContent = "This is a test file.";
+            Files.writeString(testFile.toPath(), fileContent);
+            
+            filesManager.createFile(testFile, bemg.getId(), becg.getId());
+            String sql = "SELECT file_name, file_data FROM Files where file_name = ?";
+            try(PreparedStatement p = jdbcManager.getConnection().prepareStatement(sql)){
+                p.setString(1, testFile.getName());
+                
+                ResultSet rs = p.executeQuery();
+                String fetchedFileName = rs.getString("file_name");
+                byte [] fetchedData = rs.getBytes("file_data");
+                assertEquals(testFile.getName(), fetchedFileName, "Names should match");
+                assertArrayEquals(Files.readAllBytes(testFile.toPath()), fetchedData, "Content should match.");
+                rs.close();
             }
-
-            // Guardar el archivo en la base de datos
-            filesManager.createFile(tempFile, bemg.getId(), becg.getId());
-
-            // Verificar que el archivo se ha almacenado en la base de datos
-            String query = "SELECT COUNT(*) FROM Files WHERE file_name = ?";
-            PreparedStatement ps = jdbcManager.getConnection().prepareStatement(query);
-            ps.setString(1, tempFile.getName());
-            ResultSet rs = ps.executeQuery();
-
-            // Validar que se encontró el archivo
-            assertTrue(rs.next());
-            int fileCount = rs.getInt(1);
-            assertEquals(1, fileCount, "El archivo no fue insertado en la base de datos.");
-
-            rs.close();
-            ps.close();
-
-            // Recuperar y verificar los datos del archivo almacenado
-            query = "SELECT file_data FROM Files WHERE file_name = ?";
-            ps = jdbcManager.getConnection().prepareStatement(query);
-            ps.setString(1, tempFile.getName());
-            rs = ps.executeQuery();
-
-            assertTrue(rs.next());
-            Blob fileBlob = rs.getBlob("file_data");
-            assertNotNull(fileBlob, "El archivo almacenado en la base de datos es nulo.");
-
-            // Leer el contenido del archivo desde el BLOB
-            StringBuilder fileContent = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(fileBlob.getBinaryStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    fileContent.append(line);
-                }
-            }
-            assertEquals("This is a test file content.", fileContent.toString(), "El contenido del archivo no coincide.");
-
-            rs.close();
-            ps.close();
-
-            // Eliminar el archivo temporal
-            tempFile.deleteOnExit();
-
-        } catch (IOException | SQLException e) {
-            e.printStackTrace();
-            fail("No se pudo ejecutar la prueba testCreateFile.");
+        }catch(Exception e ){
+            fail("Test failed: " + e.getMessage());
         }
+        
+        
     }
-
 }

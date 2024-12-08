@@ -38,15 +38,20 @@ public class JDBCFilesManager implements FileManager{
      * Creates a new file entry in the database.
      *
      * @param file the file object containing the data to be inserted.
+     * @param bitalinoEMG_id
+     * @param bitalinoECG_id
      */
     @Override
     public void createFile(File file, int bitalinoEMG_id, int bitalinoECG_id) {
-        try{
-        FileInputStream fis = new FileInputStream(file);   
         String sql = "INSERT INTO Files (file_name, file_data, date_time, bitalinoEMG_id, bitalinoECG_id) VALUES (?, ?, CURRENT_TIMESTAMP, ?, ?)";
-        PreparedStatement p = manager.getConnection().prepareStatement(sql);
+       try (PreparedStatement p = manager.getConnection().prepareStatement(sql);
+        FileInputStream fis = new FileInputStream(file)){
+           
+        //String sql = "INSERT INTO Files (file_name, file_data, date_time, bitalinoEMG_id, bitalinoECG_id) VALUES (?, ?, CURRENT_TIMESTAMP, ?, ?)";
+        //PreparedStatement p = manager.getConnection().prepareStatement(sql);
+        //FileInputStream fis = new FileInputStream(file);
         p.setString(1,file.getName());
-        p.setBlob(2, fis);
+        p.setBinaryStream(2, fis, (int) file.length());
         p.setInt(3, bitalinoEMG_id);
         p.setInt(4,bitalinoECG_id);
        
@@ -54,7 +59,11 @@ public class JDBCFilesManager implements FileManager{
         p.close();
 
         } catch (SQLException e) {
+            e.printStackTrace(); // O utiliza un logger para registrar la excepción
+            throw new RuntimeException("Database error: " + e.getMessage(), e);
         } catch (FileNotFoundException ex) {
+            Logger.getLogger(JDBCFilesManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(JDBCFilesManager.class.getName()).log(Level.SEVERE, null, ex);
         }
 
