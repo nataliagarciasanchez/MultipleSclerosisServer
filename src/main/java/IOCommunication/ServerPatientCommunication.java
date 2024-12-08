@@ -15,9 +15,11 @@ import POJOs.User;
 import ServerJDBC.JDBCBitalinoManager;
 import ServerJDBC.JDBCDoctorManager;
 import ServerJDBC.JDBCFeedbackManager;
+import ServerJDBC.JDBCFilesManager;
 import ServerJDBC.JDBCManager;
 import ServerJDBC.JDBCPatientManager;
 import ServerJDBC.JDBCReportManager;
+import ServerJDBC.JDBCReport_SymptomsManager;
 import ServerJDBC.JDBCRoleManager;
 import ServerJDBC.JDBCSymptomManager;
 import ServerJDBC.JDBCUserManager;
@@ -33,6 +35,7 @@ import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import TXT.TXTUtils;
+import java.io.File;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.Date;
@@ -55,6 +58,8 @@ public class ServerPatientCommunication {
     private JDBCReportManager reportManager;
     private JDBCSymptomManager symptomManager;
     private JDBCFeedbackManager feedbackManager;
+    private JDBCReport_SymptomsManager reportSymptomsManager;
+    private JDBCFilesManager fileManager;
     private final String confirmation = "PatientServerCommunication";
     private int connectedPatients = 0;
     private boolean isRunning = true;
@@ -68,6 +73,8 @@ public class ServerPatientCommunication {
         this.bitalinoManager = new JDBCBitalinoManager(jdbcManager);
         this.reportManager = new JDBCReportManager(jdbcManager);
         this.symptomManager = new JDBCSymptomManager(jdbcManager);
+        this.reportSymptomsManager=new JDBCReport_SymptomsManager(jdbcManager);
+        this.fileManager=new JDBCFilesManager(jdbcManager);
         this.port = port;
     }
 
@@ -259,13 +266,6 @@ public class ServerPatientCommunication {
                 }
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (Exception exc) {
-                try {
-                    out.writeObject("Error during registration: " + exc.getMessage());
-                    out.flush();
-                } catch (IOException ex) {
-                    Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-                }
             }
         }
 
@@ -356,41 +356,28 @@ public class ServerPatientCommunication {
          *
          * @return report
          */
-        private void handleReport() throws SQLException {
+        private void handleReport(){
 
             try {
                 Report report = (Report) in.readObject();
                 //System.out.println("Report: "+report);
                 reportManager.createReport(report);
                 out.writeObject("Report received correctly.");
+                saveBitalinos(report);
+                List<Symptom> symptoms=report.getSymptoms();
 
-                String patientName = report.getPatient().getName();
-                int report_id = report.getId();
-                Date date = report.getDate();
-                List<Bitalino> bitalinos = report.getBitalinos();
-
-                StringBuilder allSignalValues = new StringBuilder();
-                allSignalValues.append("Bitalino Signal Values:\n");
-
-                for (Bitalino bitalino : bitalinos) {
-                    String signalValues = bitalino.getSignalValues();
-                    allSignalValues.append("Signal ").append(bitalino.getSignal_type().toString()).append(": ").append(signalValues).append("\n");
-                    allSignalValues.append("-------------------------------");
+                for(Symptom symptom: symptoms){
+                    int symptom_id=symptom.getId();
+                    reportSymptomsManager.addSymptomToReport(symptom_id, report.getId());
                 }
+                String patientName = report.getPatient().getName();
+                Date date = report.getDate();
+                List <Bitalino> bitalinos = report.getBitalinos();
+                
+                saveBitalinos2Txt(patientName,bitalinos,date);
 
-                //String signalValues = report.getBitalinos().get(0).getSignalValues(); // Ejemplo con el primer Bitalino
-                //String signalValuesECG = report.getBitalinos().get(1).getSignalValues();
-                // Guardar los datos en un archivo TXT
-                String filePath = TXTUtils.saveDataToTXT(report_id, patientName, date, allSignalValues.toString());
-                //TXTUtils.saveDataToTXT(patientName, date, signalValuesECG);
 
-                // Insertar el archivo TXT en la base de datos como BLOB
-                Connection connection =reportManager.; // Obtén la conexión a la base de datos
-                TXTUtils.saveFileToDatabase(report_id, filePath, connection);
-
-            } catch (IOException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
+            } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
 
@@ -412,6 +399,29 @@ public class ServerPatientCommunication {
             Bitalino bitalinoECG = bitalinos.get(1);
             bitalinoManager.saveBitalino(bitalinoEMG);
             bitalinoManager.saveBitalino(bitalinoECG);
+        }
+        
+        /**
+         * Saves the bitalinos recorded physiological parameters (EMG, ECG) in a txt file 
+         * @param patientName
+         * @param bitalinos
+         * @param date 
+         */
+        private void saveBitalinos2Txt(String patientName,List<Bitalino> bitalinos, Date date){
+            StringBuilder allSignalValues = new StringBuilder();
+            allSignalValues.append("Bitalino Signal Values:\n");
+                Bitalino bitalinoEMG = bitalinos.get(0);
+                Bitalino bitalinoECG = bitalinos.get(1);
+                
+                for (Bitalino bitalino : bitalinos) {
+                    String signalValues = bitalino.getSignalValues();
+                    allSignalValues.append("Signal ").append(bitalino.getSignal_type().toString()).append(": ").append(signalValues).append("\n");
+                    allSignalValues.append("-------------------------------");
+                }
+                
+                 // Insertar el archivo TXT en la base de datos como BLOB
+                File file=TXTUtils.saveDataToTXT(patientName, date, allSignalValues.toString());
+                fileManager.createFile(file, bitalinoEMG.getId(),bitalinoECG.getId());      
         }
 
         //sends all the feedbacks to the patient

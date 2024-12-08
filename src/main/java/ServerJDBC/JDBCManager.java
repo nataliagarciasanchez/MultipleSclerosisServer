@@ -191,7 +191,8 @@ public class JDBCManager {
                 + "     file_name TEXT NOT NULL, "
                 + "     file_data BLOB NOT NULL, "
                 + "     date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
-                + "     bitalino_id INTEGER NOT NULL, "
+                + "     bitalinoEMG_id INTEGER NOT NULL, "
+                + "     bitalinoECG_id INTEGER NOT NULL, "
                 + "     FOREIGN KEY (bitalino_id) REFERENCES Bitalinos(id) ON DELETE CASCADE"
                 + ");";
             

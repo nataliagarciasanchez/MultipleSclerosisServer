@@ -45,7 +45,7 @@ public class TXTUtilsTest {
      * Test of saveDataToTXT method, of class TXTUtils.
      */
     @Test
-    public void testSaveDataToTXT() {
+    public File testSaveDataToTXT() {
         System.out.println("saveDataToTXT");
         
         int report_id = 1;
@@ -58,24 +58,23 @@ public class TXTUtilsTest {
         String formattedDateForMonitoring = monitoringDateFormat.format(date);
         
         
-        TXTUtils.saveDataToTXT(report_id, patientName, date, physiologicalData);
+        File file1=TXTUtils.saveDataToTXT(patientName, date, physiologicalData);
         
         //expected name
         String patientNoSpaces = patientName.replaceAll("\\s+", "");
         String expectedFileName = "TXT/" + report_id + "_" + patientNoSpaces + "_" + formattedDateForFile + "_monitoring.txt";
         System.out.println(expectedFileName);
-        File file = new File(expectedFileName);
-        System.out.println("Ruta: " + file.getAbsolutePath());
-        System.out.println("Existe: " + file.exists());
+        File file2 = new File(expectedFileName);
+        System.out.println("Ruta: " + file2.getAbsolutePath());
+        System.out.println("Existe: " + file2.exists());
         
         // verify that the file was created
-        assertTrue(() -> file.exists(), "El archivo no fue creado");
+        assertTrue(() -> file2.exists(), "El archivo no fue creado");
 
         // Verificar el contenido del archivo
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file2))) {
             String line1 = reader.readLine();
             String line2 = reader.readLine();
-            String line3 = reader.readLine();
             String line4 = reader.readLine();
 
             assertEquals("Patient Name: " + patientName, line1);
@@ -87,8 +86,8 @@ public class TXTUtilsTest {
         }
 
         //deleting file after test
-        file.delete();
-        
+        file2.delete();
+        return file1;
     }
 
     
