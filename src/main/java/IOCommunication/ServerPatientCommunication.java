@@ -419,16 +419,16 @@ public class ServerPatientCommunication {
                 fileManager.createFile(file, bitalinoEMG.getId(),bitalinoECG.getId());      
         }
 
-        //sends all the feedbacks to the patient
+        /**
+         * Retrieves all feedbacks of that patient from the database 
+         */
         public void sendFeedback2Patient() {
             try {
                 int patient_id = (int) in.readObject();
                 List<Feedback> feedbacks = feedbackManager.getListOfFeedbacksOfPatient(patient_id);
                 out.writeObject(feedbacks);
                 System.out.println(in.readObject());//confirmation from patient that the feedback has been sent
-            } catch (IOException ex) {
-                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
+            } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
