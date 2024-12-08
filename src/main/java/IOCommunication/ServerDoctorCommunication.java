@@ -33,16 +33,15 @@ import java.util.ListIterator;
 public class ServerDoctorCommunication{
     
     private ServerSocket serverSocket;
-    private int port;
-    private JDBCUserManager userManager;
-    private JDBCRoleManager roleManager;
-    private JDBCDoctorManager doctorManager;
-    private JDBCPatientManager patientManager;
-    private JDBCFeedbackManager feedbackManager;
+    private final int port;
+    private final JDBCUserManager userManager;
+    private final JDBCRoleManager roleManager;
+    private final JDBCDoctorManager doctorManager;
+    private final JDBCPatientManager patientManager;
+    private final JDBCFeedbackManager feedbackManager;
     private final String confirmation = "DoctorServerCommunication";
     private int connectedDoctors = 0;
     private boolean isRunning = true;
-     private boolean authorization;
 
     public ServerDoctorCommunication(int port, JDBCManager jdbcManager) {
         this.port=port;
@@ -138,7 +137,7 @@ public class ServerDoctorCommunication{
                 in = new ObjectInputStream(doctorSocket.getInputStream());
                 out = new ObjectOutputStream(doctorSocket.getOutputStream());
                 out.flush();
-                authorization = checkAuthorizedConnection();
+                checkAuthorizedConnection();
                 //handleDoctorsRequest();
                 boolean running = true;
             while(running){
