@@ -193,7 +193,8 @@ public class JDBCManager {
                 + "     date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
                 + "     bitalinoEMG_id INTEGER NOT NULL, "
                 + "     bitalinoECG_id INTEGER NOT NULL, "
-                + "     FOREIGN KEY (bitalino_id) REFERENCES Bitalinos(id) ON DELETE CASCADE"
+                + "     FOREIGN KEY (bitalinoEMG_id) REFERENCES Bitalinos(id) ON DELETE CASCADE,"
+                + "     FOREIGN KEY (bitalinoECG_id) REFERENCES Bitalinos(id) ON DELETE CASCADE"
                 + ");";
             
             stmt.executeUpdate(create_table_files);
