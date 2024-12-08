@@ -24,7 +24,6 @@ import ServerJDBC.JDBCRoleManager;
 import ServerJDBC.JDBCSymptomManager;
 import ServerJDBC.JDBCUserManager;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -36,10 +35,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import TXT.TXTUtils;
 import java.io.File;
-import java.net.InetAddress;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.SQLException;
+
 
 /**
  * Class used to test all the method in the communication

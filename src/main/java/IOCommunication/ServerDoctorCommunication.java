@@ -7,7 +7,6 @@ package IOCommunication;
 import POJOs.Doctor;
 import POJOs.Feedback;
 import POJOs.Patient;
-import POJOs.Report;
 import POJOs.Role;
 import POJOs.User;
 import ServerJDBC.JDBCDoctorManager;
