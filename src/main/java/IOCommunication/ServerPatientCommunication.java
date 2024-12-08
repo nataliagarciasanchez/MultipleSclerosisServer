@@ -391,11 +391,9 @@ public class ServerPatientCommunication {
                 if (bitalino.getReport() == null) {
                     bitalino.setReport(report); // Link the report to the Bitalino
                 }
+                bitalinoManager.saveBitalino(bitalino);
             }
-            Bitalino bitalinoEMG = bitalinos.get(0);
-            Bitalino bitalinoECG = bitalinos.get(1);
-            bitalinoManager.saveBitalino(bitalinoEMG);
-            bitalinoManager.saveBitalino(bitalinoECG);
+            
         }
         
         /**
