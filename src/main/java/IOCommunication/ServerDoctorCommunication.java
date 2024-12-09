@@ -304,18 +304,34 @@ public class ServerDoctorCommunication{
         /**
          * Changes password in the database
          */
-        private void handleUpdateInformation() { //solo puede cambiar la contraseña
+        private void handleUpdateInformation() {
             try {
-               
-                User user=(User) in.readObject();
-                System.out.println("user.getPassword: " + user.getPassword());
-                userManager.updateUser(user);
+
+                User user = (User) in.readObject();
                 Doctor doctor = (Doctor) in.readObject();
+                
+                System.out.println("Procession update request...");
+
+                 // Validar los datos
+                if (user == null || doctor == null) {
+                    out.writeObject("Invalid data received.");
+                    return;
+                }
+
+                // Validar que el paciente esté asociado con el usuario
+                if (!doctor.getUser().getId().equals(user.getId())) {
+                    out.writeObject("Patient and user mismatch.");
+                    return;
+                }
+                
+                userManager.updateUser(user);
                 doctorManager.updateDoctor(doctor);
-                out.writeObject("Information changed correclty");
+                
+                out.writeObject("Information updated successfully.");
+
 
             } catch (IOException | ClassNotFoundException ex) {
-                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
