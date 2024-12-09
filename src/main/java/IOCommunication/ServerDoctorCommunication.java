@@ -15,6 +15,7 @@ import POJOs.User;
 import ServerJDBC.JDBCBitalinoManager;
 import ServerJDBC.JDBCDoctorManager;
 import ServerJDBC.JDBCFeedbackManager;
+import ServerJDBC.JDBCFilesManager;
 import ServerJDBC.JDBCManager;
 import ServerJDBC.JDBCPatientManager;
 import ServerJDBC.JDBCReportManager;
@@ -22,6 +23,7 @@ import ServerJDBC.JDBCReport_SymptomsManager;
 import ServerJDBC.JDBCRoleManager;
 import ServerJDBC.JDBCSymptomManager;
 import ServerJDBC.JDBCUserManager;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -49,6 +51,7 @@ public class ServerDoctorCommunication{
     private final JDBCReport_SymptomsManager rep_sympManager;
     private final JDBCBitalinoManager bitalinoManager;
     private final JDBCFeedbackManager feedbackManager;
+    private final JDBCFilesManager fileManager;
     private final String confirmation = "DoctorServerCommunication";
     private int connectedDoctors = 0;
     private boolean isRunning = true;
@@ -64,6 +67,7 @@ public class ServerDoctorCommunication{
         this.rep_sympManager = new JDBCReport_SymptomsManager(jdbcManager);
         this.bitalinoManager = new JDBCBitalinoManager(jdbcManager);
         this.feedbackManager=new JDBCFeedbackManager(jdbcManager);
+        this.fileManager = new JDBCFilesManager(jdbcManager);
         
     }
     
@@ -175,6 +179,8 @@ public class ServerDoctorCommunication{
                         case "viewPatients":
                             handleViewPatients();
                             break;
+                        case "getSignalsFile":
+                            handleGetSignalsFile();
                         case "sendFeedback":
                             receiveFeedbackFromDoctor();    
                         default:
@@ -353,6 +359,23 @@ public class ServerDoctorCommunication{
         
         }
         
+        private void handleGetSignalsFile(){
+            
+            try{
+            System.out.println("Reaching for file...");
+            Report report = (Report) in.readObject();
+            
+            Integer bitalinoEMG_id = report.getBitalinos().get(0).getId();
+            Integer bitalinoECG_id = report.getBitalinos().get(1).getId();
+            File signalsFile = fileManager.getFileFromBitalinosId(bitalinoEMG_id, bitalinoECG_id);
+            
+            out.writeObject(signalsFile);
+            
+            }catch (IOException | ClassNotFoundException ex) {
+                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
         
         private void receiveFeedbackFromDoctor(){
             boolean sent=false;
@@ -371,6 +394,9 @@ public class ServerDoctorCommunication{
                 Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
             }
             }
+        
+        
+        
         }
         
         

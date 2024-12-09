@@ -8,6 +8,7 @@ import ServerInterfaces.FileManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,7 +43,7 @@ public class JDBCFilesManager implements FileManager{
      * @param bitalinoECG_id
      */
     @Override
-    public void createFile(File file, int bitalinoEMG_id, int bitalinoECG_id) {
+    public void createFile(File file, Integer bitalinoEMG_id, Integer bitalinoECG_id) {
         String sql = "INSERT INTO Files (file_name, file_data, date_time, bitalinoEMG_id, bitalinoECG_id) VALUES (?, ?, CURRENT_TIMESTAMP, ?, ?)";
        try (PreparedStatement p = manager.getConnection().prepareStatement(sql);
         FileInputStream fis = new FileInputStream(file)){
@@ -68,6 +69,41 @@ public class JDBCFilesManager implements FileManager{
         }
 
     }
+    
+   @Override
+    public File getFileFromBitalinosId(Integer bitalinoEMG_id, Integer bitalinoECG_id) {
+        File fileRetrieved = null;
+        String sql = "SELECT file_name, file_data FROM Files WHERE bitalinoEMG_id = ? AND bitalinoECG_id = ?";
+
+        try (PreparedStatement p = manager.getConnection().prepareStatement(sql);) {
+
+            // Establecer los valores de los parámetros
+            p.setInt(1, bitalinoEMG_id);
+            p.setInt(2, bitalinoECG_id);
+
+            try (ResultSet resultSet = p.executeQuery()) {
+                if (resultSet.next()) {
+                    // Obtener los datos del archivo y su nombre
+                    String fileName = resultSet.getString("file_name");
+                    byte[] fileData = resultSet.getBytes("file_data");
+
+                    // Crear un archivo temporal con los datos recuperados
+                    fileRetrieved = File.createTempFile(fileName, null); // null para no añadir una extensión
+                    try (FileOutputStream fos = new FileOutputStream(fileRetrieved)) {
+                        fos.write(fileData);
+                    }
+                }else{
+                    System.out.println("File with bitalinoEMG_id " + bitalinoEMG_id + "and bitalinoECG_id " + bitalinoECG_id + "not found");
+                }
+               
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return fileRetrieved;
+    }
+
 
 
 }

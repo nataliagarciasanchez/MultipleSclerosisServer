@@ -11,5 +11,6 @@ import java.io.File;
  * @author maipa
  */
 public interface FileManager {
-    public void createFile(File file, int bitalinoEMG_id, int bitalinoECG_id);
+    public void createFile(File file, Integer bitalinoEMG_id, Integer bitalinoECG_id);
+    public File getFileFromBitalinosId (Integer bitalinoEMG_id, Integer bitalinoECG_id);
 }
