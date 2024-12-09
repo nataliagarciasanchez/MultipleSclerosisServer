@@ -20,6 +20,7 @@ public interface FeedbackManager {
     public List<Feedback> getFeedBackByDate(Date date);
     public List<Feedback> getListOfFeedbacksOfPatient(Integer patient_id);
     public List<Feedback> getListOfFeedbacksOfDoctor(Integer doctor_id);
+    public Integer getDoctorIdFromFeedback(Integer feedback_id);
     
     
 }

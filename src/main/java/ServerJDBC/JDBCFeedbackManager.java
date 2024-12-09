@@ -239,5 +239,31 @@ public class JDBCFeedbackManager implements FeedbackManager {
         }
         return feedbacks;
     }
+    
+    @Override
+    public Integer getDoctorIdFromFeedback(Integer feedback_id){
+        Integer doctor_id = null;
+        try {
+            String sql = "SELECT doctor_id FROM Feedbacks WHERE id = ?";
+            PreparedStatement stmt = manager.getConnection().prepareStatement(sql);
+            stmt.setInt(1, feedback_id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                doctor_id = rs.getInt("doctor_id");
+            } else {
+                System.out.println("Feedback with ID " + feedback_id + " not found.");
+            }
+
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        
+        
+    return doctor_id;
+    }
 
 }

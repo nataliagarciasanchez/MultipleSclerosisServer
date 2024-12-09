@@ -4,16 +4,23 @@
  */
 package IOCommunication;
 
+import POJOs.Bitalino;
 import POJOs.Doctor;
 import POJOs.Feedback;
 import POJOs.Patient;
+import POJOs.Report;
 import POJOs.Role;
+import POJOs.Symptom;
 import POJOs.User;
+import ServerJDBC.JDBCBitalinoManager;
 import ServerJDBC.JDBCDoctorManager;
 import ServerJDBC.JDBCFeedbackManager;
 import ServerJDBC.JDBCManager;
 import ServerJDBC.JDBCPatientManager;
+import ServerJDBC.JDBCReportManager;
+import ServerJDBC.JDBCReport_SymptomsManager;
 import ServerJDBC.JDBCRoleManager;
+import ServerJDBC.JDBCSymptomManager;
 import ServerJDBC.JDBCUserManager;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -37,6 +44,10 @@ public class ServerDoctorCommunication{
     private final JDBCRoleManager roleManager;
     private final JDBCDoctorManager doctorManager;
     private final JDBCPatientManager patientManager;
+    private final JDBCReportManager reportManager;
+    private final JDBCSymptomManager symptomManager;
+    private final JDBCReport_SymptomsManager rep_sympManager;
+    private final JDBCBitalinoManager bitalinoManager;
     private final JDBCFeedbackManager feedbackManager;
     private final String confirmation = "DoctorServerCommunication";
     private int connectedDoctors = 0;
@@ -48,6 +59,10 @@ public class ServerDoctorCommunication{
         this.userManager = new JDBCUserManager(jdbcManager, roleManager);
         this.doctorManager=new JDBCDoctorManager(jdbcManager);
         this.patientManager = new JDBCPatientManager(jdbcManager);
+        this.reportManager = new JDBCReportManager(jdbcManager);
+        this.symptomManager = new JDBCSymptomManager(jdbcManager);
+        this.rep_sympManager = new JDBCReport_SymptomsManager(jdbcManager);
+        this.bitalinoManager = new JDBCBitalinoManager(jdbcManager);
         this.feedbackManager=new JDBCFeedbackManager(jdbcManager);
         
     }
@@ -306,9 +321,29 @@ public class ServerDoctorCommunication{
                 List <Patient> patientsFromDoctor = patientManager.getPatientsFromDoctor(doctor.getId());
                 
                 System.out.println("Patients retrieved from manager: \n" + patientsFromDoctor);
-                ListIterator it = patientsFromDoctor.listIterator();
+                /*ListIterator it = patientsFromDoctor.listIterator();
                 while(it.hasNext()){
                     System.out.println(it.next());
+                }*/
+                List <Report> reportsFromPatient = null;
+                //List <Integer> symptomsIdFromReport = null;
+                List <Symptom> symptomsFromReport = null;
+                List <Bitalino> bitalinosFromReport = null;
+                
+                for (Patient patient : patientsFromDoctor){
+                    //getting the list of reports from each patient of doctor
+                    reportsFromPatient = reportManager.getReportsFromPatient(patient.getId());
+                    patient.setReports(reportsFromPatient);
+                    for (Report report : reportsFromPatient){
+                        report.setPatient(patient);
+                        //getting the list of symptoms from each report
+                        symptomsFromReport = rep_sympManager.getSymptomsFromReport(report.getId());
+                        report.setSymptom(symptomsFromReport);
+                        //getting the list of bitalinos from each report
+                        bitalinosFromReport = bitalinoManager.getBitalinosOfReport(report.getId());
+                        report.setBitalinos(bitalinosFromReport);
+                        
+                    }
                 }
                 out.writeObject(patientsFromDoctor);
                 out.flush();

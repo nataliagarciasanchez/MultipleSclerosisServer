@@ -71,6 +71,7 @@ public class ServerPatientCommunication {
         this.reportManager = new JDBCReportManager(jdbcManager);
         this.symptomManager = new JDBCSymptomManager(jdbcManager);
         this.reportSymptomsManager=new JDBCReport_SymptomsManager(jdbcManager);
+        this.feedbackManager = new JDBCFeedbackManager(jdbcManager);
         this.fileManager=new JDBCFilesManager(jdbcManager);
         this.port = port;
     }
@@ -426,6 +427,10 @@ public class ServerPatientCommunication {
             try {
                 int patient_id = (int) in.readObject();
                 List<Feedback> feedbacks = feedbackManager.getListOfFeedbacksOfPatient(patient_id);
+                for (Feedback feedback : feedbacks){
+                    int doctor_id = feedbackManager.getDoctorIdFromFeedback(feedback.getId());
+                    feedback.setDoctor(doctorManager.getDoctorById(doctor_id));
+                }
                 out.writeObject(feedbacks);
                 System.out.println(in.readObject());//confirmation from patient that the feedback has been sent
             } catch (IOException | ClassNotFoundException ex) {
