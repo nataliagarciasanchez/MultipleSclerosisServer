@@ -23,9 +23,9 @@
         </dependency>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
-    	    <artifactId>pdfbox</artifactId>
+            <artifactId>pdfbox</artifactId>
             <version>2.0.24</version>
-	</dependency>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -36,8 +36,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>6.2.8</version> <!-- Reemplaza con la última versión -->
-            <type>jar</type>
+            <version>6.2.8</version>
         </dependency>
     </dependencies>
     <name>MultipleSclerosisServer</name>
@@ -52,7 +51,7 @@
             <resource>
                 <directory>db</directory>
                 <includes>
-                    <include>MultipleSclerosisServer.db</include> <!-- Incluir la .db -->
+                    <include>MultipleSclerosisServer.db</include> <!-- Include the .db file -->
                 </includes>
             </resource>
         </resources>
@@ -62,18 +61,49 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.0</version>
             </plugin>
-             <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>3.2.2</version>
-            <configuration>
-                <archive>
-                    <manifest>
-                        <mainClass>Menu.ServerMenu</mainClass> 
-                    </manifest>
-                </archive>
-            </configuration>
-        </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>Menu.ServerMenu</mainClass> 
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <createDependencyReducedPom>true</createDependencyReducedPom>
+                    <archive>
+                        <manifest>
+                            <mainClass>Menu.ServerMenu</mainClass> <!-- Main class -->
+                        </manifest>
+                    </archive>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
