@@ -260,5 +260,27 @@ public class JDBCFeedbackManagerTest {
         assertTrue(feedbacks.stream().anyMatch(feedback -> feedback.getMessage().equals(feedback2.getMessage())));
 
     }
+    
+    @Test
+    public void testGetDoctorIdFromFeedback(){
+        System.out.println("getDoctorIdFromFeedback");
+        
+        Feedback feedback1 = new Feedback(java.sql.Date.valueOf("2024-01-01"), "Need a consult", doctor, patient);
+        feedbackManager.createFeedback(feedback1);
+        Feedback feedback2 = new Feedback(java.sql.Date.valueOf("2024-02-02"), "All good", doctor, patient);
+        feedbackManager.createFeedback(feedback2);
+        
+        Integer doctor_id1 = feedbackManager.getDoctorIdFromFeedback(feedback1.getId());
+        Integer doctor_id2 = feedbackManager.getDoctorIdFromFeedback(feedback2.getId());
+        
+        assertNotNull(doctor_id1);
+        assertNotNull(doctor_id2);
+        
+        assertEquals(doctor.getId(), doctor_id1);
+        assertEquals(doctor.getId(), doctor_id2);
+        
+        
+    
+    }
 
 }
