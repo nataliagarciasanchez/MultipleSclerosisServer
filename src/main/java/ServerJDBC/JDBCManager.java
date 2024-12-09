@@ -6,6 +6,10 @@ package ServerJDBC;
 import POJOs.Gender;
 import POJOs.SignalType;
 import Security.PasswordEncryption;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -27,23 +31,40 @@ public class JDBCManager {
 		
     }
     
-    public void connect(){
+   public void connect() {
         try {
             if (c == null || c.isClosed()) {
                 Class.forName("org.sqlite.JDBC");
-                //String dbPath = "db/MultipleSclerosisServer.db"; 
-                String dbPath=Paths.get("db", "MultipleSclerosisServer.db").toAbsolutePath().toString();
+
+                String relativeDbPath = "MultipleSclerosisServer.db";
+
+                InputStream dbResource = getClass().getClassLoader().getResourceAsStream(relativeDbPath);
+
+                if (dbResource == null) {
+                    throw new RuntimeException("Database file not found inside JAR: " + relativeDbPath);
+                }
+
+                File tempDbFile = File.createTempFile("MultipleSclerosisServer", ".db");
+                tempDbFile.deleteOnExit(); 
+
+                try (FileOutputStream out = new FileOutputStream(tempDbFile)) {
+                    dbResource.transferTo(out);
+                }
+
+                String dbPath = tempDbFile.getAbsolutePath();
                 c = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
                 c.createStatement().execute("PRAGMA foreign_keys=ON");
-                System.out.println("Database connection opened.");
+                System.out.println("Database connection opened at: " + dbPath);
+
                 this.createTables();
                 this.insertSymptoms();
                 this.insertRoles();
-                this.insertDoctor();//TODO to make sure there is a doctor in order to register a patient
+                this.insertDoctor(); 
                 this.insertAdministrator();
-            }			
-        } catch (SQLException | ClassNotFoundException e) {
+            }
+        } catch (SQLException | ClassNotFoundException | IOException e) {
             e.printStackTrace();
+            throw new RuntimeException("Failed to connect to the database", e);
         }
     }
 	
