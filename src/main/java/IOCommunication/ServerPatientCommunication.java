@@ -318,11 +318,27 @@ public class ServerPatientCommunication {
             try {
 
                 User user = (User) in.readObject();
-                System.out.println("user.getPassword: " + user.getPassword());
-                userManager.updateUser(user);
                 Patient patient = (Patient) in.readObject();
+                
+                System.out.println("Procession update request...");
+
+                 // Validar los datos
+                if (user == null || patient == null) {
+                    out.writeObject("Invalid data received.");
+                    return;
+                }
+
+                // Validar que el paciente esté asociado con el usuario
+                if (!patient.getUser().getId().equals(user.getId())) {
+                    out.writeObject("Patient and user mismatch.");
+                    return;
+                }
+                
+                userManager.updateUser(user);
                 patientManager.updatePatient(patient);
-                out.writeObject("Information changed correclty");
+                
+                out.writeObject("Information updated successfully.");
+
 
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, null, ex);
