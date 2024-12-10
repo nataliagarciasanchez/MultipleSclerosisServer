@@ -184,7 +184,7 @@ public class ServerDoctorCommunication{
                             break;
                         case "sendFeedback":
                             receiveFeedbackFromDoctor();
-                     
+                            break;
                         default:
                             out.writeObject("Not recognized action");
                             break; 
