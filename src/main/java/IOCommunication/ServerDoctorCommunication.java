@@ -117,16 +117,9 @@ public class ServerDoctorCommunication{
     }
 
     public void stopServer() {
-        System.out.println("Stopping server....");
+        System.out.println("Stopping serverDoctorCommunicartion....");
         isRunning = false;
-        
-        try {
-            if (serverSocket != null && !serverSocket.isClosed()) {
-                serverSocket.close(); // Cierra el ServerSocket para liberar el puerto
-            }
-        } catch (IOException ex) {
-        Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, "Error closing the server socket", ex);
-        }
+        releaseResourcesServer(serverSocket);
     }
     
     private static void releaseResourcesServer(ServerSocket serverSocket) {
@@ -192,7 +185,8 @@ public class ServerDoctorCommunication{
                             break; 
                     }
                  } catch (IOException | ClassNotFoundException ex) {
-                        Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, "Error with doctor communication", ex);
+                        //Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, "Error with doctor communication", ex);
+                        System.out.println("\nClient disconnected unexpectedly: " + ex.getMessage());
                         //running = false
                         isRunning = false;
 

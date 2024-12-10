@@ -14,10 +14,12 @@ import ServerJDBC.JDBCAdministratorManager;
 import ServerJDBC.JDBCManager;
 import ServerJDBC.JDBCUserManager;
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -35,7 +37,7 @@ public class ServerAdminGUI {
     private final JDBCUserManager userMan;
     private final JDBCAdministratorManager adminMan;
     private final String admin_password = "stop";
-    private final int MAX_ATTEMPS=3; //max attemps for the admin to login
+   // private final int MAX_ATTEMPS=3; //max attemps for the admin to login
 
     public ServerAdminGUI(ServerPatientCommunication serverPatientCommunication, ServerDoctorCommunication serverDoctorCommunication, JDBCManager jdbcManager) {
         this.serverPatientCommunication = serverPatientCommunication;
@@ -55,12 +57,12 @@ public class ServerAdminGUI {
     }
     
     private boolean showLoginPanel() {
-        int attemps = 0;
+        
         User user = null; 
         Administrator admin = null; 
         
         // Panel for login form
-        while ((user == null || admin == null) && attemps < MAX_ATTEMPS) {
+        while ((user == null || admin == null)) {
             JPanel loginPanel = new JPanel(new GridLayout(3, 2, 10, 10));
 
             // Username field
@@ -75,15 +77,21 @@ public class ServerAdminGUI {
             loginPanel.add(passLabel);
             loginPanel.add(passField);
 
-            // Adds an empty label for spacing
-            loginPanel.add(new JLabel());
+             String[] options = {"Submit"}; // Un único botón "Submit"
+                int result = JOptionPane.showOptionDialog(
+                        null,
+                        loginPanel,
+                        "Log in",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        options, // Opciones de botones
+                        options[0] // Botón predeterminado
+                );
 
-            // Displays the login panel in a dialog box
-            int result = JOptionPane.showConfirmDialog(null, loginPanel, "Log in",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-            // If the user clicks OK, validate the credentials
-            if (result == JOptionPane.OK_OPTION) {
+            
+            if (result == 0) {
                 
                 String username = userField.getText();
                 String password = new String(passField.getPassword());
@@ -98,9 +106,8 @@ public class ServerAdminGUI {
                     return true;
                     
                 } else {
-                    attemps++;
-                    int left_attemps = 3-attemps;
-                    JOptionPane.showMessageDialog(null, "Incorrect credentials.\nYou have " + left_attemps + " attemps left." ,
+                   
+                    JOptionPane.showMessageDialog(null, "Incorrect credentials." ,
                             "Autentification Error", JOptionPane.WARNING_MESSAGE);
                 }
 
@@ -141,11 +148,28 @@ public class ServerAdminGUI {
         panel.add(stopServerButton);
 
         // Botón para salir de la consola
-        JButton exitButton = new JButton("Exit");
+        JButton exitButton = new JButton("Log out");
         exitButton.addActionListener(new ActionListener() {
+            
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.dispose(); // Cierra la ventana
+                int confirm = JOptionPane.showConfirmDialog(frame, 
+                        "Are you sure you want to log out?", 
+                        "Confirmation", 
+                        JOptionPane.YES_NO_OPTION);
+
+                // Si el usuario confirma, detener el servidor
+                if (confirm == JOptionPane.YES_OPTION) {
+                    frame.dispose();
+                    JOptionPane.showMessageDialog(frame, 
+                            "Logging out with success.", 
+                            "Logged out", 
+                            JOptionPane.INFORMATION_MESSAGE);
+                    if(showLoginPanel()){
+                        createGUI();
+                    }
+                    
+                }
             }
         });
         panel.add(exitButton);

@@ -126,16 +126,10 @@ public class ServerPatientCommunication {
     }
 
     public void stopServer() {
-        System.out.println("Stopping server....");
+        System.out.println("Stopping serverPatientCommunication....");
         isRunning = false;
 
-        try {
-            if (serverSocket != null && !serverSocket.isClosed()) {
-                serverSocket.close(); // Cierra el ServerSocket para liberar el puerto
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error closing the server socket", ex);
-        }
+        releaseServerResources(serverSocket);
     }
 
     private static void releaseServerResources(ServerSocket serverSocket) {
@@ -180,7 +174,7 @@ public class ServerPatientCommunication {
                                 handleLogin();
                                 break;
                             case "logout":
-                                running = false;
+                                isRunning = false;
                                 handleLogout();
                                 break;
                             case "updateInformation":
@@ -204,6 +198,7 @@ public class ServerPatientCommunication {
                         //Logger.getLogger(ServerPatientCommunication.class.getName()).log(Level.SEVERE, "Error with patient communication", ex);
                         System.out.println("\nClient disconnected unexpectedly: " + ex.getMessage());
                         running = false;
+                        //isRunning = false;
 
                     }
                 }
@@ -331,17 +326,11 @@ public class ServerPatientCommunication {
                 System.out.println("Updating information...");
 
                  // Validar los datos
-                if (user == null || patient == null) {
+                if (user == null || patient == null || !patient.getUser().getId().equals(user.getId())) {
                     System.out.println("Error while updating");
                     out.writeObject("Invalid data received.");
                     return;
-                }
-
-                // Validar que el paciente esté asociado con el usuario
-                if (!patient.getUser().getId().equals(user.getId())) {
-                    out.writeObject("Patient and user mismatch.");
-                    return;
-                }
+                } 
                 
                 userManager.updateUser(user);
                 patientManager.updatePatient(patient);
