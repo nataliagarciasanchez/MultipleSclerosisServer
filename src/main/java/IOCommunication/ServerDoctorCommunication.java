@@ -53,6 +53,7 @@ public class ServerDoctorCommunication{
     private final JDBCFeedbackManager feedbackManager;
     private final JDBCFilesManager fileManager;
     private final String confirmation = "DoctorServerCommunication";
+    private boolean authorization;
     private int connectedDoctors = 0;
     private boolean isRunning = true;
 
@@ -158,7 +159,8 @@ public class ServerDoctorCommunication{
                 checkAuthorizedConnection();
                 //handleDoctorsRequest();
                 boolean running = true;
-            while(running){
+                authorization = checkAuthorizedConnection();
+            while(running && authorization){
                 try {
                     String action = (String) in.readObject(); // Leer acción
                     
@@ -220,7 +222,7 @@ public class ServerDoctorCommunication{
                         // confirmation message not valid - the one connected is not Doctor
                         System.out.println("Unauthorized connection.");
                        
-                        out.writeObject("Not authorized connection.");
+                        out.writeObject(authorization);
                         out.flush();
                         
                         System.out.println("Closing connection...");
@@ -228,6 +230,7 @@ public class ServerDoctorCommunication{
                 }else{
                     System.out.println("Authorized connection.");
                     authorization = true;
+                    out.writeObject(authorization);
                 }
             
             } catch (IOException | ClassNotFoundException ex) {
