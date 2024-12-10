@@ -181,8 +181,10 @@ public class ServerDoctorCommunication{
                             break;
                         case "getSignalsFile":
                             handleGetSignalsFile();
+                            break;
                         case "sendFeedback":
-                            receiveFeedbackFromDoctor();    
+                            receiveFeedbackFromDoctor();
+                     
                         default:
                             out.writeObject("Not recognized action");
                             break; 
@@ -375,20 +377,42 @@ public class ServerDoctorCommunication{
         
         }
         
-        private void handleGetSignalsFile(){
-            
-            try{
-            System.out.println("Reaching for file...");
-            Report report = (Report) in.readObject();
-            
-            Integer bitalinoEMG_id = report.getBitalinos().get(0).getId();
-            Integer bitalinoECG_id = report.getBitalinos().get(1).getId();
-            File signalsFile = fileManager.getFileFromBitalinosId(bitalinoEMG_id, bitalinoECG_id);
-            
-            out.writeObject(signalsFile);
-            
-            }catch (IOException | ClassNotFoundException ex) {
-                Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, null, ex);
+        private void handleGetSignalsFile() {
+            try {
+                System.out.println("Reaching for file...");
+                Object receivedObject = in.readObject(); 
+
+                if (!(receivedObject instanceof Report)) {
+                    out.writeObject("Error: Expected a Report object but received: " + receivedObject.getClass().getName());
+                    return;
+                }
+
+                Report report = (Report) receivedObject;
+
+                if (report.getBitalinos() == null || report.getBitalinos().isEmpty()) {
+                    out.writeObject("Error: Report missing Bitalino data.");
+                    return;
+                }
+
+                Integer bitalinoEMG_id = report.getBitalinos().get(0).getId();
+                Integer bitalinoECG_id = report.getBitalinos().get(1).getId();
+
+                File signalsFile = fileManager.getFileFromBitalinosId(bitalinoEMG_id, bitalinoECG_id);
+
+                if (signalsFile != null) {
+                    byte[] fileData = java.nio.file.Files.readAllBytes(signalsFile.toPath());
+                    out.writeObject(fileData);
+                    out.writeObject(signalsFile.getName());
+                } else {
+                    out.writeObject("Error: File not found.");
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                try {
+                    out.writeObject("Error: An unexpected error occurred on the server.");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         

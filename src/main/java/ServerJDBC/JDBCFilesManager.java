@@ -75,27 +75,22 @@ public class JDBCFilesManager implements FileManager{
         File fileRetrieved = null;
         String sql = "SELECT file_name, file_data FROM Files WHERE bitalinoEMG_id = ? AND bitalinoECG_id = ?";
 
-        try (PreparedStatement p = manager.getConnection().prepareStatement(sql);) {
-
-            // Establecer los valores de los parámetros
+        try (PreparedStatement p = manager.getConnection().prepareStatement(sql)) {
             p.setInt(1, bitalinoEMG_id);
             p.setInt(2, bitalinoECG_id);
 
             try (ResultSet resultSet = p.executeQuery()) {
                 if (resultSet.next()) {
-                    // Obtener los datos del archivo y su nombre
                     String fileName = resultSet.getString("file_name");
-                    byte[] fileData = resultSet.getBytes("file_data");
+                    String fileData = resultSet.getString("file_data");
 
-                    // Crear un archivo temporal con los datos recuperados
-                    fileRetrieved = File.createTempFile(fileName, null); // null para no añadir una extensión
+                    fileRetrieved = File.createTempFile(fileName, ".txt");
                     try (FileOutputStream fos = new FileOutputStream(fileRetrieved)) {
-                        fos.write(fileData);
+                        fos.write(fileData.getBytes()); 
                     }
-                }else{
-                    System.out.println("File with bitalinoEMG_id " + bitalinoEMG_id + "and bitalinoECG_id " + bitalinoECG_id + "not found");
+                } else {
+                    System.out.println("File with bitalinoEMG_id " + bitalinoEMG_id + " and bitalinoECG_id " + bitalinoECG_id + " not found");
                 }
-               
             }
         } catch (Exception e) {
             e.printStackTrace();
