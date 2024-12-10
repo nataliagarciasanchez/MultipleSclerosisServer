@@ -35,25 +35,41 @@ public class JDBCManagerTest {
         jdbcManager.connect(); // Conectar a la base de datos
         assertNotNull(jdbcManager.getConnection(), "Conexión inicializada.");
         System.out.println("Base de datos conectada correctamente.");
+        
+        try {
+            // Desactiva auto-commit para manejar transacciones manualmente
+            jdbcManager.getConnection().setAutoCommit(false);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            fail("No se pudo configurar la conexión para transacciones.");
+        }
     }
     
     @AfterAll
     public static void tearDownClass() {
         if (jdbcManager != null) {
-            jdbcManager.disconnect(); // Cerrar la conexión
-            System.out.println("Conexión cerrada correctamente.");
+            try {
+                // Asegúrate de que la conexión esté cerrada correctamente
+                jdbcManager.getConnection().setAutoCommit(true); // Restaura auto-commit
+                jdbcManager.disconnect();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
     
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws SQLException {
         // Limpiar todas las tablas antes de cada prueba
         jdbcManager.clearAllTables();
     }
     
     @AfterEach
-    public void tearDown() {
-        //No necesario rollback
+    public void tearDown() throws SQLException {
+        if (jdbcManager != null) {
+            // Deshace todos los cambios realizados durante la prueba
+            jdbcManager.getConnection().rollback();
+        }
     }
 
     /**
