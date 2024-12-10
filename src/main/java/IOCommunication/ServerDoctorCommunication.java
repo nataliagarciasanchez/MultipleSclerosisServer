@@ -216,9 +216,15 @@ public class ServerDoctorCommunication{
             try{
                 String message = (String) in.readObject();
                 if (!message.equals(confirmation)){ // confirmation message not valid - the one connected is not Doctor
-                    System.out.println("Unauthorized connection.");
-                    System.out.println("Closing connection...");
-                    doctorSocket.close();
+                    
+                        // confirmation message not valid - the one connected is not Doctor
+                        System.out.println("Unauthorized connection.");
+                       
+                        out.writeObject("Not authorized connection.");
+                        out.flush();
+                        
+                        System.out.println("Closing connection...");
+                        doctorSocket.close();
                 }else{
                     System.out.println("Authorized connection.");
                     authorization = true;

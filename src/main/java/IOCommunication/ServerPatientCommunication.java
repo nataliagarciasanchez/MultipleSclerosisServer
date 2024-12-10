@@ -229,12 +229,15 @@ public class ServerPatientCommunication {
             try {
                 String message = (String) in.readObject();
                 if (!message.equals(confirmation)) { // confirmation message not valid - the one connected is not Patient
+                    out.writeObject(authorization);
                     System.out.println("Unauthorized connection.");
                     System.out.println("Closing connection...");
                     patientSocket.close();
                 } else {
-                    System.out.println("Authorized connection.");
                     authorization = true;
+                    out.writeObject(authorization);
+                    System.out.println("Authorized connection.");
+                   
                 }
 
             } catch (IOException | ClassNotFoundException ex) {
