@@ -151,8 +151,8 @@ public class ServerDoctorCommunication{
                 out.flush();
                 authorization = checkAuthorizedConnection();
                 //handleDoctorsRequest();
-                //boolean running = true;
-            while(isRunning && authorization ){
+                boolean running = true;
+            while(running && authorization ){
                 try {
                     String action = (String) in.readObject(); // Leer acción
                     
@@ -187,8 +187,8 @@ public class ServerDoctorCommunication{
                  } catch (IOException | ClassNotFoundException ex) {
                         //Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, "Error with doctor communication", ex);
                         System.out.println("\nClient disconnected unexpectedly: " + ex.getMessage());
-                        //running = false
-                        isRunning = false;
+                       running = false;
+                       
 
                     }
             }
@@ -198,7 +198,7 @@ public class ServerDoctorCommunication{
                 try {
                     if (doctorSocket != null && !doctorSocket.isClosed()) {
                         doctorSocket.close();
-                        System.out.println("Connection with doctor closed.");
+                        System.out.println("FInally: Connection with doctor closed.");
                         doctorDisconnected();
                     }
                     
@@ -222,8 +222,10 @@ public class ServerDoctorCommunication{
                         System.out.println("Closing connection...");
                         releaseResourcesDoctor(in, out, doctorSocket);
                 }else{
-                    System.out.println("Authorized connection.");
+                    
                     authorization = true;
+                    out.writeObject(authorization);
+                    System.out.println("Authorized connection.");
                 }
             
             } catch (IOException | ClassNotFoundException ex) {
