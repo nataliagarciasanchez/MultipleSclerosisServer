@@ -132,11 +132,13 @@ public class JDBCUserManager implements UserManager {
                 Integer id = rs.getInt("id");
                 
                 if (password.equals(storedHashedPassword)) {
-                // Creamos el objeto User solo si la contraseña es válida
-                user = new User(id, email, password);
-            }
+                    // Creamos el objeto User solo si la contraseña es válida
+                    user = new User(id, email, password);
+                    
+                }else{
+                    System.out.println("JDBCUserManager says: Incorrect password.");}
             }else{
-                System.out.println("Invalid credentials. User not found.");
+                System.out.println("JDBCUserManager says: Invalid credentials. User not found.");
             }
             rs.close();
             p.close();
@@ -183,6 +185,28 @@ public class JDBCUserManager implements UserManager {
             p.setString(2, user.getPassword()); // Puedes aplicar el hash aquí si es necesario
             p.setInt(3, user.getRole().getId());
             p.setInt(4, user.getId());
+
+            p.executeUpdate();
+            p.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    @Override
+    public void updatePassword(User user) {
+        
+        
+        
+        String sql = "UPDATE Users SET password = ? WHERE email = ?";
+
+        try {
+            PreparedStatement p = manager.getConnection().prepareStatement(sql);
+
+            
+            p.setString(1, user.getPassword()); // Puedes aplicar el hash aquí si es necesario
+            p.setString(2, user.getEmail());
+            
 
             p.executeUpdate();
             p.close();
