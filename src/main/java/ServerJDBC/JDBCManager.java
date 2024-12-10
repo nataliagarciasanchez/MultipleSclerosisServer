@@ -36,25 +36,25 @@ public class JDBCManager {
             if (c == null || c.isClosed()) {
                 Class.forName("org.sqlite.JDBC");
 
-                String relativeDbPath = "MultipleSclerosisServer.db";
+                String dbPath = "db/MultipleSclerosisServer.db";
+                File persistentDbFile = new File(dbPath);
+                
+                if(!persistentDbFile.exists()){
+                    InputStream dbResource = getClass().getClassLoader().getResourceAsStream("MultipleSclerosisServer.db");
+                    if (dbResource == null) {
+                        throw new RuntimeException("Database file not found inside JAR: MultipleSclerosisServer.db");
+                    }
 
-                InputStream dbResource = getClass().getClassLoader().getResourceAsStream(relativeDbPath);
-
-                if (dbResource == null) {
-                    throw new RuntimeException("Database file not found inside JAR: " + relativeDbPath);
+                    persistentDbFile.getParentFile().mkdirs(); // Crea directorios si no existen
+                    try (FileOutputStream out = new FileOutputStream(persistentDbFile)) {
+                        dbResource.transferTo(out);
+                    }
                 }
 
-                File tempDbFile = File.createTempFile("MultipleSclerosisServer", ".db");
-                tempDbFile.deleteOnExit(); 
-
-                try (FileOutputStream out = new FileOutputStream(tempDbFile)) {
-                    dbResource.transferTo(out);
-                }
-
-                String dbPath = tempDbFile.getAbsolutePath();
-                c = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+                
+                c = DriverManager.getConnection("jdbc:sqlite:" + persistentDbFile.getAbsolutePath());
                 c.createStatement().execute("PRAGMA foreign_keys=ON");
-                System.out.println("Database connection opened at: " + dbPath);
+                System.out.println("Database connection opened at: " + persistentDbFile.getAbsolutePath());
 
                 this.createTables();
                 this.insertSymptoms();
