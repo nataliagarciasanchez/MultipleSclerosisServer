@@ -53,9 +53,9 @@ public class ServerDoctorCommunication{
     private final JDBCFeedbackManager feedbackManager;
     private final JDBCFilesManager fileManager;
     private final String confirmation = "DoctorServerCommunication";
-    private boolean authorization;
     private int connectedDoctors = 0;
     private boolean isRunning = true;
+    private boolean authorization;
 
     public ServerDoctorCommunication(int port, JDBCManager jdbcManager) {
         this.port=port;
@@ -156,11 +156,10 @@ public class ServerDoctorCommunication{
                 in = new ObjectInputStream(doctorSocket.getInputStream());
                 out = new ObjectOutputStream(doctorSocket.getOutputStream());
                 out.flush();
-                checkAuthorizedConnection();
-                //handleDoctorsRequest();
-                boolean running = true;
                 authorization = checkAuthorizedConnection();
-            while(running && authorization){
+                //handleDoctorsRequest();
+                //boolean running = true;
+            while(isRunning && authorization ){
                 try {
                     String action = (String) in.readObject(); // Leer acción
                     
@@ -172,7 +171,8 @@ public class ServerDoctorCommunication{
                             handleLogin();
                             break;
                         case "logout":
-                            running=false;
+                            //running=false;
+                            isRunning = false;
                             handleLogout();
                             break;
                         case "updateInformation":
@@ -193,7 +193,8 @@ public class ServerDoctorCommunication{
                     }
                  } catch (IOException | ClassNotFoundException ex) {
                         Logger.getLogger(ServerDoctorCommunication.class.getName()).log(Level.SEVERE, "Error with doctor communication", ex);
-                        running = false;
+                        //running = false
+                        isRunning = false;
 
                     }
             }
@@ -219,18 +220,16 @@ public class ServerDoctorCommunication{
                 String message = (String) in.readObject();
                 if (!message.equals(confirmation)){ // confirmation message not valid - the one connected is not Doctor
                     
-                        // confirmation message not valid - the one connected is not Doctor
                         System.out.println("Unauthorized connection.");
                        
                         out.writeObject(authorization);
                         out.flush();
                         
                         System.out.println("Closing connection...");
-                        doctorSocket.close();
+                        releaseResourcesDoctor(in, out, doctorSocket);
                 }else{
                     System.out.println("Authorized connection.");
                     authorization = true;
-                    out.writeObject(authorization);
                 }
             
             } catch (IOException | ClassNotFoundException ex) {

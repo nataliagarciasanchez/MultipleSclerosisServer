@@ -54,7 +54,7 @@ public class ServerPatientCommunication {
     private final JDBCBitalinoManager bitalinoManager;
     private final JDBCReportManager reportManager;
     private final JDBCSymptomManager symptomManager;
-    private JDBCFeedbackManager feedbackManager;
+    private final JDBCFeedbackManager feedbackManager;
     private final JDBCReport_SymptomsManager reportSymptomsManager;
     private final JDBCFilesManager fileManager;
     private final String confirmation = "PatientServerCommunication";
@@ -227,10 +227,12 @@ public class ServerPatientCommunication {
             try {
                 String message = (String) in.readObject();
                 if (!message.equals(confirmation)) { // confirmation message not valid - the one connected is not Patient
-                    out.writeObject(authorization);
+                    
                     System.out.println("Unauthorized connection.");
+                    out.writeObject(authorization);
+                    out.flush();
                     System.out.println("Closing connection...");
-                    patientSocket.close();
+                    releaseResourcesPatient(in, out, patientSocket);
                 } else {
                     authorization = true;
                     out.writeObject(authorization);
