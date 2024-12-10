@@ -5,74 +5,124 @@
     <artifactId>MultipleSclerosis</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
     </properties>
+
     <dependencies>
+        <!-- SQLite JDBC -->
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.36.0.3</version>
         </dependency>
+        <!-- JPA -->
         <dependency>
             <groupId>javax.persistence</groupId>
             <artifactId>javax.persistence-api</artifactId>
             <version>2.2</version>
         </dependency>
+        <!-- PDFBox -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
             <version>2.0.24</version>
         </dependency>
+        <!-- JUnit Jupiter API -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.9.1</version>
-            <scope>test</scope>
-            <type>jar</type>
+            <version>5.10.0</version>
         </dependency>
+        <!-- Spring Security -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
             <version>6.2.8</version>
         </dependency>
+        <!-- JUnit Platform Console Launcher -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-console</artifactId>
+            <version>1.10.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
+
     <name>MultipleSclerosisServer</name>
+
     <build>
         <resources>
+            <!-- Main resources -->
             <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*</include>
-                </includes>
+                <directory>src/main/resources</directory>
             </resource>
+            <!-- Include database file -->
             <resource>
                 <directory>db</directory>
                 <includes>
-                    <include>MultipleSclerosisServer.db</include> <!-- Include the .db file -->
+                    <include>MultipleSclerosisServer.db</include>
                 </includes>
             </resource>
         </resources>
+
         <plugins>
+            <!-- Surefire Plugin for Test Execution -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.0</version>
+                <version>3.0.0-M7</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test*.java</include>
+                    </includes>
+                </configuration>
             </plugin>
+
+            <!-- Maven JAR Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.2</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>Menu.ServerMenu</mainClass> 
-                        </manifest>
-                    </archive>
-                </configuration>
+                <version>3.3.0</version>
+                <executions>
+                    <!-- Main JAR -->
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>Menu.ServerMenu</mainClass>
+                                </manifest>
+                            </archive>
+                        </configuration>
+                    </execution>
+                    <!-- Test JAR -->
+                    <execution>
+                        <id>test-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <addClasspath>true</addClasspath>
+                                    <classpathPrefix>test-dependencies/</classpathPrefix>
+                                </manifest>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
+
+            <!-- Maven Shade Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -89,7 +139,7 @@
                     <createDependencyReducedPom>true</createDependencyReducedPom>
                     <archive>
                         <manifest>
-                            <mainClass>Menu.ServerMenu</mainClass> <!-- Main class -->
+                            <mainClass>Menu.ServerMenu</mainClass>
                         </manifest>
                     </archive>
                     <filters>
