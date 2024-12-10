@@ -193,28 +193,7 @@ public class JDBCUserManager implements UserManager {
         }
     }
     
-    @Override
-    public void updatePassword(User user) {
-        
-        
-        
-        String sql = "UPDATE Users SET password = ? WHERE email = ?";
-
-        try {
-            PreparedStatement p = manager.getConnection().prepareStatement(sql);
-
-            
-            p.setString(1, user.getPassword()); // Puedes aplicar el hash aquí si es necesario
-            p.setString(2, user.getEmail());
-            
-
-            p.executeUpdate();
-            p.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
+   
     /**
      * Retrieves a list of all users in the database.
      * 
