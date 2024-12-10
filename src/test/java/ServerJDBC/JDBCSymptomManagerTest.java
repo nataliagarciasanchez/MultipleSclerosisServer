@@ -108,7 +108,7 @@ public class JDBCSymptomManagerTest {
      * Test of removeSymptom method, of class JDBCSymptomManager.
      */
     @Test
-    public void testRemoveSymptom() { //TODO revisar por que se regeneran los sintomas
+    public void testRemoveSymptom() {
         System.out.println("removeSymptom");
         Symptom sys = new Symptom ("TempSymptom");
         

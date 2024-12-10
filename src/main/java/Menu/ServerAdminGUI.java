@@ -32,9 +32,8 @@ import javax.swing.JTextField;
 public class ServerAdminGUI {
     private final ServerPatientCommunication serverPatientCommunication;
     private final ServerDoctorCommunication serverDoctorCommunication;
-    private JDBCUserManager userMan;
-    private JDBCAdministratorManager adminMan;
-    private boolean isRunning = true; 
+    private final JDBCUserManager userMan;
+    private final JDBCAdministratorManager adminMan;
     private final String admin_password = "stop";
     private final int MAX_ATTEMPS=3; //max attemps for the admin to login
 
@@ -146,7 +145,6 @@ public class ServerAdminGUI {
         exitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                isRunning = false;
                 frame.dispose(); // Cierra la ventana
             }
         });
@@ -178,7 +176,7 @@ public class ServerAdminGUI {
     }
 
     private void stopServer(JFrame frame) {
-        int connectedClients = serverPatientCommunication.getConnectedClients() + serverDoctorCommunication.getConnectedDoctors(); // Supongamos que este método existe
+        int connectedClients = serverPatientCommunication.getConnectedClients() + serverDoctorCommunication.getConnectedDoctors();
 
         if (connectedClients != 0){
             JOptionPane.showMessageDialog(frame, 

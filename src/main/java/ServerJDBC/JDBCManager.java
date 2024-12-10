@@ -111,7 +111,7 @@ public class JDBCManager {
                 + "    name TEXT NOT NULL, "
                 + "    surname TEXT NOT NULL, "    
 		+ "    specialty TEXT NOT NULL,"
-		+ "    user_id INTEGER,"//TODO PONER NOT NULL-cambiado para la prueba de communication
+		+ "    user_id INTEGER NOT NULL,"
 		+ "    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE"
 		+ ");";
 		

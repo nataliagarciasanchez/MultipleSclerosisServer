@@ -175,36 +175,35 @@ public class JDBCManagerTest {
      * Test del método clearAllTables de la clase JDBCManager.
      */
     @Test
-public void testClearAllTables() {
-    System.out.println("clearAllTables");
+    public void testClearAllTables() {
+        System.out.println("clearAllTables");
 
-    // Insertar roles y doctores para probar la limpieza
-    jdbcManager.insertRoles();
-    jdbcManager.insertDoctor();
-    jdbcManager.insertAdministrator();
-    jdbcManager.insertSymptoms();
+        // Insertar roles y doctores para probar la limpieza
+        jdbcManager.insertRoles();
+        jdbcManager.insertDoctor();
+        jdbcManager.insertAdministrator();
+        jdbcManager.insertSymptoms();
 
-    // Limpiar las tablas
-    jdbcManager.clearAllTables();
+        // Limpiar las tablas
+        jdbcManager.clearAllTables();
 
-    // Lista de tablas a verificar
-    List<String> tables = Arrays.asList("Roles", "Users", "Doctors", "Patients", "Administrators", "Reports", "Symptoms", "Bitalinos", "Report_Symptoms", "Feedbacks");
+        // Lista de tablas a verificar
+        List<String> tables = Arrays.asList("Roles", "Users", "Doctors", "Patients", "Administrators", "Reports", "Symptoms", "Bitalinos", "Report_Symptoms", "Feedbacks");
 
-    try (Connection connection = jdbcManager.getConnection();
-         Statement stmt = connection.createStatement()) {
-        
-        // Iterar sobre cada tabla y verificar que esté vacía
-        for (String table : tables) {
-            String query = "SELECT COUNT(*) AS count FROM " + table;
-            try (ResultSet rs = stmt.executeQuery(query)) {
-                rs.next();
-                int count = rs.getInt("count");
-                assertEquals(0, count, "The " + table + " table should be empty after clearing.");
+        try ( Connection connection = jdbcManager.getConnection();  Statement stmt = connection.createStatement()) {
+
+            // Iterar sobre cada tabla y verificar que esté vacía
+            for (String table : tables) {
+                String query = "SELECT COUNT(*) AS count FROM " + table;
+                try ( ResultSet rs = stmt.executeQuery(query)) {
+                    rs.next();
+                    int count = rs.getInt("count");
+                    assertEquals(0, count, "The " + table + " table should be empty after clearing.");
+                }
             }
+        } catch (SQLException e) {
+            fail("Error while verifying the state of the tables: " + e.getMessage());
         }
-    } catch (SQLException e) {
-        fail("Error while verifying the state of the tables: " + e.getMessage());
     }
-}
 
 }
