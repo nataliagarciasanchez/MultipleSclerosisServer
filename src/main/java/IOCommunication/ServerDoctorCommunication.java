@@ -198,7 +198,7 @@ public class ServerDoctorCommunication{
                 try {
                     if (doctorSocket != null && !doctorSocket.isClosed()) {
                         doctorSocket.close();
-                        System.out.println("FInally: Connection with doctor closed.");
+                        System.out.println("Connection with doctor closed.");
                         doctorDisconnected();
                     }
                     
@@ -222,10 +222,10 @@ public class ServerDoctorCommunication{
                         System.out.println("Closing connection...");
                         releaseResourcesDoctor(in, out, doctorSocket);
                 }else{
-                    
+                    System.out.println("Authorized connection.");
                     authorization = true;
                     out.writeObject(authorization);
-                    System.out.println("Authorized connection.");
+                        out.flush();
                 }
             
             } catch (IOException | ClassNotFoundException ex) {
