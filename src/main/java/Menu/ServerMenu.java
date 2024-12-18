@@ -35,8 +35,9 @@ public class ServerMenu {
         
         //calls the main thread for handling connection of patients
         Thread patientServerThread = new Thread(() -> comPatient.startServer());
-        Thread doctorServerThread=new Thread(() ->comDoctor.startServer());
         //calls the main thread for handling connection of doctors
+        Thread doctorServerThread=new Thread(() ->comDoctor.startServer());
+        
         patientServerThread.start();
         doctorServerThread.start();
     }

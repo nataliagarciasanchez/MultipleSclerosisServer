@@ -43,7 +43,9 @@ public class JDBCPatientManager implements PatientManager{
         Random random = new Random();
         int randomIndex = random.nextInt(docs_ids.size());
         
-        int doc_id = docs_ids.get(randomIndex);;
+        int doc_id = docs_ids.get(randomIndex);
+        Doctor doctor=doctorMan.getDoctorById(doc_id);
+        p.setDoctor(doctor);
                 
         try{
             String sql = "INSERT INTO Patients (name, surname, NIF, dob, gender, phone, doctor_id, user_id)"
